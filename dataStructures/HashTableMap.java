@@ -23,7 +23,7 @@ public class HashTableMap<K,V> {
 	public long scale;
 	protected long shift;
     private static final int VALUES = 1;
-	public HashTableMap(int cap) { this(109345121, cap); }
+	public HashTableMap(int cap) { this(2393, cap); }
 	public HashTableMap(int i, int cap) {
 		prime = i;
 		capacity = cap;

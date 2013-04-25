@@ -14,36 +14,39 @@ import dataStructures.BasicTree;
 import dataStructures.HashTableMap;
 import dataStructures.TreeNode;
 
-public class CollectionMethods extends BasicTree{
+public class CollectionMethods extends BasicTree {
 	public BasicTree tree = new BasicTree();
 	private String saveFile = "";
 
-	public CollectionMethods() throws InvalidKeyException, IOException {
+	public CollectionMethods() throws InvalidKeyException, IOException {		
+
 //----> comment this out if you dont want to play with text files and save() / load()
 		
 		StringBuilder sFile = new StringBuilder();
 		String home = System.getProperty("user.home");
-		sFile = readFromFile(home + "/Desktop/VCOSaveLocation.txt");
-		//System.out.print(sFile);
+		sFile = readFromFile(home + "/Desktop/VCO/VCOSaveLocation.txt");
+		//System.out.println(sFile);
 		saveFile = sFile.toString();
-		//If you have a mac you can set the save() method to a given file and then the program will
-		//load this next time
 		this.loadCompleteDatabase();
-//		try {
-//		this.load();
-//		} catch (Exception ex) {
-//			//System.out.print("Cannot find file");
-//		}
+		try {
+		this.load();
+		} catch (ArrayIndexOutOfBoundsException ex) {
+			ex.printStackTrace();
+		}
 // <------
-				String[] cards = this.getCategory("cD");
-				for(int i = 0; i < cards.length; i++) {
-					this.addCard(cards[i]);
-				}
+//				String[] cards = this.getCategory("cD");
+//				for(int i = 0; i < cards.length; i++) {
+//					this.addCard(cards[i]);
+//				}
 	}
 	
 	public static void main(String[] args) throws InvalidKeyException, IOException {
 		CollectionMethods test = new CollectionMethods();
 		//test.loadCompleteDatabase();
+//		String[] all = test.getCategory("cD");
+//		for(int i = 0; i <all.length; i++ ) {
+//			System.out.println(all[i]);
+//		}
 	}
 
 	//returns a String[] of the cards and # owned in a given hashtable
@@ -806,12 +809,12 @@ public class CollectionMethods extends BasicTree{
 	
 	public void setSaveFile(String s) throws FileNotFoundException {
 		String home = System.getProperty("user.home");
-		PrintWriter out = new PrintWriter(home + "/Desktop/VCOSaveLocation.txt");
+		PrintWriter out = new PrintWriter(home + "/Desktop/VCO/VCOSaveLocation.txt");
 		out.print(s);
 		}
 	
 	//reads the save text file, and adds the correct number of cards to your database
-	public void load() throws IOException, InvalidKeyException {
+	public void load() throws IOException, InvalidKeyException  {
 		StringBuilder sFile = new StringBuilder();
 		sFile = readFromFile(saveFile);
 		String[] lines = sFile.toString().split(":");
@@ -849,7 +852,7 @@ public void loadCompleteDatabase() throws IOException {
 	String toughnessS;
 	String text;
 	String picURL;
-	sFile = readFromFile("/Users/eorndahl/Desktop/readFormattedCards.txt");
+	sFile = readFromFile("/Users/eorndahl/Desktop/VCO/readFormattedCards.txt");
 	//String[] currentData = sFile.toString().split("/////");
 	String[] lines = sFile.toString().split("::");
 	int cur = 0;

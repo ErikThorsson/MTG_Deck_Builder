@@ -175,6 +175,9 @@ public class GUI extends JFrame {
 
 		//JTable
 		JPanel p4 = new JPanel();
+		
+		//to get around the initial null 
+//		try {
 		String[] cardNames = organizer.getAllArray();
 		Integer[] cardsOwned = organizer.getOwned();
 		String[] stringOwned = new String[cardsOwned.length];
@@ -188,18 +191,15 @@ public class GUI extends JFrame {
 			splitR = organizer.getCard(cardNames[i]).getRarity().split(",");
 			String[] splitSet = new String[2];
 			splitSet = splitR[0].split("-");
-//			System.out.println(splitSet[1]);
-//			System.out.println(cardNames[i]);
 			try {
 			rarity[i] = splitSet[1];
 			}catch (ArrayIndexOutOfBoundsException ex) {
 				ex.printStackTrace();
 			}
 		}
-
 		String[] columnNames = {"Card Name",
 		"# Owned", "Rarity"};
-		data = new String[cardNames.length][3];
+		data = new String[1000][3];
 		for(int i = 0; i < cardNames.length; i++) {
 			data[i][0] = cardNames[i];
 			data[i][1] = stringOwned[i];
@@ -211,6 +211,7 @@ public class GUI extends JFrame {
 				return false;               
 			};
 		};
+		
 		JScrollPane scrollList = new JScrollPane(table);
 		scrollList.setPreferredSize(new Dimension(500,430));
 		p4.add(scrollList);
@@ -441,7 +442,7 @@ public class GUI extends JFrame {
 								ex.printStackTrace();
 							}
 						}
-						for(int i = 0; i < organizer.getAllArray().length; i++) {
+						for(int i = 0; i < organizer.getAllArray().length + 1; i++) {
 							data[i][0] = null;
 							data[i][1] = null;
 							data[i][2] = null;
@@ -489,7 +490,7 @@ public class GUI extends JFrame {
 								ex.printStackTrace();
 							}
 						}
-						for(int i = 0; i < organizer.getAllArray().length; i++) {
+						for(int i = 0; i < organizer.getAllArray().length + 1; i++) {
 							data[i][0] = null;
 							data[i][1] = null;
 							data[i][2] = null;
@@ -559,10 +560,14 @@ public class GUI extends JFrame {
 								ex.printStackTrace();
 							}
 						}
+						try {
 						for(int i = 0; i < organizer.getAllArray().length; i++) {
 							data[i][0] = null;
 							data[i][1] = null;
 							data[i][2] = null;
+						}
+						} catch ( ArrayIndexOutOfBoundsException ex) {
+							ex.printStackTrace();
 						}
 						for(int i = 0; i < allList.length; i++) {
 							data[i][0] = allList[i];
@@ -628,6 +633,7 @@ public class GUI extends JFrame {
 				isQuery = false;
 				ArrayList<Integer> ownedList = new ArrayList();
 				String[] all = organizer.getAllArray();
+				//System.out.println(java.util.Arrays.toString(all));
 				for( int i = 0; i < all.length; i++) {
 					try {
 						ownedList.add(organizer.getCard(all[i]).getOwned());
@@ -642,6 +648,7 @@ public class GUI extends JFrame {
 				for(int i = 0; i < all.length; i++) {
 					stringOwned[i] = Integer.toString(arr2[i]);
 				}
+				//split the rarity out of each card given the name list
 				String[] rarity = new String[all.length];
 				for(int i = 0; i < all.length; i++) {
 					String[] splitR = new String[100];
@@ -719,10 +726,10 @@ public class GUI extends JFrame {
 			e.printStackTrace();
 		}
 		frame.setTitle("Virtual Card Organizer");
-		frame.setSize(1050,500);
+		frame.setSize(1060,480);
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
-		//frame.setResizable(false);
+		frame.setResizable(false);
 	}
 }
