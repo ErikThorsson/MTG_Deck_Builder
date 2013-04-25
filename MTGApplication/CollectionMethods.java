@@ -21,12 +21,11 @@ public class CollectionMethods extends BasicTree {
 	public CollectionMethods() throws InvalidKeyException, IOException {		
 
 //----> comment this out if you dont want to play with text files and save() / load()
-		
-		StringBuilder sFile = new StringBuilder();
+		String sFile;
+		//C:\\Users\\Administrator\\Desktop\\VCO\\VCOSave.txt
 		String home = System.getProperty("user.home");
-		sFile = readFromFile(home + "/Desktop/VCO/VCOSaveLocation.txt");
-		//System.out.println(sFile);
-		saveFile = sFile.toString();
+		sFile = (home + "/Desktop/VCO/VCOSave.txt");
+		saveFile = sFile;
 		this.loadCompleteDatabase();
 		try {
 		this.load();
