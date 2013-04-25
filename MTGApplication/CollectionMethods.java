@@ -787,7 +787,7 @@ public class CollectionMethods extends BasicTree {
 	public Card getCard(String s) throws InvalidKeyException {
 		Card card = new Card();
 		try {
-		card = (Card) MTG.get(s);
+		card = (Card) CompleteDatabase.get(s);
 		} catch (NullPointerException n) {
 			InvalidKeyException ex = new InvalidKeyException();
 			throw ex;

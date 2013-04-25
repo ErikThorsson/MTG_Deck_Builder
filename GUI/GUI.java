@@ -708,6 +708,8 @@ public class GUI extends JFrame {
 							label.setIcon(organizer.getCard(selected).getImg());
 						} catch (MalformedURLException e1) {
 							e1.printStackTrace();
+						} catch (IOException e2) {
+							e2.printStackTrace();
 						}
 					}catch (InvalidKeyException i2) {
 						i2.printStackTrace();

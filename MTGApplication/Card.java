@@ -1,8 +1,13 @@
 package MTGApplication;
 
+import java.awt.image.BufferedImage;
 import java.net.MalformedURLException;
 import java.net.URL;
-
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 public class Card {
@@ -58,9 +63,12 @@ public class Card {
 		img = i;
 	}
 	
-	public ImageIcon getImg() throws MalformedURLException {
-		if(img == null)
-		img = new ImageIcon(new URL(imgURL));
+	public ImageIcon getImg() throws IOException {
+		BufferedImage image = null;
+		if(img == null) {
+		image = ImageIO.read(new File("/Users/eorndahl/Desktop/VCO/Pictures Try 2/" + this.name + ".jpg"));
+		img = new ImageIcon(image);
+		}
 		return img;
 	}
 }
