@@ -40,7 +40,6 @@ public class Card {
 		text = t;
 		type1 = ty;
 		type2 = ty2;
-		//type3 = ty3;
 		owned = 0;
 		imgURL = url;
 		rarity = r;

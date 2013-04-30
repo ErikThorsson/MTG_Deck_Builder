@@ -124,9 +124,9 @@ public class Automate {
 					color = "red";
 			}else if( color.contains("W") || color.contains("w")) {
 					color = "white";
-			}else if( color.contains("B") || color.contains("b")) {
-					color = "blue";
 			}else if( color.contains("U") || color.contains("u")) {
+					color = "blue";
+			}else if( color.contains("B") || color.contains("b")) {
 					color = "black";
 			}else if( color.contains("G") || color.contains("g")) {
 						color = "green";

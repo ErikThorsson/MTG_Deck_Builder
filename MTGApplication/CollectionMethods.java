@@ -21,8 +21,13 @@ public class CollectionMethods extends BasicTree {
 	public CollectionMethods() throws InvalidKeyException, IOException {		
 
 //----> comment this out if you dont want to play with text files and save() / load()
+<<<<<<< HEAD
 		String sFile;
 		//C:\\Users\\Administrator\\Desktop\\VCO\\VCOSave.txt
+=======
+		
+		String sFile;
+>>>>>>> form fitting Jtable, Rarity query, and rarity column now displays full word
 		String home = System.getProperty("user.home");
 		sFile = (home + "/Desktop/VCO/VCOSave.txt");
 		saveFile = sFile;
@@ -41,11 +46,12 @@ public class CollectionMethods extends BasicTree {
 	
 	public static void main(String[] args) throws InvalidKeyException, IOException {
 		CollectionMethods test = new CollectionMethods();
-		//test.loadCompleteDatabase();
+		test.loadCompleteDatabase();
 //		String[] all = test.getCategory("cD");
 //		for(int i = 0; i <all.length; i++ ) {
-//			System.out.println(all[i]);
-//		}
+		//System.out.println(java.util.Arrays.toString(test.query("green", -1, -1, -1, "n", "n")));
+		//}
+		System.out.print(test.getCard("Cancel").color);
 	}
 
 	//returns a String[] of the cards and # owned in a given hashtable
@@ -743,7 +749,7 @@ public class CollectionMethods extends BasicTree {
 				card = list.get(j);
 				if(card != null)
 					if(card.color != null)
-						if(card.color.equals(color))
+						if(card.color.equals(color)) 
 						arr.add(card.name);
 			}
 			String[] arr2= new String[arr.size()];

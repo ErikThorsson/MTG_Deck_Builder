@@ -39,8 +39,11 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
+import MTGApplication.Card;
 import MTGApplication.CollectionMethods;
 
 @SuppressWarnings("serial")
@@ -55,14 +58,14 @@ public class GUI extends JFrame {
 	protected JComboBox queryPower = new JComboBox(new Object[] {"Power", 1, 2, 3, 4, 5, 6, 7, 8, 9});
 	protected JComboBox queryToughness = new JComboBox(new Object[] {"Toughness", 1, 2, 3, 4, 5, 6, 7, 8, 9});
 	protected JComboBox queryOwned = new JComboBox(new Object[] {"Owned", 1, 2, 3, 4, 5, 6, 7, 8, 9});
-	protected JComboBox queryType1 = new JComboBox(new Object[] {"Type1", "permanent", "nonPermanent"});
-	protected JComboBox queryType2 = new JComboBox(new Object[] {"Type2", "enchantment", "creature", "artifact", "instant", "sorcery"});
+	protected JComboBox queryType1 = new JComboBox(new Object[] {"Type", "permanent", "nonPermanent"});
+	protected JComboBox queryType2 = new JComboBox(new Object[] {"Subtype", "enchantment", "creature", "artifact", "instant", "sorcery"});
+	protected JComboBox queryRarity = new JComboBox(new Object[] {"Rarity", "Common", "Uncommon", "Rare", "Mythic"});
 	protected JButton goQuery = new JButton("Query!");
 	protected JButton viewAll = new JButton("View All");
 	private JTextField textBox = new JTextField("Enter Here");
 	private String selected = "no";
 	private JList list;
-	private JTable table;
 	private JList list2; 
 	private String color = "n";
 	private int power = -1;
@@ -70,6 +73,7 @@ public class GUI extends JFrame {
 	private int owned = -1;
 	private String type1 = "n";
 	private String type2 = "n";
+	private String rarityQ = "";
 	private JMenuBar menuBar;
 	private JMenu menu;
 	private JMenuItem menuItem, menuItem2;
@@ -77,6 +81,8 @@ public class GUI extends JFrame {
 	private String[] queryList;
 	private boolean isQuery = false;
 	private boolean isText = false;
+	private DefaultTableModel dataModel;
+	private JTable table;
 
 	public GUI() throws InvalidKeyException, IOException {
 		final CollectionMethods organizer = new CollectionMethods();
@@ -92,27 +98,14 @@ public class GUI extends JFrame {
 		//Build the first menu.
 		menu = new JMenu("File");
 		menu.setMnemonic(KeyEvent.VK_A);
-		menu.getAccessibleContext().setAccessibleDescription(
-				"The only menu in this program that has menu items");
+		menu.getAccessibleContext().setAccessibleDescription("The only menu in this program that has menu items");
 		menuBar.add(menu);
 
 		//a group of JMenuItems
-		menuItem = new JMenuItem("Save",
-				KeyEvent.VK_T);
-		menuItem.setAccelerator(KeyStroke.getKeyStroke(
-				KeyEvent.VK_1, ActionEvent.ALT_MASK));
-		menuItem.getAccessibleContext().setAccessibleDescription(
-				"Save");
+		menuItem = new JMenuItem("Save",KeyEvent.VK_T);
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, ActionEvent.ALT_MASK));
+		menuItem.getAccessibleContext().setAccessibleDescription("Save");
 		menu.add(menuItem);
-
-		menuItem2 = new JMenuItem("Set Save Text File",
-				KeyEvent.VK_T);
-		menuItem2.setAccelerator(KeyStroke.getKeyStroke(
-				KeyEvent.VK_1, ActionEvent.ALT_MASK));
-		menuItem2.getAccessibleContext().setAccessibleDescription(
-				"Save");
-
-		menu.add(menuItem2);
 
 		setJMenuBar(menuBar);
 
@@ -132,34 +125,21 @@ public class GUI extends JFrame {
 
 		});
 
-		menuItem2.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String s = "";
-				s = JOptionPane.showInputDialog(null, "Enter file path", "Save Path", JOptionPane.QUESTION_MESSAGE);
-				if(s != null)
-					try {
-						organizer.setSaveFile(s);
-					} catch (FileNotFoundException e1) {
-						e1.printStackTrace();
-					}
-			}
-		});
-
-
 		//Category combo box panel
 		JPanel p = new JPanel(new BorderLayout());
 		p.add(viewCat, BorderLayout.NORTH);
 
 		//query combo boxes
-		JPanel p0 = new JPanel(new GridLayout(7,1));
+		JPanel p0 = new JPanel(new GridLayout(8,1));
 		p0.add(queryColor);
 		p0.add(queryPower);
 		p0.add(queryToughness);
 		p0.add(queryOwned);
 		p0.add(queryType1);
 		p0.add(queryType2);
+		p0.add(queryRarity);
 		p0.add(goQuery);
-
+	
 		//button grid panel
 		JPanel p1 = new JPanel();
 		p1.setLayout(new GridLayout(2,2));
@@ -172,12 +152,10 @@ public class GUI extends JFrame {
 		JPanel p2 = new JPanel(new BorderLayout());
 		p2.add(textBox, BorderLayout.NORTH);
 		p2.add(p1, BorderLayout.CENTER);
+		p2.setPreferredSize(new Dimension(300,433));
 
 		//JTable
 		JPanel p4 = new JPanel();
-		
-		//to get around the initial null 
-//		try {
 		String[] cardNames = organizer.getAllArray();
 		Integer[] cardsOwned = organizer.getOwned();
 		String[] stringOwned = new String[cardsOwned.length];
@@ -192,26 +170,40 @@ public class GUI extends JFrame {
 			String[] splitSet = new String[2];
 			splitSet = splitR[0].split("-");
 			try {
-			rarity[i] = splitSet[1];
+				if(splitSet[1].equals("C"))
+					rarity[i] = "Common";
+				if(splitSet[1].equals("U"))
+					rarity[i] = "Uncommon";
+				if(splitSet[1].equals("R"))
+					rarity[i] = "Rare";
+				if(splitSet[1].equals("M"))
+					rarity[i] = "Mythic";
 			}catch (ArrayIndexOutOfBoundsException ex) {
 				ex.printStackTrace();
 			}
 		}
-		String[] columnNames = {"Card Name",
-		"# Owned", "Rarity"};
-		data = new String[1000][3];
+
+		dataModel = new DefaultTableModel();
+		dataModel.setColumnCount(3);
+		dataModel.setRowCount(organizer.getAllArray().length);
+		dataModel.setColumnIdentifiers(new String[]{"Name", "#Owned", "Rarity"});
 		for(int i = 0; i < cardNames.length; i++) {
-			data[i][0] = cardNames[i];
-			data[i][1] = stringOwned[i];
-			data[i][2] = rarity[i];
+			dataModel.setValueAt(cardNames[i],i, 0);
 		}
-		table = new JTable(data, columnNames) {
+		for(int i = 0; i < cardNames.length; i++) {
+			dataModel.setValueAt(stringOwned[i],i, 1);
+		}
+		for(int i = 0; i < cardNames.length; i++) {
+			dataModel.setValueAt(rarity[i],i, 2);
+		}
+
+		table = new JTable(dataModel) {
 			private static final long serialVersionUID = 1L;
 			public boolean isCellEditable(int row, int column) {                
-				return false;               
+				return false;  
 			};
 		};
-		
+
 		JScrollPane scrollList = new JScrollPane(table);
 		scrollList.setPreferredSize(new Dimension(500,430));
 		p4.add(scrollList);
@@ -323,6 +315,126 @@ public class GUI extends JFrame {
 					type2 = "n";
 			}
 		});
+		
+		queryRarity.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				rarityQ = (String) queryRarity.getSelectedItem();
+				ArrayList<String> arr = new ArrayList();
+				if(rarityQ.equals("Common"))
+					rarityQ = "C";
+				if(rarityQ.equals("Uncommon"))
+					rarityQ = "U";
+				if(rarityQ.equals("Rare"))
+					rarityQ = "R";
+				if(rarityQ.equals("Mythic"))
+					rarityQ = "M";
+				
+				//System.out.println(rarityQ + "\n");
+				String rarity = "";
+				String[] all = organizer.getAllArray();
+				//System.out.println(java.util.Arrays.toString(all));
+				ArrayList<Card> list = new ArrayList<Card>();
+				for(int i = 0; i < all.length; i++) {
+					try {
+					list.add(organizer.getCard(all[i]));
+					//System.out.println(organizer.getCard(all[i]).name);
+					} catch (InvalidKeyException e1) {
+						e1.printStackTrace();
+					}
+				}
+				String[] splitR;
+				Card card = new Card();
+				for(int j = 0; j < list.size(); j++) {
+					card = list.get(j);
+					if(card != null)
+						rarity = card.rarity;
+					splitR = rarity.split(",");
+					String[] splitSet = new String[2];
+					splitSet = splitR[0].split("-");
+					rarity = splitSet[1];
+					//System.out.println(rarity);
+					if(rarity.equals(rarityQ))
+						arr.add(card.name);
+				}
+				String[] arr2= new String[arr.size()];
+				arr.toArray(arr2);
+				//System.out.println(arr2.length);
+				//System.out.println(java.util.Arrays.toString(arr2));
+
+				String[] rarityL = new String[arr2.length];
+				for(int i = 0; i < arr2.length; i++) {
+					String[] splitR2 = new String[100];
+					try {
+						splitR2 = organizer.getCard(arr2[i]).getRarity().split(",");
+					} catch (InvalidKeyException e1) {
+						e1.printStackTrace();
+					}
+					String[] splitSet = new String[2];
+					splitSet = splitR2[0].split("-");
+					try {
+						if(splitSet[1].equals("C"))
+							rarityL[i] = "Common";
+						if(splitSet[1].equals("U"))
+							rarityL[i] = "Uncommon";
+						if(splitSet[1].equals("R"))
+							rarityL[i] = "Rare";
+						if(splitSet[1].equals("M"))
+							rarityL[i] = "Mythic";
+					}catch (ArrayIndexOutOfBoundsException ex) {
+						ex.printStackTrace();
+					}
+				}
+				ArrayList<Integer> ownedList = new ArrayList();
+				for( int i = 0; i < arr2.length; i++) {
+					try {
+						ownedList.add(organizer.getCard(arr2[i]).getOwned());
+						//System.out.println(organizer.getCard(arr2[i]).getOwned());
+					} catch (InvalidKeyException e1) {
+						e1.printStackTrace();
+					}
+				}
+				//convert ArrayList to Integer[]
+				Integer[] arr3= new Integer[ownedList.size()];
+				ownedList.toArray(arr3);
+				String[] stringOwned = new String[arr3.length];
+				for(int i = 0; i < arr2.length; i++) {
+					stringOwned[i] = Integer.toString(arr3[i]);
+				}
+				
+				//System.out.println(java.util.Arrays.toString(arr2));
+				//System.out.println(java.util.Arrays.toString(stringOwned));
+				//System.out.println(java.util.Arrays.toString(rarityL));
+
+				int toRemove = dataModel.getRowCount() - arr2.length;
+				for(int i = 0; i < toRemove; i++) {
+					if(dataModel.getRowCount() > 3)
+						dataModel.removeRow(dataModel.getRowCount() - 1);
+				}	
+				int toAdd = arr2.length - dataModel.getRowCount();
+				for(int i = 0; i < toAdd; i++)
+					dataModel.addRow(new Object[]{"","",""});
+				for(int i = 0; i < dataModel.getRowCount(); i++) {
+					dataModel.setValueAt(null,i, 0);
+				}
+				for(int i = 0; i < dataModel.getRowCount(); i++) {
+					dataModel.setValueAt(null,i, 1);
+				}
+				for(int i = 0; i < dataModel.getRowCount(); i++) {
+					dataModel.setValueAt(null,i, 2);
+				}
+				for(int i = 0; i < arr2.length; i++) {
+					dataModel.setValueAt(arr2[i],i, 0);
+				}
+				for(int i = 0; i < arr2.length; i++) {
+					dataModel.setValueAt(stringOwned[i],i, 1);
+				}
+				for(int i = 0; i < arr2.length; i++) {
+					dataModel.setValueAt(rarityL[i],i, 2);
+				}
+			table.repaint();
+			}
+		});
 		//query button listener and table refresher
 		goQuery.addActionListener(new ActionListener() {
 			@SuppressWarnings("rawtypes")
@@ -334,7 +446,7 @@ public class GUI extends JFrame {
 				ArrayList<Integer> ownedList = new ArrayList();
 				if(owned == -1 && color.equals("n")
 						&& type1.equals("n") && type2.equals("n") && power == -1 && toughness == -1) {
-					//System.out.print("Fuck you");
+					//Do nothing
 				} else {
 					for( int i = 0; i < queryList.length; i++) {
 						try {
@@ -347,12 +459,174 @@ public class GUI extends JFrame {
 				//convert ArrayList to Integer[]
 				Integer[] arr2= new Integer[ownedList.size()];
 				ownedList.toArray(arr2);
-				String[] stringOwned = new String[arr2.length];
+				final String[] stringOwned = new String[arr2.length];
 
 				if(owned == -1 && color.equals("n")
 						&& type1.equals("n") && type2.equals("n") && power == -1 && toughness == -1) {
-					//System.out.print("Fuck you");
+					//Do nothing
 				}else {
+					for(int i = 0; i < queryList.length; i++) {
+						stringOwned[i] = Integer.toString(arr2[i]);
+					}
+					final String[] rarity = new String[queryList.length];
+					for(int i = 0; i < queryList.length; i++) {
+						String[] splitR = new String[100];
+						try {
+							splitR = organizer.getCard(queryList[i]).getRarity().split(",");
+						} catch (InvalidKeyException e1) {
+							e1.printStackTrace();
+						}
+						String[] splitSet = new String[2];
+						splitSet = splitR[0].split("-");
+						try {
+							if(splitSet[1].equals("C"))
+								rarity[i] = "Common";
+							if(splitSet[1].equals("U"))
+								rarity[i] = "Uncommon";
+							if(splitSet[1].equals("R"))
+								rarity[i] = "Rare";
+							if(splitSet[1].equals("M"))
+								rarity[i] = "Mythic";
+						}catch (ArrayIndexOutOfBoundsException ex) {
+							ex.printStackTrace();
+						}
+					}
+					int toRemove = dataModel.getRowCount() - queryList.length;
+					for(int i = 0; i < toRemove; i++) {
+						if(dataModel.getRowCount() > 2)
+							dataModel.removeRow(dataModel.getRowCount() - 1);
+					}	
+					int toAdd = queryList.length - dataModel.getRowCount();
+					for(int i = 0; i < toAdd; i++)
+						dataModel.addRow(new Object[]{"","",""});
+					for(int i = 0; i < dataModel.getRowCount(); i++) {
+						dataModel.setValueAt(null,i, 0);
+					}
+					for(int i = 0; i < dataModel.getRowCount(); i++) {
+						dataModel.setValueAt(null,i, 1);
+					}
+					for(int i = 0; i < dataModel.getRowCount(); i++) {
+						dataModel.setValueAt(null,i, 2);
+					}
+					for(int i = 0; i < queryList.length; i++) {
+						dataModel.setValueAt(queryList[i],i, 0);
+					}
+					for(int i = 0; i < queryList.length; i++) {
+						dataModel.setValueAt(stringOwned[i],i, 1);
+					}
+					for(int i = 0; i < queryList.length; i++) {
+						dataModel.setValueAt(rarity[i],i, 2);
+					}
+				}	
+				table.repaint(); 
+			}
+		});
+
+		removeCard.addActionListener(new ActionListener() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				boolean isRemoved = false;
+				try {
+					selected = (String) table.getValueAt(table.getSelectedRow(), 0);
+				} catch (ArrayIndexOutOfBoundsException ex) {
+					selected = textBox.getText();
+				}
+				if(isText == true) {
+					selected = textBox.getText();
+				}
+				try {
+					if (organizer.getCard(selected).owned == 1)
+						isRemoved = true;
+				} catch (InvalidKeyException e1) {
+					e1.printStackTrace();
+				}
+				try {
+					if(selected != null)
+						organizer.removeCard(selected);
+				} catch (NullPointerException ex) {
+					ex.printStackTrace();
+				}
+				//determine if all view and refresh
+				if(isQuery != true) {
+					String[] allList = organizer.getAllArray();
+					ArrayList<Integer> ownedL = new ArrayList();
+					for( int i = 0; i < allList.length; i++) {
+						try {
+							ownedL.add(organizer.getCard(allList[i]).getOwned());
+						} catch (InvalidKeyException e1) {
+							e1.printStackTrace();
+						}
+					}
+					//convert ArrayList to Integer[] to String[]
+					Integer[] arr2= new Integer[ownedL.size()];
+					ownedL.toArray(arr2);
+					String[] stringOwned = new String[arr2.length];
+					for(int i = 0; i < allList.length; i++) {
+						stringOwned[i] = Integer.toString(arr2[i]);
+					}
+					String[] rarity = new String[allList.length];
+					for(int i = 0; i < allList.length; i++) {
+						String[] splitR = new String[100];
+						try {
+							splitR = organizer.getCard(allList[i]).getRarity().split(",");
+						} catch (InvalidKeyException e1) {
+							e1.printStackTrace();
+						}
+						String[] splitSet = new String[2];
+						splitSet = splitR[0].split("-");
+						try {
+							if(splitSet[1].equals("C"))
+								rarity[i] = "Common";
+							if(splitSet[1].equals("U"))
+								rarity[i] = "Uncommon";
+							if(splitSet[1].equals("R"))
+								rarity[i] = "Rare";
+							if(splitSet[1].equals("M"))
+								rarity[i] = "Mythic";
+						}catch (ArrayIndexOutOfBoundsException ex) {
+							ex.printStackTrace();
+						}
+					}
+					if(isRemoved == true && dataModel.getRowCount() > 2) {
+						dataModel.removeRow(1);
+					}
+					for(int i = 0; i < dataModel.getRowCount(); i++) {
+						dataModel.setValueAt(null,i, 0);
+					}
+					for(int i = 0; i < dataModel.getRowCount(); i++) {
+						dataModel.setValueAt(null,i, 1);
+					}
+					for(int i = 0; i < dataModel.getRowCount(); i++) {
+						dataModel.setValueAt(null,i, 2);
+					}	
+					for(int i = 0; i < allList.length; i++) {
+						dataModel.setValueAt(allList[i],i, 0);
+					}
+					for(int i = 0; i < allList.length; i++) {
+						dataModel.setValueAt(stringOwned[i],i, 1);
+					}
+					for(int i = 0; i < allList.length; i++) {
+						dataModel.setValueAt(rarity[i],i, 2);
+					}
+					table.repaint(); 
+					//determine if queryview and refresh
+				} else {
+					queryList = organizer.query(color, power,toughness,owned, type1, type2);
+					@SuppressWarnings("unchecked")
+					ArrayList<Integer> ownedList = new ArrayList();
+					for( int i = 0; i < queryList.length; i++) {
+						try {
+							ownedList.add(organizer.getCard(queryList[i]).getOwned());
+						} catch (InvalidKeyException e1) {
+							e1.printStackTrace();
+						}
+					}
+					//convert ArrayList to Integer[]
+					Integer[] arr2= new Integer[ownedList.size()];
+					ownedList.toArray(arr2);
+					String[] stringOwned = new String[arr2.length];
+
 					for(int i = 0; i < queryList.length; i++) {
 						stringOwned[i] = Integer.toString(arr2[i]);
 					}
@@ -367,142 +641,41 @@ public class GUI extends JFrame {
 						String[] splitSet = new String[2];
 						splitSet = splitR[0].split("-");
 						try {
-						rarity[i] = splitSet[1];
+							if(splitSet[1].equals("C"))
+								rarity[i] = "Common";
+							if(splitSet[1].equals("U"))
+								rarity[i] = "Uncommon";
+							if(splitSet[1].equals("R"))
+								rarity[i] = "Rare";
+							if(splitSet[1].equals("M"))
+								rarity[i] = "Mythic";
 						}catch (ArrayIndexOutOfBoundsException ex) {
 							ex.printStackTrace();
 						}
 					}
-					for(int i = 0; i < organizer.getAllArray().length; i++) {
-						data[i][0] = null;
-						data[i][1] = null;
-						data[i][2] = null;
+					if(isRemoved == true && dataModel.getRowCount() > 2)
+						dataModel.removeRow(1);
+					for(int i = 0; i < dataModel.getRowCount(); i++) {
+						dataModel.setValueAt(null,i, 0);
+					}
+					for(int i = 0; i < dataModel.getRowCount(); i++) {
+						dataModel.setValueAt(null,i, 1);
+					}
+					for(int i = 0; i < dataModel.getRowCount(); i++) {
+						dataModel.setValueAt(null,i, 2);
 					}
 					for(int i = 0; i < queryList.length; i++) {
-						data[i][0] = queryList[i];
-						data[i][1] = stringOwned[i];
-						data[i][2] = rarity[i];
+						dataModel.setValueAt(queryList[i],i, 0);
 					}
+					for(int i = 0; i < queryList.length; i++) {
+						dataModel.setValueAt(stringOwned[i],i, 1);
+					}
+					for(int i = 0; i < queryList.length; i++) {
+						dataModel.setValueAt(rarity[i],i, 2);
+					}
+					table.repaint(); 
 				}
-				table.repaint(); 
 			}
-		});
-
-		removeCard.addActionListener(new ActionListener() {
-			@SuppressWarnings("unchecked")
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					selected = (String) table.getValueAt(table.getSelectedRow(), 0);
-					} catch (ArrayIndexOutOfBoundsException ex) {
-						selected = textBox.getText();
-					}
-					//System.out.println(selected);
-				if(isText == true) {
-					selected = textBox.getText();
-				}				
-					try {
-						if(selected != null)
-							organizer.removeCard(selected);
-					} catch (NullPointerException ex) {
-						ex.printStackTrace();
-					}
-					//determine if all view and refresh
-					if(isQuery != true) {
-						//make a new JTable
-						//System.out.println("all cards");
-						String[] allList = organizer.getAllArray();
-						ArrayList<Integer> ownedL = new ArrayList();
-						for( int i = 0; i < allList.length; i++) {
-							try {
-								ownedL.add(organizer.getCard(allList[i]).getOwned());
-							} catch (InvalidKeyException e1) {
-								e1.printStackTrace();
-							}
-						}
-						//convert ArrayList to Integer[] to String[]
-						Integer[] arr2= new Integer[ownedL.size()];
-						ownedL.toArray(arr2);
-						String[] stringOwned = new String[arr2.length];
-						for(int i = 0; i < allList.length; i++) {
-							stringOwned[i] = Integer.toString(arr2[i]);
-						}
-						String[] rarity = new String[allList.length];
-						for(int i = 0; i < allList.length; i++) {
-							String[] splitR = new String[100];
-							try {
-								splitR = organizer.getCard(allList[i]).getRarity().split(",");
-							} catch (InvalidKeyException e1) {
-								e1.printStackTrace();
-							}
-							String[] splitSet = new String[2];
-							splitSet = splitR[0].split("-");
-							try {
-							rarity[i] = splitSet[1];
-							}catch (ArrayIndexOutOfBoundsException ex) {
-								ex.printStackTrace();
-							}
-						}
-						for(int i = 0; i < organizer.getAllArray().length + 1; i++) {
-							data[i][0] = null;
-							data[i][1] = null;
-							data[i][2] = null;
-						}
-						for(int i = 0; i < allList.length; i++) {
-							data[i][0] = allList[i];
-							data[i][1] = stringOwned[i];
-							data[i][2] = rarity[i];
-						}
-						table.repaint(); 
-						//determine if queryview and refresh
-					} else {
-						//System.out.println("query");
-						queryList = organizer.query(color, power,toughness,owned, type1, type2);
-						@SuppressWarnings("unchecked")
-						ArrayList<Integer> ownedList = new ArrayList();
-						for( int i = 0; i < queryList.length; i++) {
-							try {
-								ownedList.add(organizer.getCard(queryList[i]).getOwned());
-							} catch (InvalidKeyException e1) {
-								e1.printStackTrace();
-							}
-						}
-						//convert ArrayList to Integer[]
-						Integer[] arr2= new Integer[ownedList.size()];
-						ownedList.toArray(arr2);
-						String[] stringOwned = new String[arr2.length];
-
-						for(int i = 0; i < queryList.length; i++) {
-							stringOwned[i] = Integer.toString(arr2[i]);
-						}
-						String[] rarity = new String[queryList.length];
-						for(int i = 0; i < queryList.length; i++) {
-							String[] splitR = new String[100];
-							try {
-								splitR = organizer.getCard(queryList[i]).getRarity().split(",");
-							} catch (InvalidKeyException e1) {
-								e1.printStackTrace();
-							}
-							String[] splitSet = new String[2];
-							splitSet = splitR[0].split("-");
-							try {
-							rarity[i] = splitSet[1];
-							}catch (ArrayIndexOutOfBoundsException ex) {
-								ex.printStackTrace();
-							}
-						}
-						for(int i = 0; i < organizer.getAllArray().length + 1; i++) {
-							data[i][0] = null;
-							data[i][1] = null;
-							data[i][2] = null;
-						}
-						for(int i = 0; i < queryList.length; i++) {
-							data[i][0] = queryList[i];
-							data[i][1] = stringOwned[i];
-							data[i][2] = rarity[i];
-						}
-						table.repaint(); 
-					}
-				}
 		});
 
 
@@ -511,120 +684,154 @@ public class GUI extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-				selected = (String) table.getValueAt(table.getSelectedRow(), 0);
+					selected = (String) table.getValueAt(table.getSelectedRow(), 0);
 				} catch (ArrayIndexOutOfBoundsException ex) {
 					selected = textBox.getText();
 				}
 				if(isText == true) {
 					selected = textBox.getText();
 				}
+				try {
+					if(selected != null)
+						organizer.addCard(selected);
+				} catch (InvalidKeyException e1) {
+					e1.printStackTrace();
+				}
+				//determine if all view and refresh
+				if(isQuery != true) {
+					String[] allList = organizer.getAllArray();
+					ArrayList<Integer> ownedL = new ArrayList();
+					for( int i = 0; i < allList.length; i++) {
+						try {
+							ownedL.add(organizer.getCard(allList[i]).getOwned());
+						} catch (InvalidKeyException e1) {
+							e1.printStackTrace();
+						}
+					}
+					//convert ArrayList to Integer[] to String[]
+					Integer[] arr2= new Integer[ownedL.size()];
+					ownedL.toArray(arr2);
+					String[] stringOwned = new String[arr2.length];
+					for(int i = 0; i < allList.length; i++) {
+						stringOwned[i] = Integer.toString(arr2[i]);
+					}
+					String[] rarity = new String[allList.length];
+					for(int i = 0; i < allList.length; i++) {
+						String[] splitR = new String[100];
+						try {
+							splitR = organizer.getCard(allList[i]).getRarity().split(",");
+						} catch (InvalidKeyException e1) {
+							e1.printStackTrace();
+						}
+						String[] splitSet = new String[2];
+						splitSet = splitR[0].split("-");
+						try {
+							if(splitSet[1].equals("C"))
+								rarity[i] = "Common";
+							if(splitSet[1].equals("U"))
+								rarity[i] = "Uncommon";
+							if(splitSet[1].equals("R"))
+								rarity[i] = "Rare";
+							if(splitSet[1].equals("M"))
+								rarity[i] = "Mythic";
+						}catch (ArrayIndexOutOfBoundsException ex) {
+							ex.printStackTrace();
+						}
+					}
 					try {
-						if(selected != null)
-							organizer.addCard(selected);
+						if(organizer.getCard(selected).owned == 1)
+							dataModel.addRow(new Object[]{"","",""});
 					} catch (InvalidKeyException e1) {
 						e1.printStackTrace();
 					}
-					//determine if all view and refresh
-					if(isQuery != true) {
-						//make a new JTable
-						//System.out.println("all cards");
-						String[] allList = organizer.getAllArray();
-						ArrayList<Integer> ownedL = new ArrayList();
-						for( int i = 0; i < allList.length; i++) {
-							try {
-								ownedL.add(organizer.getCard(allList[i]).getOwned());
-							} catch (InvalidKeyException e1) {
-								e1.printStackTrace();
-							}
-						}
-						//convert ArrayList to Integer[] to String[]
-						Integer[] arr2= new Integer[ownedL.size()];
-						ownedL.toArray(arr2);
-						String[] stringOwned = new String[arr2.length];
-						for(int i = 0; i < allList.length; i++) {
-							stringOwned[i] = Integer.toString(arr2[i]);
-						}
-						String[] rarity = new String[allList.length];
-						for(int i = 0; i < allList.length; i++) {
-							String[] splitR = new String[100];
-							try {
-								splitR = organizer.getCard(allList[i]).getRarity().split(",");
-							} catch (InvalidKeyException e1) {
-								e1.printStackTrace();
-							}
-							String[] splitSet = new String[2];
-							splitSet = splitR[0].split("-");
-							try {
-							rarity[i] = splitSet[1];
-							}catch (ArrayIndexOutOfBoundsException ex) {
-								ex.printStackTrace();
-							}
-						}
+					for(int i = 0; i < dataModel.getRowCount(); i++) {
+						dataModel.setValueAt(null,i, 0);
+					}
+					for(int i = 0; i < dataModel.getRowCount(); i++) {
+						dataModel.setValueAt(null,i, 1);
+					}
+					for(int i = 0; i < dataModel.getRowCount(); i++) {
+						dataModel.setValueAt(null,i, 2);
+					}
+					for(int i = 0; i < allList.length; i++) {
+						dataModel.setValueAt(allList[i],i, 0);
+					}
+					for(int i = 0; i < allList.length; i++) {
+						dataModel.setValueAt(stringOwned[i],i, 1);
+					}
+					for(int i = 0; i < allList.length; i++) {
+						dataModel.setValueAt(rarity[i],i, 2);
+					}
+					table.repaint(); 
+					//determine if query view and refresh
+				} else {
+					queryList = organizer.query(color, power,toughness,owned, type1, type2);
+					@SuppressWarnings("unchecked")
+					ArrayList<Integer> ownedList = new ArrayList();
+					for( int i = 0; i < queryList.length; i++) {
 						try {
-						for(int i = 0; i < organizer.getAllArray().length; i++) {
-							data[i][0] = null;
-							data[i][1] = null;
-							data[i][2] = null;
+							ownedList.add(organizer.getCard(queryList[i]).getOwned());
+						} catch (InvalidKeyException e1) {
+							e1.printStackTrace();
 						}
-						} catch ( ArrayIndexOutOfBoundsException ex) {
+					}
+					//convert ArrayList to Integer[]
+					Integer[] arr2= new Integer[ownedList.size()];
+					ownedList.toArray(arr2);
+					String[] stringOwned = new String[arr2.length];
+
+					for(int i = 0; i < queryList.length; i++) {
+						stringOwned[i] = Integer.toString(arr2[i]);
+					}
+					String[] rarity = new String[queryList.length];
+					for(int i = 0; i < queryList.length; i++) {
+						String[] splitR = new String[100];
+						try {
+							splitR = organizer.getCard(queryList[i]).getRarity().split(",");
+						} catch (InvalidKeyException e1) {
+							e1.printStackTrace();
+						}
+						String[] splitSet = new String[2];
+						splitSet = splitR[0].split("-");
+						try {
+							if(splitSet[1].equals("C"))
+								rarity[i] = "Common";
+							if(splitSet[1].equals("U"))
+								rarity[i] = "Uncommon";
+							if(splitSet[1].equals("R"))
+								rarity[i] = "Rare";
+							if(splitSet[1].equals("M"))
+								rarity[i] = "Mythic";
+						}catch (ArrayIndexOutOfBoundsException ex) {
 							ex.printStackTrace();
 						}
-						for(int i = 0; i < allList.length; i++) {
-							data[i][0] = allList[i];
-							data[i][1] = stringOwned[i];
-							data[i][2] = rarity[i];
-						}
-						table.repaint(); 
-						//determine if query view and refresh
-					} else {
-						//System.out.println("query");
-						queryList = organizer.query(color, power,toughness,owned, type1, type2);
-						@SuppressWarnings("unchecked")
-						ArrayList<Integer> ownedList = new ArrayList();
-						for( int i = 0; i < queryList.length; i++) {
-							try {
-								ownedList.add(organizer.getCard(queryList[i]).getOwned());
-							} catch (InvalidKeyException e1) {
-								e1.printStackTrace();
-							}
-						}
-						//convert ArrayList to Integer[]
-						Integer[] arr2= new Integer[ownedList.size()];
-						ownedList.toArray(arr2);
-						String[] stringOwned = new String[arr2.length];
-
-						for(int i = 0; i < queryList.length; i++) {
-							stringOwned[i] = Integer.toString(arr2[i]);
-						}
-						String[] rarity = new String[queryList.length];
-						for(int i = 0; i < queryList.length; i++) {
-							String[] splitR = new String[100];
-							try {
-								splitR = organizer.getCard(queryList[i]).getRarity().split(",");
-							} catch (InvalidKeyException e1) {
-								e1.printStackTrace();
-							}
-							String[] splitSet = new String[2];
-							splitSet = splitR[0].split("-");
-							try {
-							rarity[i] = splitSet[1];
-							}catch (ArrayIndexOutOfBoundsException ex) {
-								ex.printStackTrace();
-							}
-						}
-						for(int i = 0; i < organizer.getAllArray().length; i++) {
-							data[i][0] = null;
-							data[i][1] = null;
-							data[i][2] = null;
-						}
-						for(int i = 0; i < queryList.length; i++) {
-							data[i][0] = queryList[i];
-							data[i][1] = stringOwned[i];
-							data[i][2] = rarity[i];
-						}
-						table.repaint(); 
 					}
+					try {
+						if(organizer.getCard(selected).owned == 1)
+							dataModel.addRow(new Object[]{"","",""});
+					} catch (InvalidKeyException e1) {
+						e1.printStackTrace();
+					}						for(int i = 0; i < dataModel.getRowCount(); i++) {
+						dataModel.setValueAt(null,i, 0);
+					}
+					for(int i = 0; i < dataModel.getRowCount(); i++) {
+						dataModel.setValueAt(null,i, 1);
+					}
+					for(int i = 0; i < dataModel.getRowCount(); i++) {
+						dataModel.setValueAt(null,i, 2);
+					}
+					for(int i = 0; i < queryList.length; i++) {
+						dataModel.setValueAt(queryList[i],i, 0);
+					}
+					for(int i = 0; i < queryList.length; i++) {
+						dataModel.setValueAt(stringOwned[i],i, 1);
+					}
+					for(int i = 0; i < queryList.length; i++) {
+						dataModel.setValueAt(rarity[i],i, 2);
+					}
+					table.repaint(); 
 				}
+			}
 		});
 
 		viewAll.addActionListener(new ActionListener() {
@@ -633,7 +840,6 @@ public class GUI extends JFrame {
 				isQuery = false;
 				ArrayList<Integer> ownedList = new ArrayList();
 				String[] all = organizer.getAllArray();
-				//System.out.println(java.util.Arrays.toString(all));
 				for( int i = 0; i < all.length; i++) {
 					try {
 						ownedList.add(organizer.getCard(all[i]).getOwned());
@@ -660,48 +866,65 @@ public class GUI extends JFrame {
 					String[] splitSet = new String[2];
 					splitSet = splitR[0].split("-");
 					try {
-					rarity[i] = splitSet[1];
+						if(splitSet[1].equals("C"))
+							rarity[i] = "Common";
+						if(splitSet[1].equals("U"))
+							rarity[i] = "Uncommon";
+						if(splitSet[1].equals("R"))
+							rarity[i] = "Rare";
+						if(splitSet[1].equals("M"))
+							rarity[i] = "Mythic";
 					}catch (ArrayIndexOutOfBoundsException ex) {
 						ex.printStackTrace();
 					}
 				}
-				for(int i = 0; i < organizer.getAllArray().length; i++) {
-					data[i][0] = null;
-					data[i][1] = null;
-					data[i][2] = null;
+				int currentRows = dataModel.getRowCount();
+				for(int i = 0; i < organizer.getAllArray(). length - currentRows ; i++) {
+					dataModel.addRow(new Object[]{"","",""});
+				}
+				for(int i = 0; i < dataModel.getRowCount(); i++) {
+					dataModel.setValueAt(null,i, 0);
+				}
+				for(int i = 0; i < dataModel.getRowCount(); i++) {
+					dataModel.setValueAt(null,i, 1);
+				}
+				for(int i = 0; i < dataModel.getRowCount(); i++) {
+					dataModel.setValueAt(null,i, 2);
 				}
 				for(int i = 0; i < all.length; i++) {
-					data[i][0] = all[i];
-					data[i][1] = stringOwned[i];
-					data[i][2] = rarity[i];
+					dataModel.setValueAt(all[i],i, 0);
+				}
+				for(int i = 0; i < all.length; i++) {
+					dataModel.setValueAt(stringOwned[i],i, 1);
+				}
+				for(int i = 0; i < all.length; i++) {
+					dataModel.setValueAt(rarity[i],i, 2);
 				}
 				table.repaint(); 
 			}
 		});
 
 		textBox.getDocument().addDocumentListener(new DocumentListener() {
-			  public void changedUpdate(DocumentEvent e) {
-				    warn();
-				  }
-				  public void removeUpdate(DocumentEvent e) {
-				    warn();
-				  }
-				  public void insertUpdate(DocumentEvent e) {
-				    warn();
-				  }
+			public void changedUpdate(DocumentEvent e) {
+				warn();
+			}
+			public void removeUpdate(DocumentEvent e) {
+				warn();
+			}
+			public void insertUpdate(DocumentEvent e) {
+				warn();
+			}
 
-				  public void warn() {
-						isText = true;
-						//System.out.println(isText);
-				  }
-			});
+			public void warn() {
+				isText = true;
+			}
+		});
 
 		table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				selected = (String) table.getValueAt(table.getSelectedRow(), 0);
 				isText = false;
-				//System.out.println(isText);
 				if(selected != null) {
 					try{
 						try {
@@ -732,6 +955,6 @@ public class GUI extends JFrame {
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
-		frame.setResizable(false);
+		//frame.setResizable(false);
 	}
 }
