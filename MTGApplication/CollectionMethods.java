@@ -21,13 +21,8 @@ public class CollectionMethods extends BasicTree {
 	public CollectionMethods() throws InvalidKeyException, IOException {		
 
 //----> comment this out if you dont want to play with text files and save() / load()
-<<<<<<< HEAD
-		String sFile;
-		//C:\\Users\\Administrator\\Desktop\\VCO\\VCOSave.txt
-=======
 		
 		String sFile;
->>>>>>> form fitting Jtable, Rarity query, and rarity column now displays full word
 		String home = System.getProperty("user.home");
 		sFile = (home + "/Desktop/VCO/VCOSave.txt");
 		saveFile = sFile;
