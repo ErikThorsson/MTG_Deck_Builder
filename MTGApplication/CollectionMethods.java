@@ -437,8 +437,9 @@ public class CollectionMethods extends BasicTree {
 	//should work
 	
 @SuppressWarnings({ "unchecked", "rawtypes" })
-	public String[] query(String s, int i, int i2, int i3, String s2, String s3) {
+	public String[] query(String h, String s, int i, int i2, int i3, String s2, String s3) {
 		String color = s;
+		HashTableMap hash = (HashTableMap)((TreeNode) treeNodes.get(h)).getReference();
 		int power = i;
 		int toughness = i2;
 		int owned = i3;
@@ -447,7 +448,7 @@ public class CollectionMethods extends BasicTree {
 		ArrayList<String> arr = new ArrayList();
 
 		if(power != -1 && toughness != -1 && !color.equals("n") && owned != -1 && !type1.equals("n") && !type2.equals("n")) {
-			ArrayList<Card> list = entries(MTG);
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -462,7 +463,7 @@ public class CollectionMethods extends BasicTree {
 			return  arr2;
 		}
 		if(power != -1 && toughness != -1 && !color.equals("n") && owned != -1 && !type1.equals("n")) {
-			ArrayList<Card> list = entries(MTG);
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -477,7 +478,7 @@ public class CollectionMethods extends BasicTree {
 			return  arr2;
 		}
 		if(power != -1 && toughness != -1 && !color.equals("n") && owned != -1) {
-			ArrayList<Card> list = entries(MTG);
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -491,7 +492,7 @@ public class CollectionMethods extends BasicTree {
 			return  arr2;
 		}
 		if(power != -1 && toughness != -1 && !color.equals("n")) {
-			ArrayList<Card> list = entries(MTG);
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -506,7 +507,7 @@ public class CollectionMethods extends BasicTree {
 		}
 		
 		if(owned != -1 && !color.equals("n")) {
-			ArrayList<Card> list = entries(MTG);
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -521,7 +522,7 @@ public class CollectionMethods extends BasicTree {
 		}
 		
 		if(power != -1 && !color.equals("n")) {
-			ArrayList<Card> list = entries(MTG);
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -536,7 +537,7 @@ public class CollectionMethods extends BasicTree {
 		}
 		
 		if(toughness != -1 && !color.equals("n")) {
-			ArrayList<Card> list = entries(MTG);
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -551,7 +552,7 @@ public class CollectionMethods extends BasicTree {
 		}
 		
 		if(power != -1 && toughness != -1 && !color.equals("n")) {
-			ArrayList<Card> list = entries(MTG);
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -566,7 +567,7 @@ public class CollectionMethods extends BasicTree {
 		}
 		
 		if(owned != -1 && !type1.equals("n")) {
-			ArrayList<Card> list = entries(MTG);
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -581,7 +582,7 @@ public class CollectionMethods extends BasicTree {
 		}
 		
 		if(owned != -1 && !type2.equals("n")) {
-			ArrayList<Card> list = entries(MTG);
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -596,7 +597,7 @@ public class CollectionMethods extends BasicTree {
 		}
 		
 		if(!type1.equals("n") && !color.equals("n")) {
-			ArrayList<Card> list = entries(MTG);
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -611,7 +612,7 @@ public class CollectionMethods extends BasicTree {
 		}
 		
 		if(!type2.equals("n") && !color.equals("n")) {
-			ArrayList<Card> list = entries(MTG);
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -626,7 +627,7 @@ public class CollectionMethods extends BasicTree {
 		}
 		
 		if(!type1.equals("n") && !type2.equals("n") && !color.equals("n")) {
-			ArrayList<Card> list = entries(MTG);
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -641,7 +642,7 @@ public class CollectionMethods extends BasicTree {
 		}
 		
 		if(power != -1 && toughness != -1) {
-			ArrayList<Card> list = entries(MTG);
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -655,7 +656,7 @@ public class CollectionMethods extends BasicTree {
 		}
 		
 		if(power != -1) {
-			ArrayList<Card> list = entries(MTG);
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -669,7 +670,7 @@ public class CollectionMethods extends BasicTree {
 		}
 		
 		if(toughness != -1) {
-			ArrayList<Card> list = entries(MTG);
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -683,7 +684,7 @@ public class CollectionMethods extends BasicTree {
 		}
 		
 		if(!(type1).equals("n") && !type2.equals("n"))  {
-			ArrayList<Card> list = entries(MTG);
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -697,7 +698,7 @@ public class CollectionMethods extends BasicTree {
 			return  arr2;
 		}
 		if(!type1.equals("n")) {
-			ArrayList<Card> list = entries(MTG);
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -711,7 +712,7 @@ public class CollectionMethods extends BasicTree {
 			return  arr2;
 		}
 		if(!type2.equals("n")) {
-			ArrayList<Card> list = entries(MTG);
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -725,7 +726,7 @@ public class CollectionMethods extends BasicTree {
 			return  arr2;
 		}
 		if(owned != -1) {
-			ArrayList<Card> list = entries(MTG);
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -738,7 +739,7 @@ public class CollectionMethods extends BasicTree {
 			return  arr2;
 		}
 		if(!color.equals("n")) {
-			ArrayList<Card> list = entries(MTG);
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
