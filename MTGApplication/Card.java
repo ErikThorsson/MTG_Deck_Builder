@@ -65,7 +65,11 @@ public class Card {
 	public ImageIcon getImg() throws IOException {
 		BufferedImage image = null;
 		if(img == null) {
-		image = ImageIO.read(new File("/Users/eorndahl/Desktop/VCO/Pictures Try 2/" + this.name + ".jpg"));
+			try {
+				image = ImageIO.read(new File("/Users/eorndahl/Desktop/VCO/Pictures Try 2/" + this.name + ".jpg"));
+			} catch (Exception ex) {
+				image = ImageIO.read(new File("/Volumes/NIGEL/VCO/Pictures Try 2/" + this.name + ".jpg"));
+			}
 		img = new ImageIcon(image);
 		}
 		return img;

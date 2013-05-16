@@ -17,18 +17,23 @@ import dataStructures.TreeNode;
 public class CollectionMethods extends BasicTree {
 	public BasicTree tree = new BasicTree();
 	private String saveFile = "";
-
 	public CollectionMethods() throws InvalidKeyException, IOException {		
 
 //----> comment this out if you dont want to play with text files and save() / load()
 		
-		String sFile;
+		String sFile = "";
 		String home = System.getProperty("user.home");
-		sFile = (home + "/Desktop/VCO/VCOSave.txt");
+		try {
+			readFromFile(home + "/Desktop/VCO/VCOSave.txt");
+			sFile = (home + "/Desktop/VCO/VCOSave.txt");
+		} catch (Exception ex) {
+			sFile = "/Volumes/NIGEL/VCO/VCOSave.txt";
+		}
 		saveFile = sFile;
 		this.loadCompleteDatabase();
 		try {
 		this.load();
+		this.addCard("card_back", null, 0, 0, null, null, null, null, null);
 		} catch (ArrayIndexOutOfBoundsException ex) {
 			ex.printStackTrace();
 		}
@@ -46,7 +51,6 @@ public class CollectionMethods extends BasicTree {
 //		for(int i = 0; i <all.length; i++ ) {
 		//System.out.println(java.util.Arrays.toString(test.query("green", -1, -1, -1, "n", "n")));
 		//}
-		System.out.print(test.getCard("Cancel").color);
 	}
 
 	//returns a String[] of the cards and # owned in a given hashtable
@@ -111,7 +115,7 @@ public class CollectionMethods extends BasicTree {
 	public void addCard(String s, String s2, int i, int i2, String t, String ty, String ty2, String ty3, String url) throws InvalidKeyException {
 		Card card = new Card(s, s2, i, i2, t, ty, ty2, ty3, url);
 		if(MTG.get(s) != null) {
-			setOwned(s, ((Card)MTG.get(s)).owned + 1);
+			setOwned(s, ((Card)MTG.get(s)).owned + 1, MTG);
 			return;
 		}
 		MTG.put(card.name, card);
@@ -239,7 +243,7 @@ public class CollectionMethods extends BasicTree {
 		Card card = (Card) CompleteDatabase.get(s);
 
 		if(MTG.get(s) != null) {
-			setOwned(s, ((Card)MTG.get(s)).owned + 1);
+			setOwned(s, ((Card)MTG.get(s)).owned + 1, MTG);
 			return;
 		}
 		
@@ -374,8 +378,9 @@ public class CollectionMethods extends BasicTree {
 
 	//quickly sets the number of owned card copies. 
 
-	public void setOwned(String s, int i) {
-		((Card) MTG.get(s)).setOwned(i);
+	@SuppressWarnings("rawtypes")
+	public void setOwned(String s, int i, HashTableMap h) {
+		((Card) h.get(s)).setOwned(i);
 	}
 
 	//Removes from appropriate hashtables w/ tree traversal.
@@ -385,7 +390,7 @@ public class CollectionMethods extends BasicTree {
 		int owned = ((Card)MTG.get(s)).owned;
 		if(land.get(s) != null) {
 			if(owned > 1) {
-				setOwned(s, owned - 1);
+				setOwned(s, owned - 1, MTG);
 			} else {
 				land.remove(s);
 				MTG.remove(s);
@@ -395,7 +400,7 @@ public class CollectionMethods extends BasicTree {
 			color = ((Card) MTG.get(s)).color;
 		}
 		if(owned > 1) {
-			setOwned(s, owned - 1);
+			setOwned(s, owned - 1, MTG);
 		} else {
 			MTG.remove(s);
 			spells.remove(s);
@@ -403,7 +408,7 @@ public class CollectionMethods extends BasicTree {
 		TreeNode start = ((TreeNode) treeNodes.get(color));
 		//remove it from its color
 		if(owned > 1) {
-			setOwned(s, owned - 1);
+			setOwned(s, owned - 1, MTG);
 		} else {
 			((HashTableMap) start.getReference()).remove(s); }
 		//then remove from every other possible subtree
@@ -411,21 +416,29 @@ public class CollectionMethods extends BasicTree {
 		for (Iterator iter = children.iterator(); iter.hasNext();) {
 			TreeNode child = (TreeNode) iter.next();
 			if(owned > 1) {
-				setOwned(s, owned - 1);
+				setOwned(s, owned - 1, MTG);
 			} else {
 				((HashTableMap) child.getReference()).remove(s);  } 
 			List<TreeNode> grandkids = child.getChildren();
 			for (Iterator iter2 = grandkids.iterator(); iter2.hasNext();) {
 				TreeNode child2 = (TreeNode) iter2.next(); 
 				if(owned > 1) {
-					setOwned(s, owned - 1);
+					setOwned(s, owned - 1, MTG);
 				} else {
 					((HashTableMap) child2.getReference()).remove(s); }
 			}
 		}
 	}
-
-
+	@SuppressWarnings("rawtypes")
+	public void removeCard(String s, String h) {
+		@SuppressWarnings("unused")
+		String color = "Iwonder";
+		HashTableMap ht = (HashTableMap)((TreeNode) treeNodes.get(h)).getReference();
+		int owned = ((Card)ht.get(s)).owned;
+		if(owned >= 1) {
+			setOwned(s, owned - 1, ht);
+		}
+	}
 	//returns a list of entries given a hashtable
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public ArrayList<Card> entries(HashTableMap h) {
@@ -842,6 +855,7 @@ public class CollectionMethods extends BasicTree {
 		}
 	}
 	
+@SuppressWarnings("unchecked")
 public void loadCompleteDatabase() throws IOException {
 	StringBuilder sFile = new StringBuilder();
 	String name;
@@ -853,7 +867,11 @@ public void loadCompleteDatabase() throws IOException {
 	String toughnessS;
 	String text;
 	String picURL;
+	try {
 	sFile = readFromFile("/Users/eorndahl/Desktop/VCO/readFormattedCards.txt");
+	} catch (Exception ex) {
+		sFile = readFromFile("/Volumes/NIGEL/VCO/readFormattedCards.txt");
+	}
 	//String[] currentData = sFile.toString().split("/////");
 	String[] lines = sFile.toString().split("::");
 	int cur = 0;

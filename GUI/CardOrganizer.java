@@ -13,12 +13,15 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.InvalidKeyException;
 import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -91,7 +94,8 @@ public class CardOrganizer extends JFrame {
 
 
 	public CardOrganizer() throws InvalidKeyException, IOException {
-	
+		
+		String home = System.getProperty("user.home");
 		try{
 			System.setProperty("apple.laf.useScreenMenuBar", "true");
 		} catch (Exception ex) {
@@ -164,15 +168,16 @@ public class CardOrganizer extends JFrame {
 		//JTable
 		JPanel p4 = new JPanel();
 		String[] cardNames = organizer.getAllArray();
-		Integer[] cardsOwned = organizer.getOwned();
-		String[] stringOwned = new String[cardsOwned.length];
-		String[] rarity = new String[cardsOwned.length];
+		Integer[] myCardsOwned = organizer.getOwned();
+		String[] stringOwned = new String[myCardsOwned.length];
+		String[] rarity = new String[myCardsOwned.length];
 		String[] fullList = new String[cardNames.length];
-		for(int i = 0; i < cardsOwned.length; i++) {
-			stringOwned[i] = cardsOwned[i].toString();
+		for(int i = 0; i < myCardsOwned.length; i++) {
+			stringOwned[i] = myCardsOwned[i].toString();
 		}
-		for(int i = 0; i < cardsOwned.length; i++) {
+		for(int i = 0; i < myCardsOwned.length; i++) {
 			String[] splitR = new String[100];
+			if(organizer.getCard(cardNames[i]).getRarity() != null) {
 			splitR = organizer.getCard(cardNames[i]).getRarity().split(",");
 			String[] splitSet = new String[2];
 			splitSet = splitR[0].split("-");
@@ -189,6 +194,7 @@ public class CardOrganizer extends JFrame {
 				ex.printStackTrace();
 			}
 		}
+	}
 
 		dataModel = new DefaultTableModel();
 		dataModel.setColumnCount(3);
@@ -216,10 +222,15 @@ public class CardOrganizer extends JFrame {
 		p4.add(scrollList);
 
 		//card viewing JLabel
-		URL url = new URL("http://upload.wikimedia.org/wikipedia/en/thumb/a/aa/Magic_the_gathering-card_back.jpg/200px-Magic_the_gathering-card_back.jpg");
-		ImageIcon ii = new ImageIcon(url);
-		final JLabel label = new JLabel(ii);
-
+		ImageIcon image;
+		final JLabel label = new JLabel();
+		try {
+			image = new ImageIcon(ImageIO.read(new File(home +"/Desktop/VCO/Pictures Try 2/" + "card_back" + ".jpg")));
+		} catch (Exception ex) {
+			//buggy for whatever reason...
+			//image = new ImageIcon(ImageIO.read(new File("Volumes/NIGEL/VCO/Pictures Try 2/" + "card_back" + ".jpg")));
+			label.setIcon(organizer.getCard("card_back").getImg());
+		}
 		//final formatting
 		JPanel p3 = new JPanel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
@@ -330,7 +341,7 @@ public class CardOrganizer extends JFrame {
 				ArrayList<Integer> ownedList = new ArrayList();
 				if(owned == -1 && color.equals("n")
 						&& type1.equals("n") && type2.equals("n") && power == -1 && toughness == -1) { //if no input for query
-					//Do nothing
+					//Do nothing. I know this is probably a horrible way to do this...
 				}else {
 					ArrayList<String[]> values = returnValues(queryList);
 					String[] stringOwned = values.get(0);
@@ -363,26 +374,35 @@ public class CardOrganizer extends JFrame {
 					selected = textBox.getText();
 						}
 				try {
-					if (organizer.getCard(selected).owned == 1)
+					if (queryHashtable.equals("root") && organizer.getCard(selected).owned == 1)
 						isRemoved = true;
 							} catch (InvalidKeyException e1) {
 								e1.printStackTrace();
 									}
 				try {
+					if(queryHashtable.equals("cD") && organizer.getCard(selected).owned == 1)
+						organizer.removeCard(selected, "cD");
+				} catch (InvalidKeyException e1) {
+					e1.printStackTrace();
+				}
+				try {
 					if(selected != null)
 						organizer.removeCard(selected);
+					if(isRemoved == true)
+						organizer.removeCard(selected, "cD");
 							} catch (NullPointerException ex) {
 									ex.printStackTrace();
 										}
-				//determine if all view and refresh
+				//determine if all view / my view and refresh
 				if(isQuery != true && isRarityQuery != true) {
-					String[] allList = organizer.getAllArray();
+					String[] allList = organizer.getCategory(queryHashtable);
 					ArrayList<String[]> values = returnValues(allList);
 					String[] stringOwned = values.get(0);
 					String[] rarity = values.get(1);
 					if(isRemoved == true && dataModel.getRowCount() > 2) { // remove one row if there is no longer a card unless there are only 2 rows
 						dataModel.removeRow(1);							   // 2 rows because you need to joggle the selected row to toggle the image...Lazy I know...Will look into it.
 					}
+					System.out.println(queryHashtable);
 					refreshTable(allList, values);
 				//determine if query view and refresh
 				} else if (isQuery == true) {
@@ -423,7 +443,7 @@ public class CardOrganizer extends JFrame {
 										}
 				//determine if all view and refresh
 				if(isQuery != true && isRarityQuery != true) {
-					String[] allList = organizer.getAllArray();
+					String[] allList = organizer.getCategory(queryHashtable);
 					ArrayList<String[]> values = returnValues(allList);
 					String[] stringOwned = values.get(0);
 					String[] rarity = values.get(1);
@@ -597,27 +617,33 @@ public class CardOrganizer extends JFrame {
 		//split the rarity out of each card given the name list
 		String[] rarity = new String[category.length];
 		for(int i = 0; i < category.length; i++) {
-			String[] splitR = new String[100];
 			try {
-				splitR = organizer.getCard(category[i]).getRarity().split(",");
-			} catch (InvalidKeyException e1) {
-				e1.printStackTrace();
+				if(organizer.getCard(category[i]).getRarity() != null) {
+				String[] splitR = new String[100];
+				try {
+					splitR = organizer.getCard(category[i]).getRarity().split(",");
+				} catch (InvalidKeyException e1) {
+					e1.printStackTrace();
+				}
+				String[] splitSet = new String[2];
+				splitSet = splitR[0].split("-");
+				try {
+					if(splitSet[1].equals("C"))
+						rarity[i] = "Common";
+					if(splitSet[1].equals("U"))
+						rarity[i] = "Uncommon";
+					if(splitSet[1].equals("R"))
+						rarity[i] = "Rare";
+					if(splitSet[1].equals("M"))
+						rarity[i] = "Mythic";
+				}catch (ArrayIndexOutOfBoundsException ex) {
+					ex.printStackTrace();
+				}
+}
+			} catch (InvalidKeyException e) {
+				e.printStackTrace();
 			}
-			String[] splitSet = new String[2];
-			splitSet = splitR[0].split("-");
-			try {
-				if(splitSet[1].equals("C"))
-					rarity[i] = "Common";
-				if(splitSet[1].equals("U"))
-					rarity[i] = "Uncommon";
-				if(splitSet[1].equals("R"))
-					rarity[i] = "Rare";
-				if(splitSet[1].equals("M"))
-					rarity[i] = "Mythic";
-			}catch (ArrayIndexOutOfBoundsException ex) {
-				ex.printStackTrace();
-			}
-		}
+	}
 		ArrayList<String[]> strings = new ArrayList<String[]>();
 		strings.add(stringOwned);
 		strings.add(rarity);
