@@ -226,9 +226,8 @@ public class CardOrganizer extends JFrame {
 		final JLabel label = new JLabel();
 		try {
 			image = new ImageIcon(ImageIO.read(new File(home +"/Desktop/VCO/Pictures Try 2/" + "card_back" + ".jpg")));
+			label.setIcon(image);
 		} catch (Exception ex) {
-			//buggy for whatever reason...
-			//image = new ImageIcon(ImageIO.read(new File("Volumes/NIGEL/VCO/Pictures Try 2/" + "card_back" + ".jpg")));
 			label.setIcon(organizer.getCard("card_back").getImg());
 		}
 		//final formatting
