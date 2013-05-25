@@ -4,13 +4,11 @@ import java.util.Scanner;
 
 public class replaceWord {
 	public static void main(String args[]) throws FileNotFoundException {
-	Scanner scan = new Scanner(new File("/Users/eorndahl/Desktop/formattedSwap.txt")); 
+	Scanner scan = new Scanner(new File("/Users/eorndahl/Desktop/fixME.txt")); 
 
 	String in = "";
 	while(scan.hasNextLine()) in += scan.nextLine() + "\n";
 
-	//regex- to replace
-	//replacement- String to replace
 	String[] lines = in.toString().split("::");
 	for(int i = 0; i < lines.length; i++) {
 	lines[i] = lines[i] + "::";
@@ -19,14 +17,12 @@ public class replaceWord {
 	else if(lines[i].equals("blue::"))
 		lines[i] = "black::";
 	}
-//	System.out.println(lines[1]);
-	
 	in = "";
 	
 	for(int i = 0; i < lines.length; i++)
 	in += lines[i];
 	
-	PrintWriter write = new PrintWriter(new File("/Users/eorndahl/Desktop/formattedSwap.txt"));
+	PrintWriter write = new PrintWriter(new File("/Users/eorndahl/Desktop/fixed.txt"));
 	write.print(in);
 	write.flush();
 	write.close();

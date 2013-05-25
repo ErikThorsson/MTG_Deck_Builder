@@ -30,7 +30,7 @@ public class testFilePrint {
 	public static void main(String[] args) throws Exception {
 		testFilePrint test = new testFilePrint();
 		test.scanFile();
-		test.formatCards();
+		//test.formatCards();
 	}
 
 	public void printData() {
@@ -94,6 +94,7 @@ public class testFilePrint {
 		StringBuilder file = new StringBuilder();
 		String name = "";
 		String color = "";
+		String CMC = "";
 		String type1 = "";
 		String type2 = "";
 		String type3;
@@ -102,8 +103,9 @@ public class testFilePrint {
 		String text = "";
 		String picURL;
 		String rarity = "";
+		Boolean isLand = false;
 
-		BufferedReader br = new BufferedReader(new FileReader("/Users/eorndahl/Desktop/test2.txt"));
+		BufferedReader br = new BufferedReader(new FileReader("/Users/eorndahl/Desktop/Innistrad Data.txt"));
 		String sCurrentLine;
 		int counter = 0;
 		while ((sCurrentLine = br.readLine()) != null) {
@@ -113,8 +115,11 @@ public class testFilePrint {
 				}
 				if(counter == 1) {
 					color = sCurrentLine;
-					//System.out.println(color);
-						  if(color.contains("R") && color.contains("W") || color.contains("r") && color.contains("w") 
+					CMC = sCurrentLine;
+					if (color.contains("Land")) {
+						color = "colorless";
+						isLand = true;
+					} else if(color.contains("R") && color.contains("W") || color.contains("r") && color.contains("w") 
 							||color.contains("R") && color.contains("B") ||color.contains("r") && color.contains("b") 
 							|| color.contains("R") && color.contains("U") ||color.contains("r") && color.contains("u") 
 							|| color.contains("R") && color.contains("G") ||color.contains("r") && color.contains("g") 
@@ -144,6 +149,10 @@ public class testFilePrint {
 				}
 				}
 				if(counter == 2) {
+					if(isLand == true) {
+						type2 = "land";
+						counter++;
+					}
 					if(sCurrentLine.contains("Instant") || sCurrentLine.contains("Sorcery"))
 						type2 = sCurrentLine.toLowerCase();
 					if(sCurrentLine.contains("Creature"))
@@ -153,6 +162,7 @@ public class testFilePrint {
 					}
 					if(sCurrentLine.contains("Planeswalker")) {
 						type2 = "planeswalker";
+						br.readLine();
 					}
 					if(sCurrentLine.contains("Artifact"))
 						type2 = "artifact";
@@ -184,7 +194,25 @@ public class testFilePrint {
 					}
 				}
 				if(counter == 4) {
-					text = sCurrentLine;
+					if(sCurrentLine.contains("-L") ) {
+					counter++;
+					text = "I am a land";
+					} else if(sCurrentLine.contains("-R") || sCurrentLine.contains("-U") || sCurrentLine.contains("-C") || sCurrentLine.contains("RTR-M") 
+							|| sCurrentLine.contains("GTC-M") || sCurrentLine.contains("DGM-M")) {
+						text = null;
+						counter++;
+					} else {
+						text = sCurrentLine; 
+						while(!sCurrentLine.contains("-R") || !sCurrentLine.contains("-U") || !sCurrentLine.contains("-C") || sCurrentLine.contains("RTR-M") 
+								|| sCurrentLine.contains("GTC-M") || sCurrentLine.contains("DGM-M")) {
+							sCurrentLine = br.readLine();
+							if(sCurrentLine.contains("-R") || sCurrentLine.contains("-U") || sCurrentLine.contains("-C") || sCurrentLine.contains("RTR-M") 
+									|| sCurrentLine.contains("GTC-M") || sCurrentLine.contains("DGM-M")) {
+									counter++;
+									break; }
+								text+= ". " + sCurrentLine;										
+						}
+					}
 				}
 				if(counter == 5) {
 					rarity = sCurrentLine;
@@ -197,10 +225,11 @@ public class testFilePrint {
 					power = Integer.parseInt(powerS);
 					toughness = Integer.parseInt(toughnessS);
 					}
-					Card card = new Card(name, color, power, toughness, text, type1, type2, rarity, "fdf");
+					Card card = new Card(name, color, CMC, power, toughness, text, type1, type2, rarity, "fdf");
 					arr.add(card);
 					System.out.print(nameQuery(card) + "\n");
 					counter = 0;
+					isLand = false;
 					continue;
 				}
 				counter++;

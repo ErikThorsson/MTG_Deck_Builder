@@ -17,8 +17,6 @@ import dataStructures.TreeNode;
 public class CollectionMethods extends BasicTree {
 	public BasicTree tree = new BasicTree();
 	private String saveFile = "";
-	private String home = System.getProperty("user.home");
-
 	public CollectionMethods() throws InvalidKeyException, IOException {		
 
 //----> comment this out if you dont want to play with text files and save() / load()
@@ -48,13 +46,11 @@ public class CollectionMethods extends BasicTree {
 	
 	public static void main(String[] args) throws InvalidKeyException, IOException {
 		CollectionMethods test = new CollectionMethods();
-//		test.loadCompleteDatabase();
-		String[] s = test.getSet("RTR-");
-		String[] t = test.query(s, "n", -1, -1, -1, "n", "n", "common");
-		for(int i = 0; i < t.length; i++)
-			System.out.println(t[i]);
-//		System.out.print("Hdfdf".compareTo("Gbdsvd"));
-//		System.out.println((int)("hello".charAt(0)));
+		test.loadCompleteDatabase();
+//		String[] all = test.getCategory("cD");
+//		for(int i = 0; i <all.length; i++ ) {
+		//System.out.println(java.util.Arrays.toString(test.query("green", -1, -1, -1, "n", "n")));
+		//}
 	}
 
 	//returns a String[] of the cards and # owned in a given hashtable
@@ -73,7 +69,6 @@ public class CollectionMethods extends BasicTree {
 		}
 		String[] arr2= new String[arr.size()];
 		arr.toArray(arr2);
-		java.util.Arrays.sort(arr2);
 		return  arr2;
 	}
 	
@@ -93,56 +88,7 @@ public class CollectionMethods extends BasicTree {
 		}
 		String[] arr2= new String[arr.size()];
 		arr.toArray(arr2);
-		java.util.Arrays.sort(arr2);
 		return  arr2;
-	}
-	
-	public String[] getSet(String s) throws InvalidKeyException {
-		String[] all = getCategory("cD");
-		ArrayList<String> set = new ArrayList<String>();
-		for(int i = 0; i < all.length; i++) {
-			try {
-			if(getCard(all[i]).rarity.contains(s))
-				set.add(all[i]);
-			} catch (Exception ex) {
-				//ex.printStackTrace();
-			}
-		}
-		String[] setArr = new String[set.size()];
-		set.toArray(setArr);
-		java.util.Arrays.sort(setArr);
-		return setArr;
-	}
-	/**
-	 * Selection sort O(n^2)....currently not usable due to slowness... >5 sec to load
-	 * @param s
-	 * @return
-	 */
-	public String[] sortByName(String[] s) {
-		String[] s2 = new String[s.length];
-		for(int i = 0; i < s.length; i++) {
-			String smallest = "";
-			int in = 0;
-			int j;
-			for(j = 0; j < s.length; j++) {
-			if(s[j] != null) {
-				smallest = s[j];
-				in = j;
-				break;
-			}}
-			for(int k = 0 ; k < s.length; k++) {
-				String n = s[k];
-				if(s[k] != null) {
-					if(smallest.compareTo(n) > 0) {
-						smallest = s[k];
-						in = k;
-					}
-			}}
-			s2[i] = smallest;
-			s[in] = null;
-			j = 0;
-			}
-		return s2;
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -167,7 +113,7 @@ public class CollectionMethods extends BasicTree {
 	//Adds non land cards not held in database.
 	@SuppressWarnings("unchecked")
 	public void addCard(String s, String s2, int i, int i2, String t, String ty, String ty2, String ty3, String url) throws InvalidKeyException {
-		Card card = new Card(s, s2, null, i, i2, t, ty, ty2, ty3, url);
+		Card card = new Card(s, s2, i, i2, t, ty, ty2, ty3, url);
 		if(MTG.get(s) != null) {
 			setOwned(s, ((Card)MTG.get(s)).owned + 1, MTG);
 			return;
@@ -504,30 +450,18 @@ public class CollectionMethods extends BasicTree {
 	//should work
 	
 @SuppressWarnings({ "unchecked", "rawtypes" })
-	public String[] query(String[] lis, String s, int i, int i2, int i3, String s2, String s3, String s4) throws InvalidKeyException {
+	public String[] query(String h, String s, int i, int i2, int i3, String s2, String s3) {
 		String color = s;
-		String[] li = lis;
+		HashTableMap hash = (HashTableMap)((TreeNode) treeNodes.get(h)).getReference();
 		int power = i;
 		int toughness = i2;
 		int owned = i3;
 		String type1 = s2;
 		String type2 = s3;
-		String rarity = s4;
 		ArrayList<String> arr = new ArrayList();
-		ArrayList<Card> list = new ArrayList<Card>();
-		for(int z = 0; z < li.length; z++) {
-			list.add(getCard(li[z]));
-		}
-		if(rarity.equals("common"))
-			rarity = "-C";
-		if(rarity.equals("uncommon"))
-			rarity = "-U";
-		if(rarity.equals("rare"))
-			rarity = "-R";
-		if(rarity.equals("mythic"))
-			rarity = "-M";
 
 		if(power != -1 && toughness != -1 && !color.equals("n") && owned != -1 && !type1.equals("n") && !type2.equals("n")) {
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -542,6 +476,7 @@ public class CollectionMethods extends BasicTree {
 			return  arr2;
 		}
 		if(power != -1 && toughness != -1 && !color.equals("n") && owned != -1 && !type1.equals("n")) {
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -556,6 +491,7 @@ public class CollectionMethods extends BasicTree {
 			return  arr2;
 		}
 		if(power != -1 && toughness != -1 && !color.equals("n") && owned != -1) {
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -569,6 +505,7 @@ public class CollectionMethods extends BasicTree {
 			return  arr2;
 		}
 		if(power != -1 && toughness != -1 && !color.equals("n")) {
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -583,6 +520,7 @@ public class CollectionMethods extends BasicTree {
 		}
 		
 		if(owned != -1 && !color.equals("n")) {
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -597,6 +535,7 @@ public class CollectionMethods extends BasicTree {
 		}
 		
 		if(power != -1 && !color.equals("n")) {
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -611,6 +550,7 @@ public class CollectionMethods extends BasicTree {
 		}
 		
 		if(toughness != -1 && !color.equals("n")) {
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -625,6 +565,7 @@ public class CollectionMethods extends BasicTree {
 		}
 		
 		if(power != -1 && toughness != -1 && !color.equals("n")) {
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -639,6 +580,7 @@ public class CollectionMethods extends BasicTree {
 		}
 		
 		if(owned != -1 && !type1.equals("n")) {
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -653,6 +595,7 @@ public class CollectionMethods extends BasicTree {
 		}
 		
 		if(owned != -1 && !type2.equals("n")) {
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -667,6 +610,7 @@ public class CollectionMethods extends BasicTree {
 		}
 		
 		if(!type1.equals("n") && !color.equals("n")) {
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -681,6 +625,7 @@ public class CollectionMethods extends BasicTree {
 		}
 		
 		if(!type2.equals("n") && !color.equals("n")) {
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -695,6 +640,7 @@ public class CollectionMethods extends BasicTree {
 		}
 		
 		if(!type1.equals("n") && !type2.equals("n") && !color.equals("n")) {
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -708,105 +654,8 @@ public class CollectionMethods extends BasicTree {
 			return  arr2;
 		}
 		
-		if(!type1.equals("n") && !type2.equals("n") && !color.equals("n") && !rarity.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type1.equals(type1) && card.type2.equals(type2) && card.color.equals(color) && card.rarity.contains(rarity))
-						arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-		
-		if(!type1.equals("n") && !type2.equals("n") && !rarity.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type1.equals(type1) && card.type2.equals(type2) && card.rarity.contains(rarity))
-						arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-		
-		if(!type1.equals("n") && !color.equals("n") && !rarity.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type1.equals(type1) && card.color.equals(color) && card.rarity.contains(rarity))
-						arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-		
-		if(!type2.equals("n") && !color.equals("n") && !rarity.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type2.equals(type2) && card.color.equals(color) && card.rarity.contains(rarity))
-						arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-		
-		if(!color.equals("n") && !rarity.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.color.equals(color) && card.rarity.contains(rarity))
-						arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-		
-		if(!type1.equals("n") && !rarity.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type1.equals(type1) && card.rarity.contains(rarity))
-						arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-		
-		if(!type2.equals("n") && !rarity.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type2.equals(type2) && card.rarity.contains(rarity))
-						arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-		
 		if(power != -1 && toughness != -1) {
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -820,6 +669,7 @@ public class CollectionMethods extends BasicTree {
 		}
 		
 		if(power != -1) {
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -833,6 +683,7 @@ public class CollectionMethods extends BasicTree {
 		}
 		
 		if(toughness != -1) {
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -846,6 +697,7 @@ public class CollectionMethods extends BasicTree {
 		}
 		
 		if(!(type1).equals("n") && !type2.equals("n"))  {
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -859,6 +711,7 @@ public class CollectionMethods extends BasicTree {
 			return  arr2;
 		}
 		if(!type1.equals("n")) {
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -872,6 +725,7 @@ public class CollectionMethods extends BasicTree {
 			return  arr2;
 		}
 		if(!type2.equals("n")) {
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -885,6 +739,7 @@ public class CollectionMethods extends BasicTree {
 			return  arr2;
 		}
 		if(owned != -1) {
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
@@ -897,25 +752,13 @@ public class CollectionMethods extends BasicTree {
 			return  arr2;
 		}
 		if(!color.equals("n")) {
+			ArrayList<Card> list = entries(hash);
 			Card card = new Card();
 			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
 				if(card != null)
 					if(card.color != null)
 						if(card.color.equals(color)) 
-						arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-		if(!rarity.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.rarity != null)
-						if(card.rarity.contains(rarity)) 
 						arr.add(card.name);
 			}
 			String[] arr2= new String[arr.size()];
@@ -968,12 +811,7 @@ public class CollectionMethods extends BasicTree {
 	
 	//saves to a specific text file on my computer
 	public void save() throws FileNotFoundException, InvalidKeyException, MalformedURLException {
-		PrintWriter out = new PrintWriter(saveFile);
-		try {
-			this.removeCard("card_back");
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		PrintWriter out = new PrintWriter(saveFile);	
 		for(int i = 0; i < this.getAllArray().length; i++) {
 			out.print(this.getAllArray()[i]);
 			out.print(":");
@@ -1030,7 +868,7 @@ public void loadCompleteDatabase() throws IOException {
 	String text;
 	String picURL;
 	try {
-	sFile = readFromFile(home + "/Desktop/VCO/readFormattedCards.txt");
+	sFile = readFromFile("/Users/eorndahl/Desktop/VCO/readFormattedCards.txt");
 	} catch (Exception ex) {
 		sFile = readFromFile("/Volumes/NIGEL/VCO/readFormattedCards.txt");
 	}
@@ -1054,7 +892,7 @@ public void loadCompleteDatabase() throws IOException {
 			int power = Integer.parseInt(powerS);
 			int toughness = Integer.parseInt(toughnessS);
 
-			CompleteDatabase.put(name, new Card(name, color, null, power, toughness, text, type1, type2, rarity, picURL));
+			CompleteDatabase.put(name, new Card(name, color, power, toughness, text, type1, type2, rarity, picURL));
 	}
 	}
 	

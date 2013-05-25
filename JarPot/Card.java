@@ -23,8 +23,7 @@ public class Card {
 	public ImageIcon img = null;
 	public String imgURL;
 	public String rarity;
-	private String home = System.getProperty("user.home");
-	private String CMC;
+
 	
 	public Card() {}
 	
@@ -33,10 +32,9 @@ public class Card {
 	}
 
 	//certain creatures can have up to three types (permanent, creature, tribal identifier e.g. "elf")
-	public Card(String s, String s2, String s3, int i, int i2, String t, String ty, String ty2, String r, String url) {
+	public Card(String s, String s2, int i, int i2, String t, String ty, String ty2, String r, String url) {
 		name = s;
 		color = s2;
-		CMC = s3;
 		power = i;
 		toughness = i2;
 		text = t;
@@ -68,21 +66,9 @@ public class Card {
 		BufferedImage image = null;
 		if(img == null) {
 			try {
-				if(this.name.contains("//")) {
-					String cut = this.name.replace("//", "");
-					image = ImageIO.read(new File(home + "/Desktop/VCO/Pictures Try 2/" + cut + ".jpg"));
-				} else {
-				image = ImageIO.read(new File(home + "/Desktop/VCO/Pictures Try 2/" + this.name + ".jpg"));
-				}
+				image = ImageIO.read(new File("/Users/eorndahl/Desktop/VCO/Pictures Try 2/" + this.name + ".jpg"));
 			} catch (Exception ex) {
-				if(this.name.contains("//")) {
-					String cut = this.name.replace("//", "");
-					System.out.println(cut);
-					image = ImageIO.read(new File("/Volumes/NIGEL/VCO/Pictures Try 2/" + cut + ".jpg"));
-					//image = ImageIO.read(new File("/Volumes/NIGEL/VCO/Pictures Try 2/Alive  Well.jpg"));
-				} else {
 				image = ImageIO.read(new File("/Volumes/NIGEL/VCO/Pictures Try 2/" + this.name + ".jpg"));
-				}
 			}
 		img = new ImageIcon(image);
 		}
