@@ -2,7 +2,9 @@ package GUI;
 
 import java.awt.AWTException;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -54,6 +56,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
+import javax.swing.UIManager;
+import javax.swing.border.MatteBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
@@ -64,11 +68,12 @@ import javax.swing.table.TableModel;
 
 import org.openqa.jetty.html.Image;
 
+import GUI.guiPractice.TestPane;
 import MTGApplication.Card;
 import MTGApplication.CollectionMethods;
 
 @SuppressWarnings("serial")
-public class CardOrganizer extends JFrame {
+public class CardOrganizer extends JFrame  {
 	protected ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 	protected JTextArea text = new JTextArea();
 	protected JScrollPane scrollBox = new JScrollPane(text);
@@ -83,7 +88,7 @@ public class CardOrganizer extends JFrame {
 	protected JComboBox queryType2 = new JComboBox(new Object[] {"Subtype", "Enchantment", "Creature", "Artifact", "Instant", "Sorcery", "Planeswalker", "Land"});
 	protected JComboBox queryRarity = new JComboBox(new Object[] {"Rarity", "Common", "Uncommon", "Rare", "Mythic"});
 	protected JComboBox queryTribal = new JComboBox(new Object[] {"Tribal", "Yes (Type in text box)"});
-	protected JComboBox set = new JComboBox(new Object[] {"Choose Set", "Return to Ravnica", "Gatecrash", "Dragon's Maze", "Innistrad", "Dark Ascension", "Avacyn Restored"});
+	protected JComboBox set = new JComboBox(new Object[] {"Set", "Return to Ravnica", "Gatecrash", "Dragon's Maze", "Innistrad", "Dark Ascension", "Avacyn Restored"});
 	private JToggleButton red = new JToggleButton("R");
 	private JToggleButton white = new JToggleButton("W");
 	private JToggleButton blue = new JToggleButton("U");
@@ -116,7 +121,8 @@ public class CardOrganizer extends JFrame {
 	private JToggleButton sixT = new JToggleButton("6");
 	private JToggleButton sevenT = new JToggleButton("7");
 	private JToggleButton land = new JToggleButton("Land");
-	private JToggleButton unowned = new JToggleButton("Unowned");
+	private JToggleButton unowned = new JToggleButton("Missing");
+	private JToggleButton ownedC = new JToggleButton("Owned");
 	private JButton mycards = new JButton("My Cards");
 	private JButton allcards = new JButton("All Cards");
 	protected JButton goQuery = new JButton("Query!");
@@ -172,9 +178,54 @@ public class CardOrganizer extends JFrame {
 	private JRadioButton textCheck = new JRadioButton();
 	private JRadioButton enterCheck = new JRadioButton();
 
-	public CardOrganizer() throws InvalidKeyException, IOException, AWTException {
+	   public static void main(String[] args) throws InvalidKeyException, IOException, AWTException {
+	        new CardOrganizer();
+	    }
+
+	    public CardOrganizer() throws InvalidKeyException, IOException, AWTException {
+	        EventQueue.invokeLater(new Runnable() {
+	            @Override
+	            public void run() {
+	                JFrame frame = new JFrame("Virtual Card Organizer");
+	                try {
+	                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	                } catch (Exception ex) {
+	                }
+	                try {
+						frame.add(new Interface());
+					} catch (InvalidKeyException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+	                frame.setResizable(true);	                
+	                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	                frame.pack();
+	                frame.setLocationRelativeTo(null);
+	                frame.setVisible(true);
+	            }
+	        });
+	    }
+	
+	    public class Interface extends JPanel {
+	    	private JPanel mainList;
+
+        public Interface() throws InvalidKeyException, IOException {
+            setLayout(new BorderLayout());
+	
+            mainList = new JPanel(new GridBagLayout());
+            mainList.setPreferredSize(new Dimension(250, 503));
+
+            GridBagConstraints d = new GridBagConstraints();
+            d.gridwidth = GridBagConstraints.REMAINDER;
+            d.weightx = 1;
+            d.weighty = 1;
+            mainList.add(new JPanel(), d);
+                        
 		queryL = organizer.getAllArray();
 		String home = System.getProperty("user.home");
+		
+		//use mac menu bar
 		try{
 			System.setProperty("apple.laf.useScreenMenuBar", "true");
 		} catch (Exception ex) {
@@ -190,20 +241,13 @@ public class CardOrganizer extends JFrame {
 		
 		//button images
 		red = new JToggleButton(new ImageIcon(home + "/Desktop/red.png"));
-		
 		blue = new JToggleButton(new ImageIcon(home + "/Desktop/blue.png"));
-
 		black = new JToggleButton(new ImageIcon(home + "/Desktop/black.png"));
-
 		white = new JToggleButton(new ImageIcon(home + "/Desktop/white.png"));
-
 		colorless = new JToggleButton(new ImageIcon(home + "/Desktop/colorless.png"));
-
 		multi = new JToggleButton(new ImageIcon(home + "/Desktop/multi.png"));
-		
 		green = new JToggleButton(new ImageIcon(home + "/Desktop/green.png"));
 		
-
 		//Create the menu bar.
 		menuBar = new JMenuBar();
 
@@ -254,25 +298,26 @@ public class CardOrganizer extends JFrame {
 			}
 		});
 		
-		GridBagConstraints d = new GridBagConstraints();
-
 		JPanel p5 = new JPanel(new GridLayout(2,1));
 		p5.add(viewDatabase);
 		p5.add(set);
 		
+	    JPanel panel1 = new JPanel(new GridBagLayout());
+        panel1.setBorder(new MatteBorder(0, 0, 1, 0, Color.GRAY));
+		
 		//TextBox, add, and remove card	
-		JPanel tR = new JPanel(new GridBagLayout());
 		JPanel p2 = new JPanel(new GridBagLayout());
 		scrollQuery = new JScrollPane(p2);
 
 		JTextField t = new JTextField();
 		d.fill = GridBagConstraints.HORIZONTAL;
-		d.weightx = 0.0;
-		d.gridwidth = 2;
+		d.weightx = 1.0;
+		d.gridwidth = 1;
 		d.gridx = 0;
 		d.gridy = 0;
 		d.anchor = GridBagConstraints.PAGE_START;
-		tR.add(textBox, d);
+		panel1.add(textBox, d);
+		
 		
 		//TextBox Filter
 		JLabel nameL = new JLabel("Name");
@@ -294,53 +339,55 @@ public class CardOrganizer extends JFrame {
 		radios.add(enterCheck);
 		d.gridy = 1;
 		d.gridx = 0;
-		tR.add(radios,d);
-		radios.setPreferredSize(new Dimension(0,30));
-			
+		//d.insets = new Insets(0,0,0,0);
+		panel1.add(radios,d);
+		//d.insets = new Insets(0,0,0,0);
+		
+		 JPanel panel1Quarter = new JPanel(new GridBagLayout());
+	        panel1Quarter.setBorder(new MatteBorder(0, 0, 1, 0, Color.GRAY)); 
+	        
 		d.fill = GridBagConstraints.HORIZONTAL;
 		d.ipady = 4;      //make this component tall
 		d.weightx = 0.5;
 		d.gridwidth = 1;
 		d.gridx = 0;
-		d.gridy = 2;
-		tR.add(addCard, d);
-
-		d.fill = GridBagConstraints.HORIZONTAL;
-		d.weighty = 0.0;
+		d.gridy = 0;
+		panel1Quarter.add(addCard, d);
 		d.ipady = 4;   	//make this component tall
 		d.weightx = 0.5;
 		d.gridwidth = 1;
 		d.gridx = 1;
-		d.gridy = 2;
-		tR.add(removeCard, d);
-		
+		d.gridy = 0;
+		panel1Quarter.add(removeCard, d);
 		d.gridx = 0;
-		d.gridy = 3;
-		tR.add(mycards,d);
-		
+		d.gridy = 1;
+		panel1Quarter.add(mycards,d);
 		d.gridx = 1;
-		d.gridy = 3;
-		tR.add(allcards,d);
-		
-		// ColorQuery
-		JLabel colors = new JLabel("Color:");
+		d.gridy = 1;
+		panel1Quarter.add(allcards,d);
+
+	    JPanel panel1Half = new JPanel(new GridBagLayout());
+        panel1Half.setBorder(new MatteBorder(0, 0, 1, 0, Color.GRAY)); 
+        
+        JLabel sort = new JLabel("Sort:");
 		d.fill = GridBagConstraints.HORIZONTAL;
-		d.weighty = 0.0;
-		d.ipady = 27;   	//make this component tall
-		d.weightx = 0.5;
-		d.gridwidth = 1;
 		d.gridx = 0;
-		d.gridy = 4;
-		d.ipady = 1;
-		tR.add(unowned,d);
-		set.setPreferredSize(new Dimension(0,30));
+		d.gridy = 0;
+		panel1Half.add(sort,d);
+		d.gridx = 0;
+		d.gridy = 1;
+		panel1Half.add(unowned,d);
 		d.gridx = 1;
-		d.gridy = 4;
-		d.insets = new Insets(0,0,0,0);
-		tR.add(set, d);
-		d.insets = new Insets(0,0,0,0);
-			
-//		color JToggle buttons
+		panel1Half.add(ownedC, d);
+		set.setPreferredSize(new Dimension(68, 30));
+		d.gridx = 2;
+		panel1Half.add(set, d);
+		d.ipady = 4;   	//make this component tall
+		
+		//ColorQuery
+		JPanel panel2 = new JPanel(new GridBagLayout());
+		panel2.setBorder(new MatteBorder(0, 0, 1, 0, Color.GRAY));
+		JLabel colors = new JLabel("Color:");
 		JPanel colorBox = new JPanel(new GridLayout(1,7));
 		colorBox.add(red);
 		colorBox.add(blue);
@@ -349,23 +396,17 @@ public class CardOrganizer extends JFrame {
 		colorBox.add(green);
 		colorBox.add(multi);
 		colorBox.add(colorless);
-		colorBox.setPreferredSize(new Dimension(0,30));
-		
-		//adding tR(textBox/+/-) and colorQuery together into p2
-		d.ipady = 10;
+		colorBox.setPreferredSize(new Dimension(0,33));
+		d.gridx = 0;
 		d.gridy = 0;
+		panel2.add(colors, d);
 		d.gridx = 0;
-		d.weighty = 0.0;
-		d.anchor = GridBagConstraints.PAGE_START;
-		p2.add(tR, d);
 		d.gridy = 1;
-		d.gridx = 0;
-		d.weighty = 0.0;
-		p2.add(colors,d);
-		d.gridy = 2;
-		p2.add(colorBox, d);
+		panel2.add(colorBox,d);
 		
 		//type Jtoggle buttons
+		 JPanel panel3 = new JPanel(new GridBagLayout());
+	        panel3.setBorder(new MatteBorder(0, 0, 1, 0, Color.GRAY));
 		JPanel typeBox1 = new JPanel(new GridLayout(1,4));
 		typeBox1.add(creature);
 		typeBox1.add(enchantment);
@@ -378,23 +419,22 @@ public class CardOrganizer extends JFrame {
 		typeBox2.add(planeswalker);
 		typeBox2.setPreferredSize(new Dimension(0,20));
 		JPanel typeBox3 = new JPanel(new GridLayout(1,1));
-//		typeBox3.add(planeswalker);
-//		typeBox3.setPreferredSize(new Dimension(0,20));
 		
 		//type buttons
 		JLabel typeL = new JLabel("Type:");
 		d.gridy = 3;
-		p2.add(typeL, d);
+		panel3.add(typeL, d);
 		d.gridy = 4;
 		d.ipady = 14;
-		p2.add(typeBox1, d);
+		panel3.add(typeBox1, d);
 		d.gridy = 5;
 		d.weighty = 0.0;
-		p2.add(typeBox2, d);
-		//p2.add()
+		panel3.add(typeBox2, d);
 		d.ipady = 10;
 
 		//rarity buttons
+		JPanel panel4 = new JPanel(new GridBagLayout());
+        panel4.setBorder(new MatteBorder(0, 0, 1, 0, Color.GRAY));
 		JPanel rarityBox = new JPanel(new GridLayout(1,4));
 		rarityBox.add(common);
 		rarityBox.add(uncommon);
@@ -403,15 +443,15 @@ public class CardOrganizer extends JFrame {
 		rarityBox.setPreferredSize(new Dimension(0,20));
 		JLabel rarityL = new JLabel("Rarity:");
 		d.gridx = 0;
-		d.gridy = 6;
-		d.weighty = 0.0;
-		p2.add(rarityL, d);
+		d.gridy = 0;
+		panel4.add(rarityL, d);
 		d.gridx = 0;
-		d.gridy = 7;
-		d.weighty = 0;
-		p2.add(rarityBox, d);
+		d.gridy = 1;
+		panel4.add(rarityBox, d);
 		
 		//power buttons
+		JPanel panel5 = new JPanel(new GridBagLayout());
+        panel5.setBorder(new MatteBorder(0, 0, 1, 0, Color.GRAY));
 		JPanel powerB = new JPanel(new GridLayout(1,7));
 		powerB.add(oneP);
 		powerB.add(twoP);
@@ -423,13 +463,14 @@ public class CardOrganizer extends JFrame {
 		powerB.setPreferredSize(new Dimension(0,23));
 		JLabel powerL = new JLabel("Power:");
 		d.gridx = 0;
-		d.gridy = 8;
-		p2.add(powerL,d);
-		d.gridy = 9;
-		d.weighty = 0;
-		p2.add(powerB,d);
+		d.gridy = 0;
+		panel5.add(powerL,d);
+		d.gridy = 1;
+		panel5.add(powerB,d);
 		
 		//toughness buttons
+		JPanel panel6 = new JPanel(new GridBagLayout());
+        panel6.setBorder(new MatteBorder(0, 0, 1, 0, Color.GRAY));
 		JPanel tB = new JPanel(new GridLayout(1,7));
 		tB.add(oneT);
 		tB.add(twoT);
@@ -441,15 +482,37 @@ public class CardOrganizer extends JFrame {
 		tB.setPreferredSize(new Dimension(0,23));
 		JLabel tL = new JLabel("Toughness:");
 		d.gridx = 0;
-		d.gridy = 10;
-		p2.add(tL,d);
+		d.gridy = 0;
+		panel6.add(tL,d);
 		d.gridx = 0;
-		d.gridy = 11;
-		d.weighty = 1;
-		p2.add(tB,d);
+		d.gridy = 1;
+		panel6.add(tB,d);
+		
+		//add panels to mainList
+		   GridBagConstraints gb = new GridBagConstraints();
+   		gb.fill = GridBagConstraints.HORIZONTAL;
+   		gb.anchor = GridBagConstraints.PAGE_START;
+   		gb.gridx = 0;
+   		gb.gridy = 0;
+   		mainList.add(panel1, gb);
+   		gb.gridy = 1;
+   		mainList.add(panel1Quarter, gb);
+   		gb.gridy = 2;
+   		mainList.add(panel1Half, gb);
+   		gb.gridy = 3;
+   		mainList.add(panel2,gb);
+   		gb.gridy = 4;
+   		mainList.add(panel3,gb);
+   		gb.gridy = 5;
+   		mainList.add(panel4, gb);
+   		gb.gridy = 6;
+   		mainList.add(panel5, gb);
+   		gb.gridy = 7;
+   		gb.weighty = 1.0;
+   		mainList.add(panel6, gb);
 		
 		//size of all panels combined
-		p2.setPreferredSize(new Dimension(250,503));
+		//mainList.setPreferredSize(new Dimension(250,303));
 
 		//JTable
 		JPanel p4 = new JPanel();
@@ -518,10 +581,14 @@ public class CardOrganizer extends JFrame {
 				return false;  
 			};
 		};
-
-		scrollList = new JScrollPane(table);
-		scrollList.setPreferredSize(new Dimension(650,500));
+		
+		JScrollPane scrollList = new JScrollPane(table);
+		scrollList.setPreferredSize(new Dimension(500,503));
 		p4.add(scrollList);
+		
+	    JScrollPane scroll =  new JScrollPane(mainList);
+	    //JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scroll.setPreferredSize(new Dimension(260, 503));
 
 		//card viewing JLabel
 		JPanel card = new JPanel(new GridBagLayout());
@@ -556,29 +623,35 @@ public class CardOrganizer extends JFrame {
 		JPanel p3 = new JPanel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 
-		//buttons
+		//Queries
 		c.fill = GridBagConstraints.HORIZONTAL;
+		c.insets = new Insets(0,5,0,0);
 		c.ipady = 0;     
 		c.weighty = 1.0;
 		c.gridx = 0;
 		c.gridy = 0;
-		p3.add(scrollQuery,c); //query list will scroll if too long
+		c.weightx = 1;
+		c.weighty = 1;
+		c.fill = GridBagConstraints.BOTH;
+		p3.add(scroll,c); //query list will scroll if too long
 
-		//JTable 
+		//JTable
+		c.insets = new Insets(0,0,0,0);
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.ipady = 0;     
 		c.gridx = 1;
 		c.gridy = 0;
-		p3.add(p4, c);
+		p3.add(p4,c);
 
 		//label orientation
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.insets = new Insets(25,15,15,0);
+		c.insets = new Insets(25,15,15,15);
 		c.ipady = 0;     
 		c.gridx = 2;
 		c.gridy = 0;
 		p3.add(card,c);
 		add(p3);
+
+
 		
 		//remaps ENTER key in JTable to addCard()
 		table.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "Enter");
@@ -2062,6 +2135,9 @@ public class CardOrganizer extends JFrame {
 			}
 		});
 	}
+}
+
+
 	/**
 	 * This method takes as a parameter the String[] of card names and then an ArrayList<String[]>
 	 * of the number owned and rarity in their appropriate String[] and refreshes the JTable with this
@@ -2101,6 +2177,7 @@ public class CardOrganizer extends JFrame {
 		}
 		table.repaint(); 
 	}
+
 	/**
 	 * This method, given a String[] containing a list of names, returns an ArrayList<String[]> containing
 	 * the String[]s for the number of each card owned and its rarity.
@@ -2313,20 +2390,5 @@ public class CardOrganizer extends JFrame {
 			if(dataModel.getRowCount() > 3)
 				dataModel.removeRow(dataModel.getRowCount() - 1);
 		}
-	}
-	
-		public static void main(String[] args) throws InvalidKeyException, IOException, AWTException {
-		CardOrganizer frame = null;
-		try {
-			frame = new CardOrganizer();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		frame.setTitle("Virtual Card Organizer");
-		frame.setSize(1185,542);
-		frame.setLocationRelativeTo(null);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setVisible(true);
-		//frame.setResizable(false);
 	}
 }
