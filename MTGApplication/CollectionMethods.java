@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.security.InvalidKeyException;
@@ -12,6 +13,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
+
+import automatedDatabase.GetPrice;
 
 import dataStructures.BasicTree;
 import dataStructures.HashTableMap;
@@ -23,9 +27,6 @@ public class CollectionMethods extends BasicTree {
 	private String home = System.getProperty("user.home");
 
 	public CollectionMethods() throws InvalidKeyException, IOException {		
-
-		//----> comment this out if you dont want to play with text files and save() / load()
-
 		String sFile = "";
 		String home = System.getProperty("user.home");
 		try {
@@ -42,20 +43,17 @@ public class CollectionMethods extends BasicTree {
 		} catch (ArrayIndexOutOfBoundsException ex) {
 			ex.printStackTrace();
 		}
-		// <------
-		//				String[] cards = this.getCategory("cD");
-		//				for(int i = 0; i < cards.length; i++) {
-		//					this.addCard(cards[i]);
-		//				}
+		loadPrices();
 	}
 
 	public static void main(String[] args) throws InvalidKeyException, IOException {
 		CollectionMethods test = new CollectionMethods();
 				test.loadCompleteDatabase();
-				String[] s = test.getCategory("cD");
-				String[] t = test.query(s, "n", -1, -1, -1, "n", "n", "n", "n", "n", "Centaur's Herald");
-				for(int i = 0; i < t.length; i++)
-					System.out.println(t[i]);
+//				String[] s = test.getCategory("cD");
+//				String[] t = test.query(s, "n", -1, -1, -1, "n", "n", "n", "n", "n", "Centaur's Herald");
+//				for(int i = 0; i < t.length; i++)
+//					System.out.println(t[i]);
+				test.printNameAndPrice();
 	}
 
 	/**
@@ -1395,6 +1393,78 @@ public class CollectionMethods extends BasicTree {
 			for(int j = 0; j < arr2[i]; j++)
 				this.addCard(arr[i]);
 		}
+	}
+	/**
+	 * returns the name of each rare/ mythic card as a String[]
+	 * @throws FileNotFoundException 
+	 */
+	public String[] rareAndMythicNames() throws FileNotFoundException {
+		StringBuilder names = new StringBuilder();
+		HashTableMap h = (HashTableMap)((TreeNode) treeNodes.get("cD")).getReference();
+		ArrayList<String> arr = new ArrayList();
+		ArrayList<Card> list = h.cardEntries();
+		Card card = new Card();
+		for(int i = 0; i < list.size(); i++) {
+			if(list.get(i) != null) {
+				card = list.get(i);
+				String s2 = card.name;
+				//System.out.println(card.name);
+				if(card.rarity != null)
+					if(card.rarity.contains("-M"))
+						arr.add(s2);
+			}
+		}
+		String[] arr2= new String[arr.size()];
+		arr.toArray(arr2);
+		java.util.Arrays.sort(arr2);
+		return arr2;
+	}
+	
+	/**
+	 * Prints the name and price of each rare and mythic card
+	 * @throws IOException 
+	 */
+	public void printNameAndPrice() throws IOException {
+		GetPrice value = new GetPrice();
+		String[] names = rareAndMythicNames();
+		String[] prices = new String[names.length];
+		String nameAndPrice = "";
+		String price = "";
+		for(int i = 0; i< names.length; i++) {
+			//if(names[i].charAt(0) >= 73) {
+			try {
+			price = value.getPriceL(names[i]);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			prices[i] = price;
+			nameAndPrice += names[i] + ":" + price + "\n";
+			PrintWriter out = new PrintWriter(home + "/Desktop/Card Prices.txt");
+			out.print(nameAndPrice);
+			out.close();
+			//}
+		}
+	}
+	/**
+	 * Load the prices
+	 * @throws IOException 
+	 * @throws InvalidKeyException 
+	 */
+	public void loadPrices() throws IOException, InvalidKeyException {
+		File price = new File(home + "/Desktop/Card Values.txt");
+		BufferedReader br = new BufferedReader(new FileReader(price));
+		String[] split = null;
+        String lineRead = "";
+        while ((lineRead = br.readLine()) != null) {
+			split = lineRead.split(":");
+			Card card = new Card();
+			card = getCard(split[0]);
+			try {
+			card.setPrice(split[1]);
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+        }
 	}
 
 	/**

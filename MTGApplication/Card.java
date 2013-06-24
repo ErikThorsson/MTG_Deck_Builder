@@ -25,6 +25,7 @@ public class Card {
 	public String rarity;
 	private String home = System.getProperty("user.home");
 	public String CMC;
+	public String price;
 	
 	public Card() {}
 	
@@ -48,6 +49,7 @@ public class Card {
 		imgURL = url;
 		rarity = r;
 		img = null;
+		price = "0.0";
 	}
 	
 	public void setOwned(int i) {
@@ -64,6 +66,10 @@ public class Card {
 	
 	public void setImg(ImageIcon i) {
 		img = i;
+	}
+	
+	public void setPrice(String s) {
+		price = s;
 	}
 	
 	public ImageIcon getImg() throws IOException {
