@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -163,7 +164,9 @@ public class CardOrganizer extends JFrame  {
 	private boolean enterC = false;
 	private boolean nameC = false;
 	private DefaultTableModel dataModel;
+	private DefaultTableModel dataModel2;
 	private JTable table;
+	private JTable table2;
 	private ArrayList<String[]> rarityArrays = new ArrayList<String[]>();
 	private CollectionMethods organizer = new CollectionMethods();
 	private boolean isRemoved;
@@ -203,6 +206,8 @@ public class CardOrganizer extends JFrame  {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+				//frame.setSize(1180,410);
+				frame.setJMenuBar(menuBar);		
 				frame.setResizable(true);	                
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				frame.pack();
@@ -516,9 +521,6 @@ public class CardOrganizer extends JFrame  {
 			gb.weighty = 1.0;
 			mainList.add(panel6, gb);
 
-			//size of all panels combined
-			//mainList.setPreferredSize(new Dimension(250,303));
-
 			//JTable
 			JPanel p4 = new JPanel();
 			String[] cardNames = organizer.getAllArray();
@@ -588,15 +590,11 @@ public class CardOrganizer extends JFrame  {
 			};
 
 			JScrollPane scrollList = new JScrollPane(table);
-			scrollList.setPreferredSize(new Dimension(500,503));
 			p4.add(scrollList);
 
 			JScrollPane scroll =  new JScrollPane(mainList);
 			//JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-			scroll.setPreferredSize(new Dimension(260, 503));
 
-			//card viewing JLabel
-			JPanel card = new JPanel(new GridBagLayout());
 			ImageIcon image;
 			label = new JLabel();
 			try {
@@ -605,38 +603,8 @@ public class CardOrganizer extends JFrame  {
 			} catch (Exception ex) {
 				label.setIcon(organizer.getCard("card_back").getImg());
 			}
-			d.fill = GridBagConstraints.HORIZONTAL;
-			d.weightx = 0.0;
-			d.gridwidth = 2;
-			d.gridx = 0;
-			d.gridy = 0;
-			d.insets = new Insets(60,0,0,0);
-			d.anchor = GridBagConstraints.PAGE_START;
-			card.add(label, d);
-			d.gridx = 0;
-			d.gridy = 1;
-			d.weighty = 0;
-			d.insets = new Insets(11,0,0,0);
-			card.add(ownedL, d);
-			d.gridx = 1;
-			d.weighty = 1;
-			d.insets = new Insets(0,50,0,0);
+	
 			ownedNum.setFont(new Font("Serif", Font.PLAIN, 36));
-			card.add(ownedNum, d);
-			d.gridx = 1;
-			d.insets = new Insets(6,90,0,0);
-			card.add(priceL, d);
-			d.gridx = 1;
-			d.insets = new Insets(0,105,0,0);
-			card.add(price, d);
-			d.gridy = 2;
-			d.insets = new Insets(20,0,0,0);
-			card.add(collectionV, d);
-			d.insets = new Insets(20,110,0,0);
-			card.add(mSign,d);
-			d.insets = new Insets(20,120,0,0);
-			priceCollection();
-			card.add(collectionValue, d);
 			price.setFont(new Font("Serif", Font.PLAIN, 36));
 			priceL.setFont(new Font("Serif", Font.PLAIN, 26));
 
@@ -645,35 +613,201 @@ public class CardOrganizer extends JFrame  {
 			GridBagConstraints c = new GridBagConstraints();
 
 			//Queries
-			c.fill = GridBagConstraints.HORIZONTAL;
 			c.insets = new Insets(0,5,0,0);
-			c.ipady = 0;     
-			c.weighty = 1.0;
 			c.gridx = 0;
 			c.gridy = 0;
-			c.weightx = 1;
-			c.weighty = 1;
+			c.weightx = 5;
+			c.weighty = 5;
 			c.fill = GridBagConstraints.BOTH;
-			p3.add(scroll,c); //query list will scroll if too long
+			scroll.setPreferredSize(new Dimension(260, 503));
+			JPanel queryContainer = new JPanel(new GridBagLayout());
+			queryContainer.setPreferredSize(new Dimension(300, 380));
+			queryContainer.add(scroll, c);
+			JPanel try2 = new JPanel();
+			try2.add(queryContainer);
+			add(try2);
+			p3.add(try2, c);
 
 			//JTable
 			c.insets = new Insets(0,0,0,0);
-			c.fill = GridBagConstraints.HORIZONTAL;
-			c.ipady = 0;     
+			c.fill = GridBagConstraints.BOTH;
 			c.gridx = 1;
 			c.gridy = 0;
-			p3.add(p4,c);
+			scrollList.setPreferredSize(new Dimension(680,384));
+			JPanel box = new JPanel(new GridBagLayout());
+			box.setPreferredSize(new Dimension(680,384));
+			c.weightx = 10;
+			c.weighty = 10;
+			c.anchor = GridBagConstraints.PAGE_START;
+			box.add(scrollList, c);
+			//add(box);
+			p3.add(box,c);
+			
 
-			//label orientation
+			//card orientation
 			c.insets = new Insets(25,15,15,15);
-			c.ipady = 0;     
+			c.ipady = 0;   
+			c.weightx = 1;
+			c.weighty = 1;
 			c.gridx = 2;
 			c.gridy = 0;
-			p3.add(card,c);
-			add(p3);
+			c.fill = GridBagConstraints.HORIZONTAL;
+			label.setPreferredSize(new Dimension(300, 380));
+			p3.add(label, c);
+			
+			//make deck builder window
+			JPanel deck = new JPanel(new GridBagLayout());
+			deck.setPreferredSize(new Dimension(1400, 410));
+			
+			dataModel2 = new DefaultTableModel();
+			dataModel2.setColumnCount(1);
+			dataModel2.setRowCount(organizer.getAllArray().length);
+			dataModel2.setColumnIdentifiers(new String[]{"Creatures"});
+			dataModel2.setValueAt("Goblin Electromancer", 0, 0);
+			dataModel2.setValueAt("Dreg Mangler", 1, 0);
+			dataModel2.setValueAt("Taunting Elf", 2, 0);
+			DefaultTableModel dataModel3 = new DefaultTableModel();
+			dataModel3.setColumnCount(1);
+			dataModel3.setRowCount(organizer.getAllArray().length);
+			dataModel3.setColumnIdentifiers(new String[]{"Spells"});
+			dataModel3.setValueAt("Giant Growth", 0, 0);
+			dataModel3.setValueAt("Shock", 1, 0);
+			dataModel3.setValueAt("Glorious Anthem", 2, 0);
+			DefaultTableModel dataModel4 = new DefaultTableModel();
+			dataModel4.setColumnCount(1);
+			dataModel4.setRowCount(organizer.getAllArray().length);
+			dataModel4.setColumnIdentifiers(new String[]{"Land"});
+			dataModel4.setValueAt("Vault of the Archangel", 0, 0);
+			dataModel4.setValueAt("Dragonskull Summit", 1, 0);
+			dataModel4.setValueAt("Drowning Pool", 2, 0);
+			DefaultTableModel dataModel5 = new DefaultTableModel();
+			dataModel4.setColumnCount(1);
+			dataModel5.setRowCount(organizer.getAllArray().length);
+			dataModel5.setColumnIdentifiers(new String[]{"Side Board"});
+			dataModel5.setValueAt("Bllllllaarrrrrrg", 0, 0);
+			dataModel5.setValueAt("I'm bad", 1, 0);
+			dataModel5.setValueAt("Suntail Shit", 2, 0);
 
 
+//			for(int i = 0; i < cardNames.length; i++) {
+//				//dataModel2.setValueAt(cardNames[i],i, 0);
+//			}
+//			for(int i = 0; i < cardNames.length; i++) {
+//				//dataModel2.setValueAt(rarity[i],i, 1);
+//			}
+//			for(int i = 0; i < cardNames.length; i++) {
+//				//dataModel2.setValueAt(stringSet[i],i, 2);
+//			}
+//			for(int i = 0; i < cardNames.length; i++) {
+//				//dataModel2.setValueAt(stringOwned[i],i, 3);
+//			}
 
+			table2 = new JTable(dataModel2) {
+				private static final long serialVersionUID = 1L;
+				public boolean isCellEditable(int row, int column) {                
+					return false;  
+				};
+			};
+			
+			JTable table3 = new JTable(dataModel3) {
+				private static final long serialVersionUID = 1L;
+				public boolean isCellEditable(int row, int column) {                
+					return false;  
+				};
+			};
+			
+			JTable table4 = new JTable(dataModel4) {
+				private static final long serialVersionUID = 1L;
+				public boolean isCellEditable(int row, int column) {                
+					return false;  
+				};
+			};
+			
+			JTable table5 = new JTable(dataModel5) {
+				private static final long serialVersionUID = 1L;
+				public boolean isCellEditable(int row, int column) {                
+					return false;  
+				};
+			};
+
+			JScrollPane scrollList2 = new JScrollPane(table2);
+			JScrollPane scrollList3 = new JScrollPane(table3);
+			JScrollPane scrollList4 = new JScrollPane(table4);
+			JScrollPane scrollList5 = new JScrollPane(table5);
+
+			GridBagConstraints b = new GridBagConstraints();
+			b.gridx = 0;
+			b.gridy = 0;
+			b.fill = GridBagConstraints.BOTH;
+			b.weightx = 1;
+			b.weighty = 1;
+			b.anchor = GridBagConstraints.PAGE_START;
+			deck.add(scrollList2, b);
+			b.gridx = 1;
+			deck.add(scrollList3, b);
+			b.gridx = 2;
+			deck.add(scrollList4, b);
+			b.gridx = 3;
+			deck.add(scrollList5, b);
+			
+			//frame and add top and bottom
+			JPanel test = new JPanel();
+			test.setPreferredSize(new Dimension(1400, 400));
+			JPanel frame = new JPanel(new GridBagLayout());
+			//JPanel frame = new JPanel(new GridLayout(2,1));
+			frame.setPreferredSize(new Dimension(1400, 800));
+			GridBagConstraints g = new GridBagConstraints();
+			g.anchor = GridBagConstraints.PAGE_START;
+			g.fill = GridBagConstraints.BOTH;
+//			g.ipady = 1;   
+			g.weightx = 1;
+			g.weighty = 1;
+			g.gridx = 0;
+			g.gridy = 0;
+			g.ipady = -285;      //make this component tall
+			//d.insets = new Insets(30,0,0,0);
+			frame.add(p3,g);
+			g.weightx = 0;
+			g.weighty = 0;
+			g.gridx = 1;
+			//frame.add(label,g);
+			g.gridx = 0;
+			g.ipady = 0;      //make this component tall
+			g.weightx = 1;
+			g.gridwidth =3;
+			g.weighty = 1;
+			g.gridy = 1;
+			g.ipady =1;
+			g.fill = GridBagConstraints.BOTH;
+			frame.add(deck, g);
+			//owned and price
+			d.gridx = 2;
+			d.gridy = 0;
+			d.insets = new Insets(350,0,0,0);
+			p3.add(ownedL, d);
+			d.gridx = 2;
+			d.insets = new Insets(340,55,0,0);
+			ownedNum.setFont(new Font("Serif", Font.PLAIN, 36));
+			p3.add(ownedNum, d);
+			d.gridx = 2;
+			d.insets = new Insets(340,90,0,0);
+			p3.add(priceL, d);
+			d.gridx = 2;
+			d.insets = new Insets(340,105,0,0);
+			p3.add(price, d);
+			d.gridx = 2;
+			d.insets = new Insets(0,0,0,0);
+			p3.add(collectionV, d);
+			d.insets = new Insets(0,110,0,0);
+			p3.add(mSign,d);
+			d.ipady = 1;
+			d.insets = new Insets(5,120,0,0);
+			priceCollection();
+			p3.add(collectionValue, d);
+			p3.setPreferredSize(new Dimension(1400, 395));
+			p3.setBorder(new MatteBorder(0, 0, 1, 0, Color.GRAY));
+			add(frame);
+			
 			//remaps ENTER key in JTable to addCard()
 			table.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "Enter");
 			table.getActionMap().put("Enter", new AbstractAction() {
