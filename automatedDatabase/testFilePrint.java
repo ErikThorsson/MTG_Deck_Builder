@@ -8,11 +8,6 @@ import java.io.PrintWriter;
 import java.awt.AWTException;
 import java.awt.Robot;
 import java.awt.event.InputEvent;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -249,7 +244,7 @@ public class testFilePrint {
 		String formatted = "";
 		ArrayList<String> arrr = new ArrayList<String>();
 		for(int i = 0; i < arr.size(); i++) {
-			Card card = (Card)(arr.get(i));
+			Card card = (arr.get(i));
 			formatted += card.name + "::";
 			formatted += card.color + "::";
 			formatted += card.CMC + "::";

@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.security.InvalidKeyException;
@@ -13,8 +12,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.Scanner;
-
 import automatedDatabase.GetPrice;
 
 import dataStructures.BasicTree;
@@ -29,12 +26,12 @@ public class CollectionMethods extends BasicTree {
 	public CollectionMethods() throws InvalidKeyException, IOException {		
 		String sFile = "";
 		String home = System.getProperty("user.home");
-		try {
+//		try {
 			readFromFile(home + "/Desktop/VCO/VCOSave.txt");
 			sFile = (home + "/Desktop/VCO/VCOSave.txt");
-		} catch (Exception ex) {
-			sFile = "/Volumes/NIGEL/VCO/VCOSave.txt";
-		}
+//		} catch (Exception ex) {
+//			sFile = "/Volumes/NIGEL/VCO/VCOSave.txt";
+//		}
 		saveFile = sFile;
 		this.loadCompleteDatabase();
 		try {
@@ -49,11 +46,12 @@ public class CollectionMethods extends BasicTree {
 	public static void main(String[] args) throws InvalidKeyException, IOException {
 		CollectionMethods test = new CollectionMethods();
 				test.loadCompleteDatabase();
-//				String[] s = test.getCategory("cD");
-//				String[] t = test.query(s, "n", -1, -1, -1, "n", "n", "n", "n", "n", "Centaur's Herald");
-//				for(int i = 0; i < t.length; i++)
-//					System.out.println(t[i]);
-				test.printNameAndPrice();
+				//test.printNameAndPrice();
+				String[] s = test.getCategory("green");
+				//String[] t = test.query("n", "green");
+						//test.query(s, "n", -1, -1, -1, "n", "n", "n", "n", "n", "Centaur's Herald");
+				for(int i = 0; i < s.length; i++)
+					System.out.println(s[i]);
 	}
 
 	/**
@@ -114,7 +112,7 @@ public class CollectionMethods extends BasicTree {
 		ArrayList<String> set = new ArrayList<String>();
 		for(int i = 0; i < all.length; i++) {
 			try {
-				if(getCard(all[i]).rarity.contains(s))
+				if(getCard(all[i]).rarity.contains(s)) //rarity contains set info too
 					set.add(all[i]);
 			} catch (Exception ex) {
 				ex.printStackTrace(); //Not quite sure what is going wrong here buuut its small as far as I can tell
@@ -157,6 +155,10 @@ public class CollectionMethods extends BasicTree {
 		return s2;
 	}
 
+/**
+ * Returns a String[] of the number of cards owned for every card you own
+ * @return
+ */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Integer[] getOwned() {
 		HashTableMap h = (HashTableMap)((TreeNode) treeNodes.get("root")).getReference();
@@ -178,31 +180,37 @@ public class CollectionMethods extends BasicTree {
 
 	/**
 	 * Adds non land cards not held in database.
-	 * Looks like this is no longer needed due to the query method being so efficient. Might be useful in the future for optimization I suppose...
-	 * @param s
-	 * @param s2
-	 * @param s3
-	 * @param i
-	 * @param i2
-	 * @param t
-	 * @param ty
-	 * @param ty2
-	 * @param ty3
-	 * @param r
-	 * @param url
-	 * @throws InvalidKeyException
+	 * Looks like this is no longer needed due to the query method being so efficient. 
+	 * Might be useful in the future for optimization I suppose...
 	 */
 	@SuppressWarnings("unchecked")
 	public void addCard(String s, String s2, String s3, int i, int i2, String t, String ty, String ty2, String ty3, String r, String url) throws InvalidKeyException {
 		Card card = new Card(s, s2, s3, i, i2, t, ty, ty2, ty3, r, url);
-		if(MTG.get(s) != null) {
-			setOwned(s, ((Card)MTG.get(s)).owned + 1, MTG);
-			return;
-		}
+//		if(MTG.get(s) != null) {
+//			setOwned(s, ((Card)MTG.get(s)).owned + 1, MTG);
+//			return;
+//		}
+//		try {
+//			if(card.type2 == "land") {
+//				land.put(card.name, card);
+//				card.owned =+ 1;
+//				return;
+//			}
+//		}catch (Exception e) {
+//			e.printStackTrace();
+//			return;
+//		}
+		
 		MTG.put(card.name, card);
 		CompleteDatabase.put(card.name, card);
+		try{
+		System.out.println(card.color);
+		}catch (Exception ex) {
+			//
+		}
 		spells.put(card.name, card);
-		if(card.color == "red") {
+		if(card.color!= null) {
+		if(card.color.equals("red")) {
 			red.put(card.name, card);
 			if (card.type1 == "permanent") 
 				redPermanents.put(card.name, card);
@@ -218,6 +226,7 @@ public class CollectionMethods extends BasicTree {
 				redInstants.put(card.name, card);
 			if(card.type2 == "sorcery")
 				redSorcery.put(card.name, card);
+			}
 		}
 		if(card.color == "white") {
 			white.put(card.name, card);
@@ -322,8 +331,8 @@ public class CollectionMethods extends BasicTree {
 	@SuppressWarnings("unchecked")
 	public void addCard(String s) throws InvalidKeyException {
 		Card card = (Card) CompleteDatabase.get(s);
-
-		if(MTG.get(s) != null) {
+//
+		if(MTG.get(s) != null) { //increases owned by one if not owned 
 			setOwned(s, ((Card)MTG.get(s)).owned + 1, MTG);
 			return;
 		}
@@ -345,7 +354,9 @@ public class CollectionMethods extends BasicTree {
 		}
 
 		spells.put(card.name, card);
-		if(card.color == "red") {
+		
+		if(card.color != null) {
+		if(card.color.equals("red")) {
 			red.put(card.name, card);
 			if (card.type1 == "permanent") 
 				redPermanents.put(card.name, card);
@@ -361,7 +372,8 @@ public class CollectionMethods extends BasicTree {
 				redInstants.put(card.name, card);
 			if(card.type2 == "sorcery")
 				redSorcery.put(card.name, card);
-		}
+			}
+
 		if(card.color == "white") {
 			white.put(card.name, card);
 			if (card.type1 == "permanent") 
@@ -379,6 +391,7 @@ public class CollectionMethods extends BasicTree {
 			if(card.type2 == "sorcery")
 				whiteSorcery.put(card.name, card);
 		}
+
 		if(card.color == "blue") {
 			blue.put(card.name, card);
 			if (card.type1 == "permanent") 
@@ -456,7 +469,8 @@ public class CollectionMethods extends BasicTree {
 				colorlessEquipment.put(card.name, card);
 			if(card.type2 == "artifact")
 				colorlessArtifacts.put(card.name, card);
-		}	
+			}
+		}
 		card.owned =+ 1;
 	}
 
@@ -469,7 +483,7 @@ public class CollectionMethods extends BasicTree {
 
 	/**
 	 * Removes from appropriate hashtables w/ tree traversal.
-	 * If the hashtable tree is no longer being used I could probably make this more efficient.
+	 * Will keep in case it leads to efficiency later down the line.
 	 * @param s
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -517,6 +531,12 @@ public class CollectionMethods extends BasicTree {
 			}
 		}
 	}
+	/**
+	 * Let's make this remove from the complete database and then my card hashtable can scan this. Much easier than
+	 * managing both at once...
+	 * @param s
+	 * @param h
+	 */
 	@SuppressWarnings("rawtypes")
 	public void removeCard(String s, String h) {
 		@SuppressWarnings("unused")
@@ -533,6 +553,52 @@ public class CollectionMethods extends BasicTree {
 		ArrayList<Card> list = h.cardEntries();
 		return list;
 	}
+	
+	/**
+	 * Dynamic query attempt
+	 */
+//	public String[] query(String t3, String s2) throws InvalidKeyException {
+//		int count = 0;
+//		boolean nameON = false;
+//		boolean colorON = false;
+//		String v1 = "";
+//		String name = t3.toLowerCase();
+//		String color = s2;
+//			if (!name.equals("n")) {
+//				count++;
+//				nameON = true;
+//			}
+//			if (!color.equals("n")) {
+//				count++;
+//				colorON = true;
+//			}
+//			
+//		if (nameON == true && v1.equals("")) {
+//			v1 = "name";
+//		}
+//		if(colorON == true && v1.equals(""))
+//			v1 = "color";
+//		String[] li = getAllArray();
+//		ArrayList<String> arr = new ArrayList();
+//		ArrayList<Card> list = new ArrayList<Card>();
+//		for(int z = 0; z < li.length; z++)
+//			list.add(getCard(li[z]));
+//		
+//			
+//		if(count == 1) {
+//			Card card = new Card();
+//			for(int j = 0; j < list.size(); j++) {
+//				card = list.get(j);
+//					if(card.v1 != null)
+//						if(card.getValue(v1).toLowerCase().contains(v1))
+//							arr.add(card.getValue(v1));
+//			}
+//			String[] arr2= new String[arr.size()];
+//			arr.toArray(arr2);
+//			return  arr2;
+//		}
+//		return null;
+//	}
 
 	//Query for cards based on multiple characteristics. To omit a value use -1 for integers or "" for Strings. Most combinations
 	//should work
@@ -1408,9 +1474,8 @@ public class CollectionMethods extends BasicTree {
 			if(list.get(i) != null) {
 				card = list.get(i);
 				String s2 = card.name;
-				//System.out.println(card.name);
 				if(card.rarity != null)
-					if(card.rarity.contains("-M"))
+					if(card.rarity.contains("-M") || card.rarity.contains("-R"))
 						arr.add(s2);
 			}
 		}
@@ -1431,7 +1496,6 @@ public class CollectionMethods extends BasicTree {
 		String nameAndPrice = "";
 		String price = "";
 		for(int i = 0; i< names.length; i++) {
-			//if(names[i].charAt(0) >= 73) {
 			try {
 			price = value.getPriceL(names[i]);
 			} catch (Exception ex) {
@@ -1442,7 +1506,6 @@ public class CollectionMethods extends BasicTree {
 			PrintWriter out = new PrintWriter(home + "/Desktop/Card Prices.txt");
 			out.print(nameAndPrice);
 			out.close();
-			//}
 		}
 	}
 	/**
@@ -1525,8 +1588,6 @@ public class CollectionMethods extends BasicTree {
 		String line;
 		while ((line = bufferedReader.readLine()) != null) {
 			line2.append(line);
-			{
-			}
 		}
 		return line2;
 	}

@@ -1,10 +1,6 @@
 package MTGApplication;
 
 import java.awt.image.BufferedImage;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -58,6 +54,16 @@ public class Card {
 	
 	public int getOwned() {
 		return owned;
+	}
+	
+	public String getValue(String s) {
+		if (s.equals("name")) {
+			return name;
+		}
+		if(s.equals("color")){
+			return color;
+		}
+		return null;
 	}
 	
 	public String getRarity () {

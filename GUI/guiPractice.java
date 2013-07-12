@@ -12,7 +12,6 @@ import java.awt.Insets;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.security.InvalidKeyException;
 import java.util.ArrayList;
 
@@ -37,7 +36,6 @@ import javax.swing.UIManager;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableModel;
 
-import GUI.DynamicPanelList.TestPane;
 import MTGApplication.CollectionMethods;
 
 public class guiPractice extends JFrame{
@@ -456,7 +454,8 @@ public class guiPractice extends JFrame{
 
     		table = new JTable(dataModel) {
     			private static final long serialVersionUID = 1L;
-    			public boolean isCellEditable(int row, int column) {                
+    			@Override
+				public boolean isCellEditable(int row, int column) {                
     				return false;  
     			};
     		};

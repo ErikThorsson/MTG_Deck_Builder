@@ -102,7 +102,7 @@ public class Automate {
 		BufferedImage img = ImageIO.read(new URL(cURL));
 		try {
 	    File outputfile = new File("/Users/eorndahl/Desktop/VCO/ISD/" + s + ".jpg");
-	    ImageIO.write((RenderedImage) img, "jpg", outputfile);
+	    ImageIO.write(img, "jpg", outputfile);
 		} catch (Exception ex) {
 			System.out.println("Unable to retrive " + s + "'s image." );
 		}
@@ -113,7 +113,7 @@ public class Automate {
 	public void saveImg(String s) throws MalformedURLException, IOException {
 		BufferedImage img = ImageIO.read(new URL(s));
 	    File outputfile = new File("/Users/eorndahl/Desktop/VCO/DGM/" + s + ".jpg");
-	    ImageIO.write((RenderedImage) img, "jpg", outputfile);
+	    ImageIO.write(img, "jpg", outputfile);
 	}
 	
 	public void scanFile() throws IOException, InterruptedException, AWTException {
@@ -268,7 +268,7 @@ public class Automate {
 		String formatted = "";
 		ArrayList<String> arrr = new ArrayList<String>();
 		for(int i = 0; i < arr2.size(); i++) {
-			Card card = (Card)(arr2.get(i));
+			Card card = (arr2.get(i));
 			formatted += card.name + "::";
 			formatted += card.color + "::";
 			formatted += card.type1 + "::";

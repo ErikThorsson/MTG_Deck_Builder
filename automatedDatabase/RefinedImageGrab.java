@@ -1,9 +1,6 @@
 package automatedDatabase;
 
 import java.awt.AWTException;
-import java.awt.Robot;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -46,7 +43,7 @@ public class RefinedImageGrab {
 	    cURL+= splits[1] + "&type=card";
 		BufferedImage img = ImageIO.read(new URL(cURL));
 	    File outputfile = new File("/Users/eorndahl/Desktop/VCO/DGM/" + s + ".jpg");
-	    ImageIO.write((RenderedImage) img, "jpg", outputfile);
+	    ImageIO.write(img, "jpg", outputfile);
 	    driver.close();
 	    return cURL;
 	}

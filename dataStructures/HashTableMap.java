@@ -2,16 +2,8 @@ package dataStructures;
 // Erik Orndahl 4/3/13 This is the example provided in the book.
 
 import java.security.InvalidKeyException;
-import java.util.AbstractCollection;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-
 import MTGApplication.Card;
 
 
@@ -27,7 +19,7 @@ public class HashTableMap<K,V> {
 	public HashTableMap(int i, int cap) {
 		prime = i;
 		capacity = cap;
-		bucket = (Entry<K,V>[]) new Entry[capacity];
+		bucket = new Entry[capacity];
 		java.util.Random rand = new java.util.Random();
 		scale = rand.nextInt(prime-1) + 1;
 		shift = rand.nextInt(prime);
@@ -135,7 +127,7 @@ public class HashTableMap<K,V> {
 	protected void rehash() throws InvalidKeyException {
 		capacity = 2*capacity;
 		Entry<K,V>[] old = bucket;
-		bucket =(Entry<K,V>[]) new Entry[capacity]; //new bucket twice as large
+		bucket =new Entry[capacity]; //new bucket twice as large
 		java.util.Random rand = new java.util.Random();
 		scale = rand.nextInt(prime-1) + 1; 
 		shift = rand.nextInt(prime); 

@@ -8,8 +8,6 @@ import java.net.URL;
 import java.security.InvalidKeyException;
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-
 import MTGApplication.Card;
 import MTGApplication.CollectionMethods;
 
@@ -33,7 +31,7 @@ public class imgGrab {
 		    // retrieve image
 			BufferedImage img = ImageIO.read(new URL(card[i].imgURL));
 		    File outputfile = new File("/Users/eorndahl/Desktop/VCO/Pictures Try 2/" + card[i].name + ".jpg");
-		    ImageIO.write((RenderedImage) img, "jpg", outputfile);
+		    ImageIO.write(img, "jpg", outputfile);
 		} catch (IOException e) {
 		}
 		}

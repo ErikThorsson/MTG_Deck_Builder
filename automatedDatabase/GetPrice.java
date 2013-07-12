@@ -1,10 +1,7 @@
 package automatedDatabase;
 
 import java.awt.AWTException;
-import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -12,16 +9,13 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.imageio.ImageIO;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
+
+import com.sun.jna.platform.unix.X11.Display;
 
 public class GetPrice {
 		private static URL URLObj;
@@ -36,6 +30,8 @@ public class GetPrice {
 		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.Jdk14Logger");
 		Logger.getAnonymousLogger().getParent().setLevel(Level.WARNING);
 		
+
+				
 		//Create a new instance of the Firefox driver
 		WebDriver driver = new FirefoxDriver();
 		driver.get("http://www.mtggoldfish.com");
