@@ -50,8 +50,8 @@ public class CollectionMethods extends BasicTree {
 				String[] s = test.getCategory("green");
 				//String[] t = test.query("n", "green");
 						//test.query(s, "n", -1, -1, -1, "n", "n", "n", "n", "n", "Centaur's Herald");
-				for(int i = 0; i < s.length; i++)
-					System.out.println(s[i]);
+//				for(int i = 0; i < s.length; i++)
+					//System.out.println(s[i]);
 	}
 
 	/**
@@ -203,11 +203,11 @@ public class CollectionMethods extends BasicTree {
 		
 		MTG.put(card.name, card);
 		CompleteDatabase.put(card.name, card);
-		try{
-		System.out.println(card.color);
-		}catch (Exception ex) {
-			//
-		}
+//		try{
+//		//System.out.println(card.color);
+//		}catch (Exception ex) {
+//			//
+//		}
 		spells.put(card.name, card);
 		if(card.color!= null) {
 		if(card.color.equals("red")) {

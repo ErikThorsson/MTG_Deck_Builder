@@ -108,7 +108,7 @@ public class CardOrganizer extends JFrame  {
 	protected JButton goQuery = new JButton("Query!");
 	protected JButton viewAll = new JButton("My Cards");
 	private JTextField textBox = new JTextField("Enter Here");
-	private String selected = "no";
+	private String selected = null;
 	private JCheckBox deckBuild = new JCheckBox();
 	private JComboBox decks = new JComboBox(new Object[] {"Example1", "Example2"});
 	private String name = "n";
@@ -548,48 +548,8 @@ public class CardOrganizer extends JFrame  {
 			//JTable
 			JPanel p4 = new JPanel();
 			String[] cardNames = organizer.getAllArray();
-			ArrayList<Integer> myCardsOwned = new ArrayList<Integer>();
-			for( int i = 0; i < cardNames.length; i++) {
-				try {
-					myCardsOwned.add(organizer.getCard(cardNames[i]).getOwned()); //put owned ints into ownedList
-				} catch (InvalidKeyException e1) {
-					e1.printStackTrace();
-				}
-			}
-			Integer[] cardsOwned = new Integer[myCardsOwned.size()];
-			myCardsOwned.toArray(cardsOwned);
-			String[] stringOwned = new String[cardsOwned.length];
-			String[] stringSet = new String[cardsOwned.length];
-			String[] rarity = new String[cardsOwned.length];
-			String[] fullList = new String[cardNames.length];
-			for(int i = 0; i < cardsOwned.length; i++) {
-				if(cardsOwned[i] > 0) 
-					stringOwned[i] = "✓";
-				else
-					stringOwned[i] = "No";
-			}
-			
-			for(int i = 0; i < cardsOwned.length; i++) {
-				String[] splitR = new String[100];
-				if(organizer.getCard(cardNames[i]).getRarity() != null) {
-					splitR = organizer.getCard(cardNames[i]).getRarity().split(",");
-					String[] splitSet = new String[2];
-					splitSet = splitR[0].split("-");
-					try {
-						stringSet[i] = splitSet[0];
-						if(splitSet[1].equals("C"))
-							rarity[i] = "Common";
-						if(splitSet[1].equals("U"))
-							rarity[i] = "Uncommon";
-						if(splitSet[1].equals("R"))
-							rarity[i] = "Rare";
-						if(splitSet[1].equals("M"))
-							rarity[i] = "Mythic";
-					}catch (ArrayIndexOutOfBoundsException ex) {
-						ex.printStackTrace();
-					}
-				}
-			}	
+			ArrayList<String[]> values = returnValues(cardNames);
+			queryList = cardNames;	
 			dataModel = new DefaultTableModel();
 			dataModel.setColumnCount(4);
 			dataModel.setRowCount(organizer.getAllArray().length);
@@ -608,27 +568,8 @@ public class CardOrganizer extends JFrame  {
 				    return Object.class;
 				}
 			};
-
-			for(int i = 0; i < cardNames.length; i++) {
-				dataModel.setValueAt(cardNames[i],i, 0);
-			}
-			for(int i = 0; i < cardNames.length; i++) {
-				if(rarity[i] == "Mythic") {
-					dataModel.setValueAt(mythicIcon,i, 1);
-				} else if(rarity[i] == "Rare"){
-				dataModel.setValueAt(rareIcon,i, 1); 
-				} else if(rarity[i] == "Uncommon"){
-					dataModel.setValueAt(uncommonIcon,i, 1); 
-				} else if(rarity[i] == "Common"){
-					dataModel.setValueAt(commonIcon,i, 1); 
-				}
-			}
-			for(int i = 0; i < cardNames.length; i++) {
-				dataModel.setValueAt(stringSet[i],i, 2);
-			}
-			for(int i = 0; i < cardNames.length; i++) {
-				dataModel.setValueAt(stringOwned[i],i, 3);
-			}
+			
+			refreshTable(cardNames, values);
 
 			JScrollPane scrollList = new JScrollPane(table);
 			p4.add(scrollList);
@@ -1417,115 +1358,6 @@ public class CardOrganizer extends JFrame  {
 					refreshCardValues();
 				}
 			});
-
-			set.addItemListener(new ItemListener() {
-				@Override
-				public void itemStateChanged(ItemEvent e) {
-					isSet = true;
-					String sel = (String) set.getSelectedItem();
-					if(sel.equals("Choose Set")) {
-						if(isMyCards == true) {
-							viewMyCards();
-							query();
-							return; }
-						else {
-							viewAll();
-							query();
-							return; 
-						}
-					}
-					if(sel.equals("Return to Ravnica"))
-						sel = "RTR-";
-					if(sel.equals("Gatecrash"))
-						sel = "GTC-";
-					if(sel.equals("Dragon's Maze"))
-						sel = "DGM-";
-					if(sel.equals("Innistrad"))
-						sel = "ISD-";
-					if(sel.equals("Dark Ascension"))
-						sel = "DKA-";
-					if(sel.equals("Avacyn Restored"))
-						sel = "AVR-";
-					String[] all = null;
-					try {
-						all = organizer.getSet(sel);
-					} catch (InvalidKeyException e1) {
-						e1.printStackTrace();
-					}
-					if(isMyCards == true) {
-						ArrayList<String> arr = new ArrayList<String>();
-						String[] mine = organizer.getAllArray();
-						for(int i = 0; i < mine.length; i++) {
-							try {
-								if(organizer.getCard(mine[i]).rarity.contains(sel))
-									arr.add(mine[i]);
-							} catch (Exception ex) {
-								//ex.printStackTrace(); //Not quite sure what is going wrong here buuut its small as far as I can tell
-							}
-						}
-						all = new String[arr.size()];
-						arr.toArray(all);
-					}
-					if(owned == -1 && color.equals("n") && type1.equals("n") && type2.equals("n") 
-							&& power == -1 && toughness == -1 && rarityC.equals("n") && tribal.equals("n")) {
-						queryL = all;
-					} else {		
-						try {
-							all = organizer.query(all, color, power,toughness,owned, type1, type2, rarityC, tribal, cardText, name);
-							queryL = all;
-						} catch (InvalidKeyException e1) {
-							e1.printStackTrace();
-						}
-					}
-					ArrayList<String[]> values = returnValues(all);
-					String[] stringOwned = values.get(0);
-					String[] rarity = values.get(1);
-					int currentRows = dataModel.getRowCount();
-					for(int i = 0; i < all.length - currentRows ; i++) { //add appropriate number of rows
-						dataModel.addRow(new Object[]{"","",""});
-					}
-					refreshTable(all, values); 
-					int toRemove = dataModel.getRowCount() - all.length;
-					for(int i = 0; i < toRemove; i++) { // remove excess rows
-						if(dataModel.getRowCount() > 3)
-							dataModel.removeRow(dataModel.getRowCount() - 1);
-					}
-				}
-			});
-
-			//query button listener and table refresher
-			goQuery.addActionListener(new ActionListener() {
-				@SuppressWarnings({ "rawtypes", "unused", "unchecked" })
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					try {
-						queryList = organizer.query(queryL, color, power,toughness,owned, type1, type2, rarityC, tribal, cardText, name);
-					} catch (InvalidKeyException e1) {
-						e1.printStackTrace();
-					}
-					java.util.Arrays.sort(queryList);
-					isQuery = true;
-					ArrayList<Integer> ownedList = new ArrayList();
-					if(owned == -1 && color.equals("n") && type1.equals("n") && type2.equals("n") 
-							&& power == -1 && toughness == -1 && rarityC.equals("n") && tribal.equals("n")) { //if no input for query
-						//Do nothing. I know this is probably a horrible way to do this...
-					}else {
-						ArrayList<String[]> values = returnValues(queryList);
-						String[] stringOwned = values.get(0);
-						String[] rarity = values.get(1);
-						int toRemove = dataModel.getRowCount() - queryList.length; //get # of rows to remove which = current rowCount - querylist length
-						for(int i = 0; i < toRemove; i++) {
-							if(dataModel.getRowCount() > 2)
-								dataModel.removeRow(dataModel.getRowCount() - 1);
-						}	
-						int toAdd = queryList.length - dataModel.getRowCount(); //get # of rows to add if previously within shorter query = qList length - rowCount
-						for(int i = 0; i < toAdd; i++)
-							dataModel.addRow(new Object[]{"","",""});
-
-						refreshTable(queryList, values);
-					}
-				}
-			});
 			
 			/**
 			 * Removing cards from queries inside of sets, removing cards from queries inside of all cards
@@ -1686,13 +1518,7 @@ public class CardOrganizer extends JFrame  {
 				@SuppressWarnings("unchecked")
 				@Override
 				public void actionPerformed(ActionEvent e) {
-//					if( enterC != true) {
-//						try { //set new owned number to JLabel
-//							ownedNum.setText(Integer.toString(organizer.getCard(selected).getOwned()));
-//						} catch (InvalidKeyException e3) {
-//							e3.printStackTrace();
-//						}}
-					if(enterC == true) { //wouldn't this make the previous redundant?
+					if(enterC == true) { //use textbox string if checked
 						selected = textBox.getText();
 					}
 					try {
@@ -1701,26 +1527,17 @@ public class CardOrganizer extends JFrame  {
 					} catch (InvalidKeyException e1) {
 						e1.printStackTrace();
 					}
-
 					//determine if all view and refresh
 					if(isQuery != true) {
 						String[] allList = organizer.getAllArray(); //replaced queryL
 						ArrayList<String[]> values = returnValues(allList);
 						String[] stringOwned = values.get(0);
 						String[] rarity = values.get(1);
-						try {
-							if(organizer.getCard(selected).owned == 1)
-								dataModel.addRow(new Object[]{"","",""}); //only add row if card didn't exist yet
-						} catch (InvalidKeyException e1) {
-							e1.printStackTrace();
-						}
-						refreshTable(allList, values);
 						if(isMyCards == true)
 							viewMyCards(); 
 						else
 							viewAll();
-						//determine if query view and refresh
-					} else if(isQuery == true) {
+					} else if(isQuery == true) { 	//determine if query view and refresh
 						try {
 							queryList = organizer.query(queryL, color, power,toughness,owned, type1, type2, rarityC, tribal, cardText, name);
 						} catch (InvalidKeyException e2) {
@@ -1730,114 +1547,29 @@ public class CardOrganizer extends JFrame  {
 						ArrayList<String[]> values = returnValues(queryList);
 						String[] stringOwned = values.get(0);
 						String[] rarity = values.get(1);
-						try { //I might want to consider making a viewQuery method too.
-							if(organizer.getCard(selected).owned == 1)
-								dataModel.addRow(new Object[]{"","",""});
-						} catch (InvalidKeyException e1) {
-							e1.printStackTrace();
-						}
 						refreshTable(queryList, values);
-						try {
-							selected = (String) table.getValueAt(table.getSelectedRow(), 0);
-						} catch (ArrayIndexOutOfBoundsException e1) {
-							e1.printStackTrace();
-						}
-						try {
-							ownedNum.setText(Integer.toString(organizer.getCard(selected).getOwned()));
-							price.setText(organizer.getCard(selected).price);
-						} catch (InvalidKeyException e3) {
-							e3.printStackTrace();
-						}
 					}
 				}
 			});
-
-			mycards.addActionListener(new ActionListener() {
+			
+			mycards.addActionListener(new ActionListener() { //refreshes table to your collection
 				@Override
 				public void actionPerformed(ActionEvent actionEvent) {
-					queryL = organizer.getAllArray();
-					isQuery = false;
-					isMyCards = true;
-					isSet = false;
-					String[] all = organizer.getAllArray();
-					if(owned == -1 && color.equals("n") && type1.equals("n") && type2.equals("n") 
-							&& power == -1 && toughness == -1 && rarityC.equals("n") && tribal.equals("n")  && cardText.equals("n") && name.equals("n") && isSet != true) { 
-						//do nothing
-					} else {
-						try {
-							all = organizer.query(all, color, power,toughness,owned, type1, type2, rarityC, tribal, cardText, name);
-						} catch (InvalidKeyException e) {
-							e.printStackTrace();
-						}
-					}
-					ArrayList<String[]> values = returnValues(all);
-					String[] stringOwned = values.get(0);
-					String[] rarity = values.get(1);
-					int currentRows = dataModel.getRowCount();
-					for(int i = 0; i < organizer.getAllArray(). length - currentRows ; i++) { //add appropriate number of rows
-						dataModel.addRow(new Object[]{"","",""});
-					}
-					refreshTable(all, values);
-					int toRemove = dataModel.getRowCount() - all.length;
-					for(int i = 0; i < toRemove; i++) {
-						if(dataModel.getRowCount() > 3)
-							dataModel.removeRow(dataModel.getRowCount() - 1);
-					}
-					try {
-						selected = (String) table.getValueAt(table.getSelectedRow(), 0);
-					}catch (Exception ex) {
-						//ex.printStackTrace();
-					}
-					try {
-						label.setIcon(organizer.getCard(selected).getImg());
-					} catch (InvalidKeyException e) {
-						//e.printStackTrace();
-					} catch (IOException e) {
-						//e.printStackTrace();
-					}
-					table.requestFocusInWindow();
+					viewMyCards();
 				}
 			});
 
-			allcards.addActionListener(new ActionListener() {
+			allcards.addActionListener(new ActionListener() { //refreshes table to complete database
 				@Override
 				public void actionPerformed(ActionEvent actionEvent) {
-					queryL = organizer.getCategory("cD");
-					isQuery = false;
-					isMyCards = false;
-					isSet = false;
-					String[] all = organizer.getCategory("cD");
-					if(owned == -1 && color.equals("n") && type1.equals("n") && type2.equals("n") 
-							&& power == -1 && toughness == -1 && rarityC.equals("n") && tribal.equals("n")  && cardText.equals("n") && name.equals("n") && isSet != true) { 
-						//do nothing
-					} else {
-						try {
-							all = organizer.query(all, color, power,toughness,owned, type1, type2, rarityC, tribal, cardText, name);
-						} catch (InvalidKeyException e) {
-							e.printStackTrace();
-						}
-					}
-					ArrayList<String[]> values = returnValues(all);
-					String[] stringOwned = values.get(0);
-					String[] rarity = values.get(1);
-					int currentRows = dataModel.getRowCount();
-					for(int i = 0; i < organizer.getCategory("cD"). length - currentRows ; i++) { //add appropriate number of rows
-						dataModel.addRow(new Object[]{"","",""});
-					}
-					refreshTable(all, values);
-					try {
-						selected = (String) table.getValueAt(table.getSelectedRow(), 0);
-					}catch (Exception ex) {
-						//ex.printStackTrace();
-					}
-					try {
-						label.setIcon(organizer.getCard(selected).getImg());
-					} catch (InvalidKeyException e) {
-						//e.printStackTrace();
-					} catch (IOException e) {
-						//e.printStackTrace();
-					}
-					table.requestFocusInWindow();
+					viewAll();
+				}
+			});
+
+			set.addItemListener(new ItemListener() { //refreshes table to query the current table by set
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+					viewSet();
 				}
 			});
 
@@ -1987,6 +1719,7 @@ public class CardOrganizer extends JFrame  {
 	 */
 	public void refreshCardValues() {
 		table.requestFocusInWindow();
+		if(selected != null) {
 		try {
 			selected = (String) table.getValueAt(table.getSelectedRow(), 0);
 		} catch (ArrayIndexOutOfBoundsException e1) {
@@ -2004,6 +1737,7 @@ public class CardOrganizer extends JFrame  {
 			price.setText(organizer.getCard(selected).price);
 		} catch (Exception ex) {
 			ex.printStackTrace();
+		}
 		}
 	}
 	/**
@@ -2041,7 +1775,17 @@ public class CardOrganizer extends JFrame  {
 		String[] stringSet = l.get(0);
 		String[] rarity = l.get(1);
 		String[] owned = l.get(2);
-
+		
+		int toRemove = dataModel.getRowCount() - queryList.length; //get # of rows to remove which = current rowCount - querylist length
+		for(int i = 0; i < toRemove; i++) {
+			if(dataModel.getRowCount() > 2)
+				dataModel.removeRow(dataModel.getRowCount() - 1);
+		}	
+		int toAdd = queryList.length - dataModel.getRowCount(); //get # of rows to add if previously within shorter query = qList length - rowCount
+		for(int i = 0; i < toAdd; i++)
+			dataModel.addRow(new Object[]{"","",""});
+		
+		
 		for(int i = 0; i < dataModel.getRowCount(); i++) {
 			dataModel.setValueAt(null,i, 0);
 		}
@@ -2075,6 +1819,7 @@ public class CardOrganizer extends JFrame  {
 			dataModel.setValueAt(owned[i],i, 3);
 		}
 		table.repaint(); 
+		refreshCardValues();
 	}
 
 	/**
@@ -2158,7 +1903,8 @@ public class CardOrganizer extends JFrame  {
 		isQuery = true;
 		ArrayList<Integer> ownedList = new ArrayList();
 		if(owned == -1 && color.equals("n") && type1.equals("n") && type2.equals("n") 
-				&& power == -1 && toughness == -1 && rarityC.equals("n") && tribal.equals("n") && cardText.equals("n") && name.equals("n") && isSet != true) { //if no input for query
+				&& power == -1 && toughness == -1 && rarityC.equals("n") && tribal.equals("n") 
+				&& cardText.equals("n") && name.equals("n") && isSet != true) { //if no input for query
 			if (isMyCards == true) {
 				viewMyCards();
 			} else if(isSet == true) {
@@ -2178,75 +1924,46 @@ public class CardOrganizer extends JFrame  {
 			int toAdd = queryList.length - dataModel.getRowCount(); //get # of rows to add if previously within shorter query = qList length - rowCount
 			for(int i = 0; i < toAdd; i++)
 				dataModel.addRow(new Object[]{"","",""});
-
 			refreshTable(queryList, values);
-			try {
-				selected = (String) table.getValueAt(table.getSelectedRow(), 0);
-			} catch (Exception ex) {
-				selected = (String) table.getValueAt(0, 0);
-				//ex.printStackTrace();//do nothing since there is no selected row
-			}
-			try {
-				label.setIcon(organizer.getCard(selected).getImg());
-			} catch (Exception e1) {
-				//e1.printStackTrace(); //nor image file for it
-			}	
+			refreshCardValues();	
 		}
 	}
+	
+	/**
+	 * Refresh table to your collection
+	 */
 	public void viewMyCards() {
 		queryL = organizer.getAllArray();
 		isQuery = false;
 		isMyCards = true;
 		isSet = false;
-		try {
-			selected = (String) table.getValueAt(table.getSelectedRow(), 0);
-		} catch (ArrayIndexOutOfBoundsException e1) {
-			e1.printStackTrace();
-		}
-		try {
-			ownedNum.setText(Integer.toString(organizer.getCard(selected).getOwned()));
-			price.setText(organizer.getCard(selected).price);
-		} catch (InvalidKeyException e3) {
-			e3.printStackTrace();
-		}
-		String[] all = organizer.getAllArray();
-		ArrayList<String[]> values = returnValues(all);
+		String[] my = organizer.getAllArray();
+		queryList = my;
+		ArrayList<String[]> values = returnValues(my);
 		String[] stringOwned = values.get(0);
 		String[] rarity = values.get(1);
-		int currentRows = dataModel.getRowCount();
-		for(int i = 0; i < organizer.getAllArray(). length - currentRows ; i++) { //add appropriate number of rows
-			dataModel.addRow(new Object[]{"","",""});
-		}
-		refreshTable(all, values);
-		int toRemove = dataModel.getRowCount() - all.length;
-		for(int i = 0; i < toRemove; i++) {
-			if(dataModel.getRowCount() > 3)
-				dataModel.removeRow(dataModel.getRowCount() - 1);
-		}
+		refreshTable(my, values);
 	}
 
+	/**
+	 * Refresh table to entire database
+	 */
 	public void viewAll() {
 		queryL = organizer.getCategory("cD");
 		isQuery = false;
 		isMyCards = false;
 		isSet = false;
-		try {
-			ownedNum.setText(Integer.toString(organizer.getCard(selected).getOwned()));
-			price.setText(organizer.getCard(selected).price);
-		} catch (InvalidKeyException e3) {
-			e3.printStackTrace();
-		}
 		String[] all = organizer.getCategory("cD");
+		queryList = all;
 		ArrayList<String[]> values = returnValues(all);
 		String[] stringOwned = values.get(0);
 		String[] rarity = values.get(1);
-		int currentRows = dataModel.getRowCount();
-		for(int i = 0; i < organizer.getCategory("cD"). length - currentRows ; i++) { //add appropriate number of rows
-			dataModel.addRow(new Object[]{"","",""});
-		}
 		refreshTable(all, values);
 	}
 
+	/**
+	 * Query current table by set
+	 */
 	public void viewSet() {
 		isSet = true;
 		String sel = (String) set.getSelectedItem();
@@ -2268,7 +1985,7 @@ public class CardOrganizer extends JFrame  {
 		} catch (InvalidKeyException e1) {
 			e1.printStackTrace();
 		}
-		if(isMyCards == true) {
+		if(isMyCards == true) { //skims your collection
 			ArrayList<String> arr = new ArrayList<String>();
 			String[] mine = organizer.getAllArray();
 			for(int i = 0; i < mine.length; i++) {
@@ -2296,5 +2013,6 @@ public class CardOrganizer extends JFrame  {
 			if(dataModel.getRowCount() > 3)
 				dataModel.removeRow(dataModel.getRowCount() - 1);
 		}
+		refreshCardValues();
 	}
 }
