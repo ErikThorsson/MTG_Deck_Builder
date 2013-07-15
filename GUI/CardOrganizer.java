@@ -147,12 +147,11 @@ public class CardOrganizer extends JFrame  {
 	private DefaultTableModel dataModel2;
 	private JTable table;
 	private JTable table2;
-	private ArrayList<String[]> rarityArrays = new ArrayList<String[]>();
+	//private ArrayList<String[]> rarityArrays = new ArrayList<String[]>();
 	private CollectionMethods organizer = new CollectionMethods();
 	private boolean isRemoved;
 	private JScrollPane scrollList;
 	private JScrollPane scrollQuery;
-	private String[] queryL;
 	private JLabel label = new JLabel();
 	private JLabel ownedL = new JLabel("Owned: ");
 	private JLabel ownedNum = new JLabel("0");
@@ -169,7 +168,6 @@ public class CardOrganizer extends JFrame  {
 	private ImageIcon rareIcon = new ImageIcon();		  
 	private ImageIcon uncommonIcon = new ImageIcon();		  
 	private ImageIcon commonIcon = new ImageIcon();	
-	private String textString;
 
 	public static void main(String[] args) throws InvalidKeyException, IOException, AWTException {
 		new CardOrganizer();
@@ -216,7 +214,6 @@ public class CardOrganizer extends JFrame  {
 			d.weighty = 1;
 			mainList.add(new JPanel(), d);
 
-			queryL = organizer.getAllArray();
 			String home = System.getProperty("user.home");
 
 			//use mac menu bar
@@ -315,7 +312,6 @@ public class CardOrganizer extends JFrame  {
 			JPanel p2 = new JPanel(new GridBagLayout());
 			scrollQuery = new JScrollPane(p2);
 
-			JTextField t = new JTextField();
 			d.fill = GridBagConstraints.HORIZONTAL;
 			d.weightx = 1.0;
 			d.gridwidth = 1;
@@ -426,7 +422,6 @@ public class CardOrganizer extends JFrame  {
 			typeBox2.add(land);
 			typeBox2.add(planeswalker);
 			typeBox2.setPreferredSize(new Dimension(0,20));
-			JPanel typeBox3 = new JPanel(new GridLayout(1,1));
 
 			//type buttons
 			JLabel typeL = new JLabel("Type:");
@@ -511,6 +506,7 @@ public class CardOrganizer extends JFrame  {
 			d.gridx =2;
 			//decks.setPreferredSize(new Dimension(0,70));
 			dB.add(decks,d);
+			@SuppressWarnings("unused")
 			JLabel dL = new JLabel("Deck Building:");
 			d.gridx = 0;
 			d.gridy = 0;
@@ -560,6 +556,7 @@ public class CardOrganizer extends JFrame  {
 				public boolean isCellEditable(int row, int column) {                
 					return false;  
 				};
+				@SuppressWarnings({ "unchecked", "rawtypes" })
 				@Override
 				public Class getColumnClass(int columnIndex) {
 				    if(columnIndex == 1){
@@ -825,18 +822,8 @@ public class CardOrganizer extends JFrame  {
 			table.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "Enter");
 			table.getActionMap().put("Enter", new AbstractAction() {
 				@Override
-				public void actionPerformed(ActionEvent ae) {
-					try {
-						ownedNum.setText(Integer.toString(organizer.getCard(selected).getOwned()));
-					} catch (InvalidKeyException e3) {
-						e3.printStackTrace();
-					}
-					try {
-						selected = (String) table.getValueAt(table.getSelectedRow(), 0);
-					} catch (ArrayIndexOutOfBoundsException ex) {
-						selected = textBox.getText();
-					}
-					if(isText == true) {
+				public void actionPerformed(ActionEvent e) {
+					if(enterC == true) { //use textbox string if checked
 						selected = textBox.getText();
 					}
 					try {
@@ -845,43 +832,15 @@ public class CardOrganizer extends JFrame  {
 					} catch (InvalidKeyException e1) {
 						e1.printStackTrace();
 					}
-
-					//determine if all view and refresh
+					//determine view and refresh
 					if(isQuery != true) {
-						String[] allList = queryL;
-						ArrayList<String[]> values = returnValues(allList);
-						String[] stringOwned = values.get(0);
-						String[] rarity = values.get(1);
-						try {
-							if(organizer.getCard(selected).owned == 1)
-								dataModel.addRow(new Object[]{"","",""}); //only add row if card doesn't exist yet
-						} catch (InvalidKeyException e1) {
-							e1.printStackTrace();
-						}
-						refreshTable(allList, values);
 						if(isMyCards == true)
 							viewMyCards(); 
 						else
 							viewAll();
-						//determine if query view and refresh
-					} else if(isQuery == true) {
-						try {
-							queryList = organizer.query(queryL, color, power,toughness,owned, type1, type2, rarityC, tribal, cardText, name);
-						} catch (InvalidKeyException e2) {
-							e2.printStackTrace();
-						}
-						@SuppressWarnings("unchecked")
+					} else if(isQuery == true) { 	//determine if query view and refresh
 						ArrayList<String[]> values = returnValues(queryList);
-						String[] stringOwned = values.get(0);
-						String[] rarity = values.get(1);
-						try {
-							if(organizer.getCard(selected).owned == 1)
-								dataModel.addRow(new Object[]{"","",""});
-						} catch (InvalidKeyException e1) {
-							e1.printStackTrace();
-						}
 						refreshTable(queryList, values);
-
 					}
 				}
 			});
@@ -946,7 +905,6 @@ public class CardOrganizer extends JFrame  {
 					if(buttonSelected == false)
 						power = -1;
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -959,7 +917,6 @@ public class CardOrganizer extends JFrame  {
 					if(buttonSelected == false)
 						power = -1;
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -972,7 +929,6 @@ public class CardOrganizer extends JFrame  {
 					if(buttonSelected == false)
 						power = -1;
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -985,7 +941,6 @@ public class CardOrganizer extends JFrame  {
 					if(buttonSelected == false)
 						power = -1;
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -998,7 +953,6 @@ public class CardOrganizer extends JFrame  {
 					if(buttonSelected == false)
 						power = -1;
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -1011,7 +965,6 @@ public class CardOrganizer extends JFrame  {
 					if(buttonSelected == false)
 						power = -1;
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -1024,7 +977,6 @@ public class CardOrganizer extends JFrame  {
 					if(buttonSelected == false)
 						power = -1;
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -1037,7 +989,6 @@ public class CardOrganizer extends JFrame  {
 					if(buttonSelected == false)
 						toughness = -1;
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -1051,7 +1002,6 @@ public class CardOrganizer extends JFrame  {
 					if(buttonSelected == false)
 						toughness = -1;
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -1065,7 +1015,6 @@ public class CardOrganizer extends JFrame  {
 					if(buttonSelected == false)
 						toughness = -1;
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -1079,7 +1028,6 @@ public class CardOrganizer extends JFrame  {
 					if(buttonSelected == false)
 						toughness = -1;
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -1093,7 +1041,6 @@ public class CardOrganizer extends JFrame  {
 					if(buttonSelected == false)
 						toughness = -1;
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -1107,7 +1054,6 @@ public class CardOrganizer extends JFrame  {
 					if(buttonSelected == false)
 						toughness = -1;
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -1121,7 +1067,6 @@ public class CardOrganizer extends JFrame  {
 					if(buttonSelected == false)
 						toughness = -1;
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -1134,7 +1079,6 @@ public class CardOrganizer extends JFrame  {
 					if(buttonSelected == false)
 						type2 = "n";
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -1147,7 +1091,6 @@ public class CardOrganizer extends JFrame  {
 					if(buttonSelected == false)
 						type2 = "n";
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -1160,7 +1103,6 @@ public class CardOrganizer extends JFrame  {
 					if(buttonSelected == false)
 						type2 = "n";
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -1173,7 +1115,6 @@ public class CardOrganizer extends JFrame  {
 					if(buttonSelected == false)
 						type2 = "n";
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -1186,7 +1127,6 @@ public class CardOrganizer extends JFrame  {
 					if(buttonSelected == false)
 						type2 = "n";
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -1199,7 +1139,6 @@ public class CardOrganizer extends JFrame  {
 					if(buttonSelected == false)
 						type2 = "n";
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -1212,7 +1151,6 @@ public class CardOrganizer extends JFrame  {
 					if(buttonSelected == false)
 						type2 = "n";
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -1225,7 +1163,6 @@ public class CardOrganizer extends JFrame  {
 					if(redSelected == false)
 						color = "n";
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -1238,7 +1175,6 @@ public class CardOrganizer extends JFrame  {
 					if(whiteSelected == false)
 						color = "n";
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -1251,7 +1187,6 @@ public class CardOrganizer extends JFrame  {
 					if(blueSelected == false)
 						color = "n";
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -1264,7 +1199,6 @@ public class CardOrganizer extends JFrame  {
 					if(greenSelected == false)
 						color = "n";
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -1277,7 +1211,6 @@ public class CardOrganizer extends JFrame  {
 					if(blackSelected == false)
 						color = "n";
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -1290,7 +1223,6 @@ public class CardOrganizer extends JFrame  {
 					if(colorlessSelected == false)
 						color = "n";
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -1303,7 +1235,6 @@ public class CardOrganizer extends JFrame  {
 					if(multiSelected == false)
 						color = "n";
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -1316,7 +1247,6 @@ public class CardOrganizer extends JFrame  {
 					if(buttonSelected == false)
 						rarityC = "n";
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -1329,7 +1259,6 @@ public class CardOrganizer extends JFrame  {
 					if(buttonSelected == false)
 						rarityC = "n";
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -1342,7 +1271,6 @@ public class CardOrganizer extends JFrame  {
 					if(buttonSelected == false)
 						rarityC = "n";
 					query();
-					refreshCardValues();
 				}
 			});
 
@@ -1355,167 +1283,60 @@ public class CardOrganizer extends JFrame  {
 					if(buttonSelected == false)
 						rarityC = "n";
 					query();
-					refreshCardValues();
 				}
 			});
 			
-			/**
-			 * Removing cards from queries inside of sets, removing cards from queries inside of all cards
-			 *  and querying after removing inside a query do no work for some reason
-			 *  
-			 *  HOWEVER, removing inside my cards, all cards, set cards, and queries inside of my cards do work
-			 */
 			removeCard.addActionListener(new ActionListener() {
-				@SuppressWarnings("unchecked")
 				@Override
 				public void actionPerformed(ActionEvent e) {			
 					isRemoved = false;
-					if( enterC != true) {
-						try { //set new owned number to JLabel
-							int owned = (organizer.getCard(selected).getOwned()) - 1;
-							ownedNum.setText(Integer.toString(owned));
-						} catch (InvalidKeyException e3) {
-							e3.printStackTrace();
-						}}
 					if(enterC == true) { 
 						selected = textBox.getText();
 					}
-					try {
-						if (isMyCards == true && organizer.getCard(selected).owned == 1) 
-							isRemoved = true;
-					} catch (InvalidKeyException e1) {
-						e1.printStackTrace();
-					}
-					//deals with complete database keeping cards with zero and my cards deleting the cards
-					try {
-						if (organizer.getCard(selected).owned == 1)
-							organizer.removeCard(selected, "cD");
-						if(selected != null && isMyCards == true) {
-							organizer.removeCard(selected);
-						} else
-							organizer.removeCard(selected);
-					} catch (NullPointerException ex) {
-						ex.printStackTrace();
-					} catch (InvalidKeyException e1) {
-						e1.printStackTrace();
-					}
-					//attempt at refreshing #owned
-					try {
-						ownedNum.setText(Integer.toString(organizer.getCard(selected).getOwned()));
-					} catch (InvalidKeyException e2) {
-						e2.printStackTrace();
-					}
-					String[] all2 = organizer.getCategory("cD");
-					ArrayList<String[]> values2 = returnValues(all2);
-					refreshTable(all2, returnValues(all2));
-
-					//give it the right String[] to refresh
 					if(isMyCards == true) {
-						if(isSet == false && isQuery == false)
-							queryL = organizer.getAllArray();
-						if (isSet == true && isQuery == false) {
-							String sel = (String) set.getSelectedItem();
-							if(sel.equals("Return to Ravnica"))
-								sel = "RTR-";
-							if(sel.equals("Gatecrash"))
-								sel = "GTC-";
-							if(sel.equals("Dragon's Maze"))
-								sel = "DGM-";
-							if(sel.equals("Innistrad"))
-								sel = "ISD-";
-							if(sel.equals("Dark Ascension"))
-								sel = "DKA-";
-							if(sel.equals("Avacyn Restored"))
-								sel = "AVR-";
-							String[] all = null;
-							try {
-								all = organizer.getSet(sel);
-							} catch (InvalidKeyException e1) {
-								e1.printStackTrace();
-							}
-							if(isMyCards == true) {
-								ArrayList<String> arr = new ArrayList<String>();
-								String[] mine = organizer.getAllArray();
-								for(int i = 0; i < mine.length; i++) {
-									try {
-										if(organizer.getCard(mine[i]).rarity.contains(sel))
-											arr.add(mine[i]);
-									} catch (Exception ex) {
-										//ex.printStackTrace(); //Not quite sure what is going wrong here buuut its small as far as I can tell
-									}
-								}
-								all = new String[arr.size()];
-								arr.toArray(all);
-							}
-							queryL = all;
-						} else if (isQuery == true) {
-							try {
-								queryList = organizer.query(queryL, color, power,toughness,owned, type1, type2, rarityC, tribal, cardText, name);
-							} catch (InvalidKeyException e1) {
-								e1.printStackTrace();
-							}
-							queryL = queryList;
-						}
-					} else {
-						if(isSet == false && isQuery == false) {
-							queryL = organizer.getCategory("cD");
-							if (isSet == true && isQuery == false) {
-								String sel = (String) set.getSelectedItem();
-								if(sel.equals("Return to Ravnica"))
-									sel = "RTR-";
-								if(sel.equals("Gatecrash"))
-									sel = "GTC-";
-								if(sel.equals("Dragon's Maze"))
-									sel = "DGM-";
-								if(sel.equals("Innistrad"))
-									sel = "ISD-";
-								if(sel.equals("Dark Ascension"))
-									sel = "DKA-";
-								if(sel.equals("Avacyn Restored"))
-									sel = "AVR-";
-								String[] all = null;
+						if(selected != null)
+							organizer.removeCard(selected, "root");
+						if(isQuery == true) {
+							ArrayList<String> filterOwned = new ArrayList<String>(); //filters out owned = 0 cards 
+							for (int i = 0; i < queryList.length; i++) {
+								Card card = null;
 								try {
-									all = organizer.getSet(sel);
-								} catch (InvalidKeyException e1) {
-									e1.printStackTrace();
+									card = organizer.getCard(queryList[i]);
+								} catch (InvalidKeyException e2) {
+									e2.printStackTrace();
 								}
-								if(isMyCards == true) {
-									ArrayList<String> arr = new ArrayList<String>();
-									String[] mine = organizer.getAllArray();
-									for(int i = 0; i < mine.length; i++) {
-										try {
-											if(organizer.getCard(mine[i]).rarity.contains(sel))
-												arr.add(mine[i]);
-										} catch (Exception ex) {
-											//ex.printStackTrace(); //Not quite sure what is going wrong here buuut its small as far as I can tell
-										}
-									}
-									all = new String[arr.size()];
-									arr.toArray(all);
-								}
-								queryL = all;
-							} else if (isQuery == true) {
-								try {
-									queryList = organizer.query(queryL, color, power,toughness,owned, type1, type2, rarityC, tribal, cardText, name);
-								} catch (InvalidKeyException e1) {
-									e1.printStackTrace();
-								}
-								queryL = queryList;
-							} 
+								if(card.owned != 0)
+									filterOwned.add(queryList[i]);
+							}
+							String[] myCards = new String[filterOwned.size()];
+							filterOwned.toArray(myCards);
+							queryList = myCards;
+							ArrayList<String[]> values = returnValues(queryList);
+							refreshTable(queryList, values);
+							return;
 						}
+					viewMyCards();
 					}
-					String[] allList = queryL;
-					ArrayList<String[]> values = returnValues(allList);
-					if(isRemoved == true && dataModel.getRowCount() > 2) { // remove one row if there is no longer a card unless there are only 2 rows
-						dataModel.removeRow(1);							   // 2 rows because you need to joggle the selected row to toggle the image...Lazy I know...Will look into it.
+					if(isMyCards != true) {
+						if(selected != null)
+							organizer.removeCard(selected, "cD");
+						if(isQuery == true) {
+							try {
+								queryList = organizer.query(queryList, color, power,toughness,owned, type1, type2, rarityC, tribal, cardText, name);
+							} catch (InvalidKeyException e2) {
+								e2.printStackTrace();
+							}
+							ArrayList<String[]> values = returnValues(queryList);
+							refreshTable(queryList, values);
+							return;
+							}
+						viewAll(); 
 					}
-					refreshTable(allList, values);
 				}
 			});
 
 
 			addCard.addActionListener(new ActionListener() {
-				@SuppressWarnings("unchecked")
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					if(enterC == true) { //use textbox string if checked
@@ -1527,26 +1348,14 @@ public class CardOrganizer extends JFrame  {
 					} catch (InvalidKeyException e1) {
 						e1.printStackTrace();
 					}
-					//determine if all view and refresh
+					//determine view and refresh
 					if(isQuery != true) {
-						String[] allList = organizer.getAllArray(); //replaced queryL
-						ArrayList<String[]> values = returnValues(allList);
-						String[] stringOwned = values.get(0);
-						String[] rarity = values.get(1);
 						if(isMyCards == true)
 							viewMyCards(); 
 						else
 							viewAll();
 					} else if(isQuery == true) { 	//determine if query view and refresh
-						try {
-							queryList = organizer.query(queryL, color, power,toughness,owned, type1, type2, rarityC, tribal, cardText, name);
-						} catch (InvalidKeyException e2) {
-							e2.printStackTrace();
-						}
-						@SuppressWarnings("unchecked")
 						ArrayList<String[]> values = returnValues(queryList);
-						String[] stringOwned = values.get(0);
-						String[] rarity = values.get(1);
 						refreshTable(queryList, values);
 					}
 				}
@@ -1661,23 +1470,7 @@ public class CardOrganizer extends JFrame  {
 					}
 					isText = false;
 					if(selected != null) {
-						try {
-							ownedNum.setText(Integer.toString(organizer.getCard(selected).getOwned()));
-							price.setText(organizer.getCard(selected).price);
-						} catch (Exception ex) {
-							ex.printStackTrace();
-						}
-						try{
-							try {
-								label.setIcon(organizer.getCard(selected).getImg());
-							} catch (MalformedURLException e1) {
-								e1.printStackTrace();
-							} catch (IOException e2) {
-								e2.printStackTrace();
-							}
-						} catch (InvalidKeyException i2) {
-							i2.printStackTrace();
-						}
+						refreshCardValues();
 					}
 				}
 			});
@@ -1691,23 +1484,7 @@ public class CardOrganizer extends JFrame  {
 					}
 					isText = false;
 					if(selected != null) {
-						try {
-							ownedNum.setText(Integer.toString(organizer.getCard(selected).getOwned()));
-							price.setText(organizer.getCard(selected).price);
-						} catch (Exception ex) {
-							ex.printStackTrace();
-						}
-						try{
-							try {
-								label.setIcon(organizer.getCard(selected).getImg());
-							} catch (MalformedURLException e1) {
-								e1.printStackTrace();
-							} catch (IOException e2) {
-								e2.printStackTrace();
-							}
-						} catch (InvalidKeyException i2) {
-							i2.printStackTrace();
-						}
+						refreshCardValues();
 					}
 				}
 			});
@@ -1718,12 +1495,14 @@ public class CardOrganizer extends JFrame  {
 	 * Refresh card values (price/owned/icon)
 	 */
 	public void refreshCardValues() {
+		if(isText!= true) {
 		table.requestFocusInWindow();
+		}
 		if(selected != null) {
 		try {
 			selected = (String) table.getValueAt(table.getSelectedRow(), 0);
 		} catch (ArrayIndexOutOfBoundsException e1) {
-			e1.printStackTrace();
+			e1.printStackTrace(); //this will not be selected at times which is ok
 		}
 		try {
 			label.setIcon(organizer.getCard(selected).getImg());
@@ -1785,7 +1564,6 @@ public class CardOrganizer extends JFrame  {
 		for(int i = 0; i < toAdd; i++)
 			dataModel.addRow(new Object[]{"","",""});
 		
-		
 		for(int i = 0; i < dataModel.getRowCount(); i++) {
 			dataModel.setValueAt(null,i, 0);
 		}
@@ -1829,7 +1607,7 @@ public class CardOrganizer extends JFrame  {
 	 * @return
 	 */
 	public ArrayList<String[]> returnValues(String[] s) {
-		ArrayList<Integer> ownedList = new ArrayList();
+		ArrayList<Integer> ownedList = new ArrayList<Integer>();
 		String[] category = s;
 		for( int i = 0; i < category.length; i++) {
 			try {
@@ -1891,39 +1669,36 @@ public class CardOrganizer extends JFrame  {
 	/**
 	 * Refreshes table with query
 	 */
-	public void query() {
-		if(isSet == true)
-			viewSet();
+	public void query() {		
+		isQuery = true;
+		String[] querySet = null;
+		String[] myCards = organizer.getAllArray();
+		String[] allCards = organizer.getCategory("cD");
+		if(isSet == true) {
+			querySet = queryList;
+		} else if(isMyCards) {
+			querySet = myCards;
+		} else 
+			querySet = allCards;
 		try {
-			queryList = organizer.query(queryL, color, power,toughness,owned, type1, type2, rarityC, tribal, cardText, name);
+			queryList = organizer.query(querySet, color, power,toughness,owned, type1, type2, rarityC, tribal, cardText, name);
 		} catch (Exception e1) {
 			e1.printStackTrace();
-		}
+			}
 		java.util.Arrays.sort(queryList);
-		isQuery = true;
-		ArrayList<Integer> ownedList = new ArrayList();
 		if(owned == -1 && color.equals("n") && type1.equals("n") && type2.equals("n") 
 				&& power == -1 && toughness == -1 && rarityC.equals("n") && tribal.equals("n") 
-				&& cardText.equals("n") && name.equals("n") && isSet != true) { //if no input for query
+				&& cardText.equals("n") && name.equals("n")) { //if no input for query
+			isQuery = false;
 			if (isMyCards == true) {
 				viewMyCards();
 			} else if(isSet == true) {
 				viewSet();
 			} else {
 				viewAll();
-			}	
+			}
 		} else {
 			ArrayList<String[]> values = returnValues(queryList);
-			String[] stringOwned = values.get(0);
-			String[] rarity = values.get(1);
-			int toRemove = dataModel.getRowCount() - queryList.length; //get # of rows to remove which = current rowCount - querylist length
-			for(int i = 0; i < toRemove; i++) {
-				if(dataModel.getRowCount() > 2)
-					dataModel.removeRow(dataModel.getRowCount() - 1);
-			}	
-			int toAdd = queryList.length - dataModel.getRowCount(); //get # of rows to add if previously within shorter query = qList length - rowCount
-			for(int i = 0; i < toAdd; i++)
-				dataModel.addRow(new Object[]{"","",""});
 			refreshTable(queryList, values);
 			refreshCardValues();	
 		}
@@ -1931,33 +1706,57 @@ public class CardOrganizer extends JFrame  {
 	
 	/**
 	 * Refresh table to your collection
+	 * @throws InvalidKeyException 
 	 */
 	public void viewMyCards() {
-		queryL = organizer.getAllArray();
-		isQuery = false;
 		isMyCards = true;
 		isSet = false;
-		String[] my = organizer.getAllArray();
-		queryList = my;
-		ArrayList<String[]> values = returnValues(my);
-		String[] stringOwned = values.get(0);
-		String[] rarity = values.get(1);
-		refreshTable(my, values);
+		String[] my = null;
+		if(isQuery != true) {
+			my = organizer.getAllArray();
+		} else {
+		try {
+			my = organizer.query(organizer.getCategory("cD"), color, power,toughness,owned, type1, type2, rarityC, tribal, cardText, name);
+		} catch (InvalidKeyException e) {
+			e.printStackTrace();
+			}
+		}
+		ArrayList<String> filterOwned = new ArrayList<String>();
+		for (int i = 0; i < my.length; i++) {
+			Card card = null;
+			try {
+				card = organizer.getCard(my[i]);
+			} catch (InvalidKeyException e) {
+				e.printStackTrace();
+			}
+			if(card.owned != 0)
+				filterOwned.add(my[i]);
+		}
+		String[] myCards = new String[filterOwned.size()];
+		filterOwned.toArray(myCards);
+		queryList = myCards;
+		ArrayList<String[]> values = returnValues(myCards);
+		refreshTable(myCards, values);
 	}
 
 	/**
 	 * Refresh table to entire database
 	 */
 	public void viewAll() {
-		queryL = organizer.getCategory("cD");
-		isQuery = false;
 		isMyCards = false;
 		isSet = false;
-		String[] all = organizer.getCategory("cD");
+		String[] all = null;
+		if(isQuery != true) {
+			all = organizer.getCategory("cD");
+		} else {
+			try {
+				all = organizer.query(organizer.getCategory("cD"), color, power,toughness,owned, type1, type2, rarityC, tribal, cardText, name);
+			} catch (InvalidKeyException e) {
+				e.printStackTrace();
+			}
+		}
 		queryList = all;
 		ArrayList<String[]> values = returnValues(all);
-		String[] stringOwned = values.get(0);
-		String[] rarity = values.get(1);
 		refreshTable(all, values);
 	}
 
@@ -1999,20 +1798,8 @@ public class CardOrganizer extends JFrame  {
 			all = new String[arr.size()];
 			arr.toArray(all);
 		}
-		queryL = all;
+		queryList = all;
 		ArrayList<String[]> values = returnValues(all);
-		String[] stringOwned = values.get(0);
-		String[] rarity = values.get(1);
-		int currentRows = dataModel.getRowCount();
-		for(int i = 0; i < all.length - currentRows ; i++) { //add appropriate number of rows
-			dataModel.addRow(new Object[]{"","",""});
-		}
 		refreshTable(all, values);
-		int toRemove = dataModel.getRowCount() - all.length;
-		for(int i = 0; i < toRemove; i++) { // remove excess rows
-			if(dataModel.getRowCount() > 3)
-				dataModel.removeRow(dataModel.getRowCount() - 1);
-		}
-		refreshCardValues();
 	}
 }

@@ -42,7 +42,6 @@ public class Automate {
 		Card card = new Card();
 		int count = 0;
 		for(int i = 0; i < arr.size(); i++) {
-			//if(arr.get(i).rarity.contains(s)) {
 				card = arr.get(i);
 				card.imgURL = getImgURL(card.name);
 				arr2.add(card);
@@ -50,7 +49,6 @@ public class Automate {
 				if(count % 50 == 0) {
 					this.formatCards();
 				}
-			//}
 		}
 
 	}

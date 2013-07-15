@@ -46,7 +46,7 @@ public class CollectionMethods extends BasicTree {
 	public static void main(String[] args) throws InvalidKeyException, IOException {
 		CollectionMethods test = new CollectionMethods();
 				test.loadCompleteDatabase();
-				//test.printNameAndPrice();
+				test.printNameAndPrice();
 				String[] s = test.getCategory("green");
 				//String[] t = test.query("n", "green");
 						//test.query(s, "n", -1, -1, -1, "n", "n", "n", "n", "n", "Centaur's Herald");
@@ -190,25 +190,21 @@ public class CollectionMethods extends BasicTree {
 //			setOwned(s, ((Card)MTG.get(s)).owned + 1, MTG);
 //			return;
 //		}
-//		try {
-//			if(card.type2 == "land") {
-//				land.put(card.name, card);
-//				card.owned =+ 1;
-//				return;
-//			}
-//		}catch (Exception e) {
-//			e.printStackTrace();
-//			return;
-//		}
+		try {
+			if(card.type2 == "land") {
+				land.put(card.name, card);
+				card.owned =+ 1;
+				return;
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
 		
 		MTG.put(card.name, card);
 		CompleteDatabase.put(card.name, card);
-//		try{
-//		//System.out.println(card.color);
-//		}catch (Exception ex) {
-//			//
-//		}
 		spells.put(card.name, card);
+		
 		if(card.color!= null) {
 		if(card.color.equals("red")) {
 			red.put(card.name, card);
@@ -331,7 +327,6 @@ public class CollectionMethods extends BasicTree {
 	@SuppressWarnings("unchecked")
 	public void addCard(String s) throws InvalidKeyException {
 		Card card = (Card) CompleteDatabase.get(s);
-//
 		if(MTG.get(s) != null) { //increases owned by one if not owned 
 			setOwned(s, ((Card)MTG.get(s)).owned + 1, MTG);
 			return;
@@ -546,6 +541,8 @@ public class CollectionMethods extends BasicTree {
 		if(owned >= 1) {
 			setOwned(s, owned - 1, ht);
 		}
+		if(owned == 1 && h.equals("root"))
+			MTG.remove(s);
 	}
 	//returns a list of entries given a hashtable
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -1525,7 +1522,7 @@ public class CollectionMethods extends BasicTree {
 			try {
 			card.setPrice(split[1]);
 			}catch (Exception e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
         }
 	}
