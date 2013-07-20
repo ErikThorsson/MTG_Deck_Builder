@@ -1,20 +1,28 @@
 package GUI;
 
 import java.awt.AWTException;
+import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Insets;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -76,6 +84,8 @@ public class CardOrganizer extends JFrame  {
 	private JToggleButton black = new JToggleButton("B");
 	private JToggleButton colorless = new JToggleButton("Cl");
 	private JToggleButton multi = new JToggleButton("Mc");
+	private JToggleButton and = new JToggleButton("And");
+	private JToggleButton or  = new JToggleButton("Or");
 	private JToggleButton common = new JToggleButton("C");
 	private JToggleButton uncommon = new JToggleButton("U");
 	private JToggleButton rare = new JToggleButton("R");
@@ -147,7 +157,6 @@ public class CardOrganizer extends JFrame  {
 	private DefaultTableModel dataModel2;
 	private JTable table;
 	private JTable table2;
-	//private ArrayList<String[]> rarityArrays = new ArrayList<String[]>();
 	private CollectionMethods organizer = new CollectionMethods();
 	private boolean isRemoved;
 	private JScrollPane scrollList;
@@ -168,7 +177,38 @@ public class CardOrganizer extends JFrame  {
 	private ImageIcon rareIcon = new ImageIcon();		  
 	private ImageIcon uncommonIcon = new ImageIcon();		  
 	private ImageIcon commonIcon = new ImageIcon();	
+	private ImageIcon blackIcon = new ImageIcon();
+	private ImageIcon greenIcon = new ImageIcon();	
+	private ImageIcon blueIcon = new ImageIcon();
+	private ImageIcon redIcon = new ImageIcon();
+	private ImageIcon whiteIcon = new ImageIcon();
+	private ImageIcon oneIcon = new ImageIcon();
+	private ImageIcon twoIcon = new ImageIcon();
+	private ImageIcon threeIcon = new ImageIcon();
+	private ImageIcon fourIcon = new ImageIcon();
+	private ImageIcon fiveIcon = new ImageIcon();
+	private ImageIcon sixIcon = new ImageIcon();
+	private ImageIcon sevenIcon = new ImageIcon();
+	private ImageIcon eightIcon = new ImageIcon();
+	private ImageIcon nineIcon = new ImageIcon();
+	private ImageIcon tenIcon = new ImageIcon();
+	private ImageIcon elevenIcon = new ImageIcon();
+	private ImageIcon bgIcon = new ImageIcon();
+	private ImageIcon buIcon = new ImageIcon();
+	private ImageIcon brIcon = new ImageIcon();
+	private ImageIcon bwIcon = new ImageIcon();
+	private ImageIcon ugIcon = new ImageIcon();
+	private ImageIcon urIcon = new ImageIcon();
+	private ImageIcon uwIcon = new ImageIcon();
+	private ImageIcon wgIcon = new ImageIcon();
+	private ImageIcon wrIcon = new ImageIcon();
+	private ImageIcon grIcon = new ImageIcon();
 
+	String[][] deckList = new String[1][1];
+	ArrayList<Card> creatures = new ArrayList<Card>();
+	String home = System.getProperty("user.home");
+
+	
 	public static void main(String[] args) throws InvalidKeyException, IOException, AWTException {
 		new CardOrganizer();
 	}
@@ -206,15 +246,13 @@ public class CardOrganizer extends JFrame  {
 			setLayout(new BorderLayout());
 
 			mainList = new JPanel(new GridBagLayout());
-			mainList.setPreferredSize(new Dimension(250, 553));
+			mainList.setPreferredSize(new Dimension(250, 590));
 
 			GridBagConstraints d = new GridBagConstraints();
 			d.gridwidth = GridBagConstraints.REMAINDER;
 			d.weightx = 1;
 			d.weighty = 1;
 			mainList.add(new JPanel(), d);
-
-			String home = System.getProperty("user.home");
 
 			//use mac menu bar
 			try{
@@ -239,6 +277,8 @@ public class CardOrganizer extends JFrame  {
 			multi = new JToggleButton(new ImageIcon(home + "/Desktop/multi.png"));
 			green = new JToggleButton(new ImageIcon(home + "/Desktop/green.png"));
 			
+			
+			
 			//rarity icons and buttons	private JToggleButton common = new JToggleButton("C");
 			mythicIcon = new ImageIcon(home + "/Desktop/mythic.png");
 			rareIcon = new ImageIcon(home + "/Desktop/rare.png");		  
@@ -248,7 +288,32 @@ public class CardOrganizer extends JFrame  {
 			uncommon = new JToggleButton(uncommonIcon);
 			rare = new JToggleButton(rareIcon);
 			mythic = new JToggleButton(mythicIcon);
-
+			blackIcon = new ImageIcon(home + "/Desktop/Icons/black_mana.gif");
+			greenIcon = new ImageIcon(home + "/Desktop/Icons/green_mana.gif");
+			blueIcon = new ImageIcon(home + "/Desktop/Icons/blue_mana.gif");
+			whiteIcon = new ImageIcon(home + "/Desktop/Icons/white_mana.gif");
+			oneIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_1_mana.gif");
+			twoIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_2_mana.gif");
+			threeIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_3_mana.gif");
+			fourIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_4_mana.gif");
+			fiveIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_5_mana.gif");
+			sixIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_6_mana.gif");
+			sevenIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_7_mana.gif");
+			eightIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_8_mana.gif");
+			nineIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_9_mana.gif");
+			tenIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_10_mana.gif");
+			elevenIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_11_mana.gif");
+			bgIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_BG_mana.gif");
+			buIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_UB_mana.gif");
+			brIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_BR_mana.gif");
+			bwIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_WB_mana.gif");
+			ugIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_GU_mana.gif");
+			urIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_UR_mana.gif");
+			uwIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_WU_mana.gif");
+			wgIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_GW_mana.gif");
+			wrIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_RW_mana.gif");
+			grIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_RG_mana.gif");
+			
 			//Create the menu bar.
 			menuBar = new JMenuBar();
 
@@ -392,6 +457,9 @@ public class CardOrganizer extends JFrame  {
 			JPanel panel2 = new JPanel(new GridBagLayout());
 			panel2.setBorder(new MatteBorder(0, 0, 1, 0, Color.GRAY));
 			JLabel colors = new JLabel("Color:");
+			JPanel andOr = new JPanel(new GridLayout(1,2));
+			andOr.add(and);
+			andOr.add(or);
 			JPanel colorBox = new JPanel(new GridLayout(1,7));
 			colorBox.add(red);
 			colorBox.add(blue);
@@ -407,6 +475,9 @@ public class CardOrganizer extends JFrame  {
 			d.gridx = 0;
 			d.gridy = 1;
 			panel2.add(colorBox,d);
+			d.gridx = 0;
+			d.gridy = 2;
+			panel2.add(andOr, d);
 
 			//type Jtoggle buttons
 			JPanel panel3 = new JPanel(new GridBagLayout());
@@ -547,9 +618,9 @@ public class CardOrganizer extends JFrame  {
 			ArrayList<String[]> values = returnValues(cardNames);
 			queryList = cardNames;	
 			dataModel = new DefaultTableModel();
-			dataModel.setColumnCount(4);
+			dataModel.setColumnCount(5);
 			dataModel.setRowCount(organizer.getAllArray().length);
-			dataModel.setColumnIdentifiers(new String[]{"Name", "Rarity", "Set", "Owned"});
+			dataModel.setColumnIdentifiers(new String[]{"Name", "CMC", "Type", "Rarity", "Set", "Owned"});
 			table = new JTable(dataModel) {
 				private static final long serialVersionUID = 1L;
 				@Override
@@ -559,13 +630,16 @@ public class CardOrganizer extends JFrame  {
 				@SuppressWarnings({ "unchecked", "rawtypes" })
 				@Override
 				public Class getColumnClass(int columnIndex) {
-				    if(columnIndex == 1){
+				    if(columnIndex == 1 || columnIndex == 3){
 				        return ImageIcon.class;
 				    }
 				    return Object.class;
 				}
 			};
-			
+			//table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+			table.getColumnModel().getColumn(0).setPreferredWidth(150);
+//			table.getColumnModel().getColumn(2).setPreferredWidth(1);
+
 			refreshTable(cardNames, values);
 
 			JScrollPane scrollList = new JScrollPane(table);
@@ -600,7 +674,7 @@ public class CardOrganizer extends JFrame  {
 			c.fill = GridBagConstraints.BOTH;
 			scroll.setPreferredSize(new Dimension(300, 503));
 			JPanel queryContainer = new JPanel(new GridBagLayout());
-			queryContainer.setPreferredSize(new Dimension(320, 380));
+			queryContainer.setPreferredSize(new Dimension(300, 470));
 			queryContainer.add(scroll, c);
 			JPanel try2 = new JPanel();
 			try2.add(queryContainer);
@@ -616,9 +690,7 @@ public class CardOrganizer extends JFrame  {
 			c.fill = GridBagConstraints.BOTH;
 			c.gridx = 1;
 			c.gridy = 0;
-			//scrollList.setPreferredSize(new Dimension(680,384));
 			JPanel box = new JPanel(new GridBagLayout());
-			//box.setPreferredSize(new Dimension(660,384));
 			c.weightx = 10;
 			c.weighty = 10;
 			c.anchor = GridBagConstraints.PAGE_START;
@@ -627,36 +699,26 @@ public class CardOrganizer extends JFrame  {
 			
 			//make deck builder window
 			JPanel deck = new JPanel(new GridBagLayout());
-			//deck.setPreferredSize(new Dimension(1400, 410));
+			deck.setPreferredSize(new Dimension(1400, 310));
+			p3.setPreferredSize(new Dimension(1400, 490));
 			
 			dataModel2 = new DefaultTableModel();
 			dataModel2.setColumnCount(2);
-			dataModel2.setRowCount(organizer.getAllArray().length);
+			dataModel2.setRowCount(0);
 			dataModel2.setColumnIdentifiers(new String[]{"Creatures", "#"});
-			dataModel2.setValueAt("Goblin Electromancer", 0, 0);
-			dataModel2.setValueAt("Dreg Mangler", 1, 0);
-			dataModel2.setValueAt("Taunting Elf", 2, 0);
+
 			DefaultTableModel dataModel3 = new DefaultTableModel();
 			dataModel3.setColumnCount(2);
-			dataModel3.setRowCount(organizer.getAllArray().length);
+			dataModel3.setRowCount(0);
 			dataModel3.setColumnIdentifiers(new String[]{"Spells", "#"});
-			dataModel3.setValueAt("Giant Growth", 0, 0);
-			dataModel3.setValueAt("Shock", 1, 0);
-			dataModel3.setValueAt("Glorious Anthem", 2, 0);
 			DefaultTableModel dataModel4 = new DefaultTableModel();
 			dataModel4.setColumnCount(2);
-			dataModel4.setRowCount(organizer.getAllArray().length);
+			dataModel4.setRowCount(0);
 			dataModel4.setColumnIdentifiers(new String[]{"Land", "#"});
-			dataModel4.setValueAt("Vault of the Archangel", 0, 0);
-			dataModel4.setValueAt("Dragonskull Summit", 1, 0);
-			dataModel4.setValueAt("Drowning Pool", 2, 0);
 			DefaultTableModel dataModel5 = new DefaultTableModel();
 			dataModel4.setColumnCount(2);
-			dataModel5.setRowCount(organizer.getAllArray().length);
+			dataModel5.setRowCount(0);
 			dataModel5.setColumnIdentifiers(new String[]{"Side Board", "#"});
-			dataModel5.setValueAt("Bllllllaarrrrrrg", 0, 0);
-			dataModel5.setValueAt("I'm quite bad", 1, 0);
-			dataModel5.setValueAt("Suntail Hooplah", 2, 0);
 
 			table2 = new JTable(dataModel2) {
 				private static final long serialVersionUID = 1L;
@@ -710,40 +772,17 @@ public class CardOrganizer extends JFrame  {
 			b.gridx = 3;
 			deck.add(scrollList5, b);
 			
-			//frame and add top and bottom
-			JPanel test = new JPanel();
-			test.setPreferredSize(new Dimension(1400, 400));
-			JPanel frame = new JPanel(new GridBagLayout());
-			frame.setPreferredSize(new Dimension(1400, 800));
+			//deckbuild and query Panel
 			GridBagConstraints g = new GridBagConstraints();
 			g.anchor = GridBagConstraints.PAGE_START;
-			g.fill = GridBagConstraints.BOTH;
-			g.weightx = 1;
-			g.weighty = 1;
-			g.gridx = 0;
-			g.gridy = 0;
-			g.ipady = -275;      //make this component tall
-			frame.add(p3,g);
-			g.weightx = 0;
-			g.weighty = 0;
-			g.gridx = 1;
-			frame.add(label,g);
-			g.gridx = 0;
-			g.ipady = 0;      //make this component tall
-			g.weightx = 1;
-			g.gridwidth =3;
-			g.weighty = 1;
-			g.gridy = 1;
-			g.ipady =1;
-			g.fill = GridBagConstraints.BOTH;
-			frame.add(deck, g);
-			
-			//deckbuild and query Panel
+			g.fill = GridBagConstraints.BOTH;			
 			JPanel topBottom = new JPanel(new GridBagLayout());
-			topBottom.setPreferredSize(new Dimension(1300, 800));
+			g.weightx = 1;
+			g.weighty = 1;
+			g.gridwidth =3;
 			g.gridx = 0;
 			g.gridy = 0;
-			g.ipady = 60;      
+			g.ipady = 140;      
 			topBottom.add(p3, g);
 			g.gridy = 1;
 			g.ipady = 0; 
@@ -751,72 +790,78 @@ public class CardOrganizer extends JFrame  {
 			g.ipady = 0; 
 			g.gridx = 0;
 			g.gridy = 0;
-			g.weightx = 1;
-			g.weighty = 1;
-			//g.fill = GrigBagConstraints.BOTH;
-			//frame.add(topBottom, g);
 			
 			//card view panel
 			JPanel cardV = new JPanel(new GridBagLayout());
-			g.insets = new Insets(0,35,30,-50);
+			//g.insets = new Insets(0,35,40,-50);
 			g.gridx = 0;
 			g.gridy = 0;
-			g.weightx = 1;
-			g.weighty = 1;
-			cardV.add(label, g);
+			g.anchor = GridBagConstraints.PAGE_START;
+			JPanel collectionVal = new JPanel(new GridBagLayout());
 			g.insets = new Insets(0,0,0,0);
-			notes.setPreferredSize(new Dimension(0, 280));
+			collectionVal.add(collectionV, g);
+			g.insets = new Insets(0,110,0,0);
+			collectionVal.add(mSign,g);
+			//d.ipady = 1;
+			g.insets = new Insets(0,120,0,0);
+			priceCollection();
+			collectionVal.add(collectionValue, g);
+			g.insets = new Insets(0,0,0,0);
+			cardV.add(collectionVal, g);
 			g.gridy = 1;
-			cardV.add(notes,g);
-			JLabel notesL = new JLabel("Notes:");
-			g.insets = new Insets(380,0,0,0);
-			g.gridx = 2;
+			cardV.add(label, g);
+//			g.insets = new Insets(0,0,0,0);
+//			d.gridx = 2;
+//			d.gridy = 0;
+//			d.insets = new Insets(347,0,0,0);
+			JPanel ownedBox = new JPanel(new GridBagLayout());
 			g.gridy = 0;
-			cardV.add(notesL, g);
+			ownedBox.add(ownedL, g);
+			g.insets = new Insets(0,55,0,0);
+			ownedNum.setFont(new Font("Serif", Font.PLAIN, 36));
+			ownedBox.add(ownedNum, g);
+			//g.gridx = 1;
+			g.insets = new Insets(0,90,0,0);
+			ownedBox.add(priceL, g);
+			//g.gridx = 1;
+			g.insets = new Insets(0,105,0,0);
+			ownedBox.add(price, g);
 			g.insets = new Insets(0,0,0,0);
-			
+			g.gridy = 2;
+			cardV.add(ownedBox, g);
+			JLabel notesL = new JLabel("Notes:");
+			g.gridx = 0;
+			g.gridy = 3;
+			cardV.add(notesL, g);
+			notes.setPreferredSize(new Dimension(0, 280));
+			g.gridy = 4;
+			cardV.add(notes,g);
+		
 			//combine tB and cV
 			JPanel combine = new JPanel(new GridBagLayout());
 			g.fill = GridBagConstraints.BOTH;
+			g.weightx = 1;
+			g.weighty = 1;
 			g.gridx = 0;
 			g.gridy = 0;
 			g.gridwidth = 1;
-			g.weightx = 8;
-			combine.add(topBottom, g);
+			topBottom.setPreferredSize(new Dimension(880, 800));
+			JPanel try3 = new JPanel();
+			try3.add(topBottom);
+			add(try3);
+			g.anchor = GridBagConstraints.FIRST_LINE_START;
+			combine.add(try3, g);
 			g.gridx = 1;
-			g.weightx = 1;
+			g.weightx = 0;
+			g.weighty = 0;
+			g.ipadx = 1;
 			combine.add(cardV, g);
-			
+//			JPanel cardImage = new JPanel();
+//			cardImage.add(label);
+//			cardImage.setPreferredSize(new Dimension(500, 500));
+//			resizeImage(500, 500);
+//			add(cardImage);
 			add(combine);
-			//add(frame);
-			
-			//owned and price
-			d.gridx = 2;
-			d.gridy = 0;
-			d.insets = new Insets(347,0,0,0);
-			cardV.add(ownedL, d);
-			d.gridx = 2;
-			d.insets = new Insets(340,55,0,0);
-			ownedNum.setFont(new Font("Serif", Font.PLAIN, 36));
-			cardV.add(ownedNum, d);
-			d.gridx = 2;
-			d.insets = new Insets(340,90,0,0);
-			cardV.add(priceL, d);
-			d.gridx = 2;
-			d.insets = new Insets(340,105,0,0);
-			cardV.add(price, d);
-			d.gridx = 2;
-			d.insets = new Insets(0,0,0,0);
-			cardV.add(collectionV, d);
-			d.insets = new Insets(0,110,0,0);
-			cardV.add(mSign,d);
-			d.ipady = 1;
-			d.insets = new Insets(5,120,0,0);
-			priceCollection();
-			cardV.add(collectionValue, d);
-			p3.setPreferredSize(new Dimension(1400, 395));
-			p3.setBorder(new MatteBorder(0, 0, 1, 0, Color.GRAY));
-
 			
 			//remaps ENTER key in JTable to addCard()
 			table.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "Enter");
@@ -1342,6 +1387,7 @@ public class CardOrganizer extends JFrame  {
 					if(enterC == true) { //use textbox string if checked
 						selected = textBox.getText();
 					}
+					if(deckCheck!= true){
 					try {
 						if(selected != null)
 							organizer.addCard(selected);
@@ -1357,6 +1403,15 @@ public class CardOrganizer extends JFrame  {
 					} else if(isQuery == true) { 	//determine if query view and refresh
 						ArrayList<String[]> values = returnValues(queryList);
 						refreshTable(queryList, values);
+					}
+					} else {
+						organizer.addCardToDeck(selected);
+						creatures = organizer.entries("deckCreatures");
+						try{
+							refreshCreatureTable();
+						}catch (Exception e2) {
+							e2.printStackTrace();
+						}
 					}
 				}
 			});
@@ -1492,6 +1547,130 @@ public class CardOrganizer extends JFrame  {
 	}
 	
 	/**
+	 * Return a combined icon 
+	 */
+	
+	public Icon iconCombine(String s) {
+		ArrayList<Icon> CMC = new ArrayList<Icon>();
+		if(s != null) {
+		for(int i = 0; i< s.length(); i++) {
+			if(String.valueOf(s.charAt(i)).equals("1"))
+				CMC.add(oneIcon);
+			if(String.valueOf(s.charAt(i)).equals("2"))
+				CMC.add(twoIcon);
+			if(String.valueOf(s.charAt(i)).equals("3"))
+				CMC.add(threeIcon);
+			if(String.valueOf(s.charAt(i)).equals("4"))
+				CMC.add(fourIcon);
+			if(String.valueOf(s.charAt(i)).equals("5"))
+				CMC.add(fiveIcon);
+			if(String.valueOf(s.charAt(i)).equals("6"))
+				CMC.add(sixIcon);
+			if(String.valueOf(s.charAt(i)).equals("7"))
+				CMC.add(sevenIcon);
+			if(String.valueOf(s.charAt(i)).equals("8"))
+				CMC.add(eightIcon);
+			if(String.valueOf(s.charAt(i)).equals("9"))
+				CMC.add(nineIcon);
+			if(String.valueOf(s.charAt(i)).equals("10"))
+				CMC.add(tenIcon);
+			if(String.valueOf(s.charAt(i)).equals("11"))
+				CMC.add(elevenIcon);
+			if(String.valueOf(s.charAt(i)).equals("R"))
+				CMC.add(redIcon);
+			if(String.valueOf(s.charAt(i)).equals("W"))
+				CMC.add(whiteIcon);
+			if(String.valueOf(s.charAt(i)).equals("U"))
+				CMC.add(blueIcon);
+			if(String.valueOf(s.charAt(i)).equals("B"))
+				CMC.add(blackIcon);
+			if(String.valueOf(s.charAt(i)).equals("G"))
+				CMC.add(greenIcon);
+			if(String.valueOf(s.charAt(i)).equals("(")) {
+				String multi = "(";
+				for(int j = 1; j < 5; j++) {
+					multi+=String.valueOf(s.charAt(i +j));
+				}
+				if(multi.equals("(r/w)"))
+					CMC.add(wrIcon);
+				if(multi.equals("(r/g)"))
+					CMC.add(grIcon);
+				if(multi.equals("(w/b)"))
+					CMC.add(bwIcon);
+				if(multi.equals("(w/u)"))
+					CMC.add(uwIcon);
+				if(multi.equals("(b/r)"))
+					CMC.add(brIcon);
+				if(multi.equals("(b/g)"))
+					CMC.add(bgIcon);
+				if(multi.equals("(u/r)"))
+					CMC.add(urIcon);
+				if(multi.equals("(u/b)"))
+					CMC.add(buIcon);
+				if(multi.equals("(g/w)"))
+					CMC.add(wgIcon);
+				if(multi.equals("(g/u)"))
+					CMC.add(ugIcon);
+				i+=4;
+				}
+			}
+		}
+		Icon[] icons = new Icon[CMC.size()];
+		CMC.toArray(icons);
+		Icon icon = new CompoundIcon(icons);
+		return icon;
+	}
+	/**
+	 * Icon to image
+	 * @param icon
+	 * @return
+	 */
+	static Image iconToImage(Icon icon) {
+		   if (icon instanceof ImageIcon) {
+		      return ((ImageIcon)icon).getImage();
+		   } 
+		   else {
+		      int w = icon.getIconWidth();
+		      int h = icon.getIconHeight();
+		      GraphicsEnvironment ge = 
+		        GraphicsEnvironment.getLocalGraphicsEnvironment();
+		      GraphicsDevice gd = ge.getDefaultScreenDevice();
+		      GraphicsConfiguration gc = gd.getDefaultConfiguration();
+		      BufferedImage image = gc.createCompatibleImage(w, h);
+		      Graphics2D g = image.createGraphics();
+		      icon.paintIcon(null, g, 0, 0);
+		      g.dispose();
+		      return image;
+		   }
+		 }
+	
+	/**
+	 * we want the x and o to be resized when the JFrame is resized
+	 */
+	public void resizeImage(int biggerWidth, int biggerHeight) throws InvalidKeyException, IOException {
+	    int type = BufferedImage.TYPE_INT_ARGB;
+
+	    BufferedImage resizedImage = new BufferedImage(biggerWidth, biggerHeight, type);
+	    Graphics2D g = resizedImage.createGraphics();
+
+	    g.setComposite(AlphaComposite.Src);
+	    g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+	    g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+	    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	    
+	    ImageIcon icon = new ImageIcon(ImageIO.read(new File(home +"/Desktop/VCO/Pictures Try 2/" + "card_back" + ".jpg")));
+	    Image card = iconToImage(icon);
+	    g.drawImage(card, 0, 0, biggerWidth, biggerHeight, this);
+	    g.dispose();
+	    Image image = (Image)resizedImage;
+		try {
+			label.setIcon((Icon) image);
+		} catch (Exception ex) {
+			label.setIcon(organizer.getCard("card_back").getImg());
+		}
+	}
+	
+	/**
 	 * Refresh card values (price/owned/icon)
 	 */
 	public void refreshCardValues() {
@@ -1554,13 +1733,25 @@ public class CardOrganizer extends JFrame  {
 		String[] stringSet = l.get(0);
 		String[] rarity = l.get(1);
 		String[] owned = l.get(2);
+		ArrayList<Card> cards = new ArrayList<Card>();
+		for(int i = 0; i < all.length; i++) {
+			try {
+				cards.add(organizer.getCard(all[i]));
+			} catch (InvalidKeyException e) {
+				e.printStackTrace();
+			}
+		}
+//		String[] CMC = new String[all.length];
+//		for(int i = 0; i < all.length; i++) {
+//			CMC[i] = cards.get(i).CMC;
+//		}
 		
-		int toRemove = dataModel.getRowCount() - queryList.length; //get # of rows to remove which = current rowCount - querylist length
+		int toRemove = dataModel.getRowCount() - s.length; //get # of rows to remove which = current rowCount - querylist length
 		for(int i = 0; i < toRemove; i++) {
 			if(dataModel.getRowCount() > 2)
 				dataModel.removeRow(dataModel.getRowCount() - 1);
 		}	
-		int toAdd = queryList.length - dataModel.getRowCount(); //get # of rows to add if previously within shorter query = qList length - rowCount
+		int toAdd = s.length - dataModel.getRowCount(); //get # of rows to add if previously within shorter query = qList length - rowCount
 		for(int i = 0; i < toAdd; i++)
 			dataModel.addRow(new Object[]{"","",""});
 		
@@ -1576,25 +1767,64 @@ public class CardOrganizer extends JFrame  {
 		for(int i = 0; i < dataModel.getRowCount(); i++) {
 			dataModel.setValueAt(null,i, 3);
 		}
+		for(int i = 0; i < dataModel.getRowCount(); i++) {
+			dataModel.setValueAt(null,i, 4);
+		}
+		for(int i = 0; i < dataModel.getRowCount(); i++) {
+			dataModel.setValueAt(null,i, 5);
+		}
 		for(int i = 0; i < all.length; i++) {
 			dataModel.setValueAt(all[i],i, 0);
 		}
 		for(int i = 0; i < all.length; i++) {
+			dataModel.setValueAt(iconCombine(cards.get(i).CMC),i, 1);
+		}
+		for(int i = 0; i < all.length; i++) {
+			dataModel.setValueAt(cards.get(i).type2,i, 2);
+		}
+		for(int i = 0; i < all.length; i++) {
 			if(rarity[i] == "Mythic") {
-				dataModel.setValueAt(mythicIcon,i, 1);
+				dataModel.setValueAt(mythicIcon,i, 3);
 			} else if(rarity[i] == "Rare"){
-			dataModel.setValueAt(rareIcon,i, 1); 
+			dataModel.setValueAt(rareIcon,i, 3); 
 			} else if(rarity[i] == "Uncommon"){
-				dataModel.setValueAt(uncommonIcon,i, 1); 
+				dataModel.setValueAt(uncommonIcon,i, 3); 
 			} else if(rarity[i] == "Common"){
-				dataModel.setValueAt(commonIcon,i, 1); 
+				dataModel.setValueAt(commonIcon,i, 3); 
 			}
 		}
 		for(int i = 0; i < all.length; i++) {
-			dataModel.setValueAt(stringSet[i],i, 2);
+			dataModel.setValueAt(stringSet[i],i, 4);
 		}
 		for(int i = 0; i < all.length; i++) {
-			dataModel.setValueAt(owned[i],i, 3);
+			dataModel.setValueAt(owned[i],i, 5);
+		}
+		table.repaint(); 
+		refreshCardValues();
+	}
+	
+	public void refreshCreatureTable() {
+		String[] names = new String[creatures.size()];			
+		int toRemove = dataModel2.getRowCount() - creatures.size(); //get # of rows to remove which = current rowCount - querylist length
+		for(int i = 0; i < toRemove; i++) {
+			if(dataModel2.getRowCount() > 2)
+				dataModel2.removeRow(dataModel2.getRowCount() - 1);
+		}	
+		int toAdd = creatures.size() - dataModel2.getRowCount(); //get # of rows to add if previously within shorter query = qList length - rowCount
+		for(int i = 0; i < toAdd; i++)
+			dataModel2.addRow(new Object[]{"","",""});
+		
+		for(int i = 0; i < dataModel2.getRowCount(); i++) {
+			dataModel2.setValueAt(null,i, 0);
+		}
+		for(int i = 0; i < dataModel2.getRowCount(); i++) {
+			dataModel2.setValueAt(null,i, 1);
+		}
+		for(int i = 0; i < creatures.size(); i++) {
+			dataModel2.setValueAt(creatures.get(i).name,i, 0);
+		}
+		for(int i = 0; i < names.length; i++) {
+			dataModel2.setValueAt(creatures.get(i).cardsInDeck,i, 1);
 		}
 		table.repaint(); 
 		refreshCardValues();

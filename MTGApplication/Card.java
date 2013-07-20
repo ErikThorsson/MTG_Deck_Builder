@@ -22,11 +22,17 @@ public class Card {
 	private String home = System.getProperty("user.home");
 	public String CMC;
 	public String price;
+	public int cardsInDeck;
 	
 	public Card() {}
 	
 	public Card(String s) {
 		name = s;
+	}
+	
+	public Card(String s, int i) {
+		name = s;
+		owned = i;
 	}
 
 	//certain creatures can have up to three types (permanent, creature, tribal identifier e.g. "elf")
@@ -46,6 +52,7 @@ public class Card {
 		rarity = r;
 		img = null;
 		price = "0.0";
+		cardsInDeck = 1;
 	}
 	
 	public void setOwned(int i) {

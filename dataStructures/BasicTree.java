@@ -22,6 +22,7 @@ public class BasicTree {
 	protected HashTableMap attributes = new HashTableMap(10);	
 	protected HashTableMap CompleteDatabase = new HashTableMap(500);
 	protected HashTableMap MTG = new HashTableMap(500);
+	protected HashTableMap deckCreatures = new HashTableMap(20);
 	protected HashTableMap spells = new HashTableMap(500);
 	protected HashTableMap land = new HashTableMap(500);
 	protected HashTableMap red = new HashTableMap(500);
@@ -85,6 +86,8 @@ public class BasicTree {
 		treeNodes.put("root", root);  //adds TreeNode to treeNodes hash
 		TreeNode cD = new TreeNode(CompleteDatabase);
 		treeNodes.put("cD", cD); 
+		TreeNode deckCreaturesT = new TreeNode(deckCreatures);
+		treeNodes.put("deckCreatures", deckCreaturesT); 
 		TreeNode spellsT = new TreeNode(spells);
 		treeNodes.put("spells", spellsT); 
 		TreeNode landT = new TreeNode(land);

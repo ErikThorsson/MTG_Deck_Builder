@@ -46,8 +46,10 @@ public class CollectionMethods extends BasicTree {
 	public static void main(String[] args) throws InvalidKeyException, IOException {
 		CollectionMethods test = new CollectionMethods();
 				test.loadCompleteDatabase();
-				test.printNameAndPrice();
-				String[] s = test.getCategory("green");
+				//test.printNameAndPrice();
+				//String[] s = test.getCategory("green");
+				Card card = test.getCard("Azor's Elocutors");
+				System.out.println(card.CMC);
 				//String[] t = test.query("n", "green");
 						//test.query(s, "n", -1, -1, -1, "n", "n", "n", "n", "n", "Centaur's Herald");
 //				for(int i = 0; i < s.length; i++)
@@ -178,6 +180,25 @@ public class CollectionMethods extends BasicTree {
 	}
 
 
+	/**
+	 * Adds a card to the deck
+	 */
+	public void addCardToDeck(String s) {
+	Card card = (Card) CompleteDatabase.get(s); 
+	if(deckCreatures.get(s) != null) { //increases owned by one if not owned 
+		card.cardsInDeck++;
+			return;}
+	deckCreatures.put(card.name, card);
+	}
+	
+	/**
+	 * grabs deck card
+	 */
+	
+	public Card grabDeckCard(String s) {
+		return (Card) deckCreatures.get(s);
+	}
+	
 	/**
 	 * Adds non land cards not held in database.
 	 * Looks like this is no longer needed due to the query method being so efficient. 
@@ -546,7 +567,8 @@ public class CollectionMethods extends BasicTree {
 	}
 	//returns a list of entries given a hashtable
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public ArrayList<Card> entries(HashTableMap h) {
+	public ArrayList<Card> entries(String s) {
+		HashTableMap h = (HashTableMap)((TreeNode) treeNodes.get(s)).getReference();
 		ArrayList<Card> list = h.cardEntries();
 		return list;
 	}
