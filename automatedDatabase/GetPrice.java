@@ -41,7 +41,12 @@ public class GetPrice {
 		searchBox.sendKeys(s);
 	    searchBox.sendKeys(Keys.RETURN);	
 	    String URL = driver.getCurrentUrl();
-	    String[] priceArr = readURL(URL);
+	    String[] priceArr = null;
+	    try{
+	    priceArr = readURL(URL);
+	    } catch (Exception ex) {
+		    driver.close();
+	    }
 	    String price = priceArr[0];
 	    driver.close();
 	    return price;

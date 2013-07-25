@@ -1,5 +1,7 @@
 package MTGApplication;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,6 +14,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+
 import automatedDatabase.GetPrice;
 
 import dataStructures.BasicTree;
@@ -47,13 +53,25 @@ public class CollectionMethods extends BasicTree {
 		CollectionMethods test = new CollectionMethods();
 				test.loadCompleteDatabase();
 				//test.printNameAndPrice();
-				//String[] s = test.getCategory("green");
-				Card card = test.getCard("Azor's Elocutors");
-				System.out.println(card.CMC);
+				String[] s = test.getCategory("cD");
+//				Card card = test.getCard("Azor's Elocutors");
+//				System.out.println(card.CMC);
 				//String[] t = test.query("n", "green");
 						//test.query(s, "n", -1, -1, -1, "n", "n", "n", "n", "n", "Centaur's Herald");
-//				for(int i = 0; i < s.length; i++)
-					//System.out.println(s[i]);
+				for(int i = 0; i < s.length; i++) { //tests for card picture
+					Card card = test.getCard(s[i]);
+					//System.out.println(card.name);
+					BufferedImage image = null;
+					String home = System.getProperty("user.home");
+					try {
+						String cut = card.name;
+						if(card.name.contains("//"))
+							cut = card.name.replace("//", "");
+						image = ImageIO.read(new File(home + "/Desktop/VCO/Pictures Try 2/" + cut + ".jpg"));
+					} catch (Exception ex) {
+						System.out.println(card.name);
+					}
+			}
 	}
 
 	/**
@@ -185,10 +203,22 @@ public class CollectionMethods extends BasicTree {
 	 */
 	public void addCardToDeck(String s) {
 	Card card = (Card) CompleteDatabase.get(s); 
-	if(deckCreatures.get(s) != null) { //increases owned by one if not owned 
+	if(deck.get(s) != null) { //increases owned by one if not owned 
 		card.cardsInDeck++;
 			return;}
-	deckCreatures.put(card.name, card);
+	deck.put(card.name, card);
+	card.cardsInDeck++;
+	}
+	
+	/**
+	 * removes cards
+	 */
+	public void removeCardFromDeck(String s) {
+	Card card = (Card) deck.get(s);
+	if(card.cardsInDeck > 0) { //decreases owned by one if owned 
+		card.cardsInDeck--;
+			return;}
+	deck.remove(card.name);
 	}
 	
 	/**
@@ -196,7 +226,25 @@ public class CollectionMethods extends BasicTree {
 	 */
 	
 	public Card grabDeckCard(String s) {
-		return (Card) deckCreatures.get(s);
+		return (Card) deck.get(s);
+	}
+	
+	/**
+	 * Reset deck
+	 */
+	
+	public void resetDeck(){
+		ArrayList<Card> cards = deck.cardEntries();
+		for(int i = 0; i < cards.size(); i++) {
+			Card card = cards.get(i);
+			int h = card.cardsInDeck;
+			for(int j = 0; j < h; j++) {
+				card.cardsInDeck--;
+				if(card.cardsInDeck == 0)
+					deck.remove(card.name);
+				//System.out.println(card.name + " " + card.cardsInDeck);
+			}
+		}
 	}
 	
 	/**

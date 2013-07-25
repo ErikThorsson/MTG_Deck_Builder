@@ -27,6 +27,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.security.InvalidKeyException;
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -133,7 +135,7 @@ public class CardOrganizer extends JFrame  {
 	private String tribal = "n";
 	private JMenuBar menuBar;
 	private JMenu menu;
-	private JMenuItem menuItem, menuItem2;
+	private JMenuItem menuItem, menuItem2, menuItem3, menuItem4;
 	private String[][] data; 
 	private String[] queryList;
 	private boolean isQuery = false;
@@ -155,8 +157,14 @@ public class CardOrganizer extends JFrame  {
 	private boolean deckCheck = false;
 	private DefaultTableModel dataModel;
 	private DefaultTableModel dataModel2;
+	private DefaultTableModel dataModel3;
+	private DefaultTableModel dataModel4;
+	private DefaultTableModel dataModel5;
 	private JTable table;
 	private JTable table2;
+	private JTable table3;
+	private JTable table4;
+	private JTable table5;
 	private CollectionMethods organizer = new CollectionMethods();
 	private boolean isRemoved;
 	private JScrollPane scrollList;
@@ -203,9 +211,19 @@ public class CardOrganizer extends JFrame  {
 	private ImageIcon wgIcon = new ImageIcon();
 	private ImageIcon wrIcon = new ImageIcon();
 	private ImageIcon grIcon = new ImageIcon();
-
+	private ImageIcon checkIcon = new ImageIcon();
+	private ImageIcon xIcon = new ImageIcon();
+	private ImageIcon XIcon = new ImageIcon();
 	String[][] deckList = new String[1][1];
 	ArrayList<Card> creatures = new ArrayList<Card>();
+	ArrayList<Card> spells = new ArrayList<Card>();
+	ArrayList<Card> lands = new ArrayList<Card>();
+	ArrayList<Card> sideboard = new ArrayList<Card>();
+	Boolean tableSel = false;
+	Boolean table2Sel = false;
+	Boolean table3Sel = false;
+	Boolean table4Sel = false;
+
 	String home = System.getProperty("user.home");
 
 	
@@ -292,6 +310,7 @@ public class CardOrganizer extends JFrame  {
 			greenIcon = new ImageIcon(home + "/Desktop/Icons/green_mana.gif");
 			blueIcon = new ImageIcon(home + "/Desktop/Icons/blue_mana.gif");
 			whiteIcon = new ImageIcon(home + "/Desktop/Icons/white_mana.gif");
+			redIcon = new ImageIcon(home + "/Desktop/Icons/red_mana.gif");
 			oneIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_1_mana.gif");
 			twoIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_2_mana.gif");
 			threeIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_3_mana.gif");
@@ -313,6 +332,9 @@ public class CardOrganizer extends JFrame  {
 			wgIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_GW_mana.gif");
 			wrIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_RW_mana.gif");
 			grIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_RG_mana.gif");
+			checkIcon = new ImageIcon(home + "/Desktop/Icons/rsz_check2.png");
+			xIcon = new ImageIcon(home + "/Desktop/Icons/cross16.png");
+			XIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_X_mana.gif");
 			
 			//Create the menu bar.
 			menuBar = new JMenuBar();
@@ -324,14 +346,20 @@ public class CardOrganizer extends JFrame  {
 			menuBar.add(menu);
 
 			//a group of JMenuItems
-			menuItem = new JMenuItem("Save",KeyEvent.VK_T);
+			menuItem = new JMenuItem("Save Collection",KeyEvent.VK_T);
 			menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, ActionEvent.ALT_MASK));
 			menuItem.getAccessibleContext().setAccessibleDescription("Save");
 			menu.add(menuItem);
-			menuItem2 = new JMenuItem("Backup", KeyEvent.VK_T);
+			menuItem2 = new JMenuItem("Backup Collection", KeyEvent.VK_T);
 			menuItem2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2, ActionEvent.ALT_MASK));
 			menuItem2.getAccessibleContext().setAccessibleDescription("Backup");
 			menu.add(menuItem2);
+			menuItem3 = new JMenuItem("Save Deck", KeyEvent.VK_T);
+			menu.add(menuItem3);
+			menuItem4 = new JMenuItem("Load Deck", KeyEvent.VK_T);
+			menu.add(menuItem4);
+			
+
 			setJMenuBar(menuBar);
 
 			//menuItem listener
@@ -356,6 +384,36 @@ public class CardOrganizer extends JFrame  {
 				public void actionPerformed(ActionEvent e) {
 					try {
 						organizer.backup();
+					} catch (FileNotFoundException e1) {
+						e1.printStackTrace();
+					} catch (MalformedURLException e1) {
+						e1.printStackTrace();
+					} catch (IOException e3) {
+						e3.printStackTrace();
+					}
+				}
+			});
+			
+			menuItem3.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					try {
+						saveDeck();
+					} catch (FileNotFoundException e1) {
+						e1.printStackTrace();
+					} catch (MalformedURLException e1) {
+						e1.printStackTrace();
+					} catch (IOException e3) {
+						e3.printStackTrace();
+					}
+				}
+			});
+			menuItem4.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					try {
+						String inputValue = JOptionPane.showInputDialog(null, "Enter name", "Load Deck", JOptionPane.PLAIN_MESSAGE);
+						loadDeck(inputValue);
 					} catch (FileNotFoundException e1) {
 						e1.printStackTrace();
 					} catch (MalformedURLException e1) {
@@ -630,16 +688,13 @@ public class CardOrganizer extends JFrame  {
 				@SuppressWarnings({ "unchecked", "rawtypes" })
 				@Override
 				public Class getColumnClass(int columnIndex) {
-				    if(columnIndex == 1 || columnIndex == 3){
+				    if(columnIndex == 1 || columnIndex == 3 || columnIndex == 5){
 				        return ImageIcon.class;
 				    }
 				    return Object.class;
 				}
 			};
-			//table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 			table.getColumnModel().getColumn(0).setPreferredWidth(150);
-//			table.getColumnModel().getColumn(2).setPreferredWidth(1);
-
 			refreshTable(cardNames, values);
 
 			JScrollPane scrollList = new JScrollPane(table);
@@ -706,17 +761,16 @@ public class CardOrganizer extends JFrame  {
 			dataModel2.setColumnCount(2);
 			dataModel2.setRowCount(0);
 			dataModel2.setColumnIdentifiers(new String[]{"Creatures", "#"});
-
-			DefaultTableModel dataModel3 = new DefaultTableModel();
+			dataModel3 = new DefaultTableModel();
 			dataModel3.setColumnCount(2);
 			dataModel3.setRowCount(0);
 			dataModel3.setColumnIdentifiers(new String[]{"Spells", "#"});
-			DefaultTableModel dataModel4 = new DefaultTableModel();
+			dataModel4 = new DefaultTableModel();
 			dataModel4.setColumnCount(2);
 			dataModel4.setRowCount(0);
 			dataModel4.setColumnIdentifiers(new String[]{"Land", "#"});
-			DefaultTableModel dataModel5 = new DefaultTableModel();
 			dataModel4.setColumnCount(2);
+			dataModel5 = new DefaultTableModel();
 			dataModel5.setRowCount(0);
 			dataModel5.setColumnIdentifiers(new String[]{"Side Board", "#"});
 
@@ -727,30 +781,34 @@ public class CardOrganizer extends JFrame  {
 					return false;  
 				};
 			};
+			table2.getColumnModel().getColumn(0).setPreferredWidth(150);
 			
-			JTable table3 = new JTable(dataModel3) {
+			table3 = new JTable(dataModel3) {
 				private static final long serialVersionUID = 1L;
 				@Override
 				public boolean isCellEditable(int row, int column) {                
 					return false;  
 				};
 			};
-			
-			JTable table4 = new JTable(dataModel4) {
+			table3.getColumnModel().getColumn(0).setPreferredWidth(150);
+
+			table4 = new JTable(dataModel4) {
 				private static final long serialVersionUID = 1L;
 				@Override
 				public boolean isCellEditable(int row, int column) {                
 					return false;  
 				};
 			};
-			
-			JTable table5 = new JTable(dataModel5) {
+			table4.getColumnModel().getColumn(0).setPreferredWidth(150);
+
+			table5 = new JTable(dataModel5) {
 				private static final long serialVersionUID = 1L;
 				@Override
 				public boolean isCellEditable(int row, int column) {                
 					return false;  
 				};
 			};
+			table5.getColumnModel().getColumn(0).setPreferredWidth(150);
 
 			JScrollPane scrollList2 = new JScrollPane(table2);
 			JScrollPane scrollList3 = new JScrollPane(table3);
@@ -1338,6 +1396,7 @@ public class CardOrganizer extends JFrame  {
 					if(enterC == true) { 
 						selected = textBox.getText();
 					}
+					if(deckCheck!= true){
 					if(isMyCards == true) {
 						if(selected != null)
 							organizer.removeCard(selected, "root");
@@ -1376,6 +1435,40 @@ public class CardOrganizer extends JFrame  {
 							return;
 							}
 						viewAll(); 
+						}
+					} else {
+						try{
+						organizer.removeCardFromDeck(selected);
+						for(int i = 0; i < creatures.size(); i++) {
+							if(creatures.get(i).cardsInDeck == 0)
+								creatures.remove(i);
+						}
+						for(int i = 0; i < spells.size(); i++) {
+							if(spells.get(i).cardsInDeck == 0)
+								spells.remove(i);
+						}
+						for(int i = 0; i < lands.size(); i++) {
+							if(lands.get(i).cardsInDeck == 0)
+								lands.remove(i);
+						}
+						} catch (Exception ex) {
+							//tis fine
+						}
+						try{
+							refreshDeckTable(creatures, dataModel2);
+						}catch (Exception e2) {
+							e2.printStackTrace();
+							}
+						try{
+							refreshDeckTable(spells, dataModel3);
+						}catch (Exception e2) {
+							e2.printStackTrace();
+							}
+						try{
+							refreshDeckTable(lands, dataModel4);
+						}catch (Exception e2) {
+							e2.printStackTrace();
+							}
 					}
 				}
 			});
@@ -1406,14 +1499,41 @@ public class CardOrganizer extends JFrame  {
 					}
 					} else {
 						organizer.addCardToDeck(selected);
-						creatures = organizer.entries("deckCreatures");
+						ArrayList<Card> temp = organizer.entries("deck");
+						for(int i = 0; i < temp.size(); i++) {
+							Card card = temp.get(i);
+							if(card.type2.equals("creature") && !creatures.contains(card)) {
+								creatures.add(card);
+							}
+							else if(card.type2.equals("instant") && !spells.contains(card)
+									|| card.type2.equals("sorcery") && !spells.contains(card)
+									||card.type2.equals("enchantment")&& !spells.contains(card)
+									||card.type2.equals("planeswalker")&& !spells.contains(card)) {
+								spells.add(card);
+							}
+							else if(card.type2.equals("land") && !lands.contains(card)) {
+								lands.add(card);
+							}
+//							if(card.type2.equals("creature") && !creatures.contains(card))
+//								creatures.add(card);
+						}
 						try{
-							refreshCreatureTable();
+							refreshDeckTable(creatures, dataModel2);
 						}catch (Exception e2) {
 							e2.printStackTrace();
+							}
+						try{
+							refreshDeckTable(spells, dataModel3);
+						}catch (Exception e2) {
+							e2.printStackTrace();
+							}
+						try{
+							refreshDeckTable(lands, dataModel4);
+						}catch (Exception e2) {
+							e2.printStackTrace();
+							}
 						}
 					}
-				}
 			});
 			
 			mycards.addActionListener(new ActionListener() { //refreshes table to your collection
@@ -1525,7 +1645,7 @@ public class CardOrganizer extends JFrame  {
 					}
 					isText = false;
 					if(selected != null) {
-						refreshCardValues();
+						refreshCardValues(table);
 					}
 				}
 			});
@@ -1539,7 +1659,35 @@ public class CardOrganizer extends JFrame  {
 					}
 					isText = false;
 					if(selected != null) {
-						refreshCardValues();
+						refreshCardValues(table2);
+					}
+				}
+			});
+			table3.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+				@Override
+				public void valueChanged(ListSelectionEvent e) {
+					try {
+						selected = (String) table3.getValueAt(table3.getSelectedRow(), 0);
+					} catch (ArrayIndexOutOfBoundsException e1) {
+						e1.printStackTrace();
+					}
+					isText = false;
+					if(selected != null) {
+						refreshCardValues(table3);
+					}
+				}
+			});
+			table4.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+				@Override
+				public void valueChanged(ListSelectionEvent e) {
+					try {
+						selected = (String) table4.getValueAt(table4.getSelectedRow(), 0);
+					} catch (ArrayIndexOutOfBoundsException e1) {
+						e1.printStackTrace();
+					}
+					isText = false;
+					if(selected != null) {
+						refreshCardValues(table4);
 					}
 				}
 			});
@@ -1554,6 +1702,8 @@ public class CardOrganizer extends JFrame  {
 		ArrayList<Icon> CMC = new ArrayList<Icon>();
 		if(s != null) {
 		for(int i = 0; i< s.length(); i++) {
+			if(String.valueOf(s.charAt(i)).equals("X"))
+				CMC.add(XIcon);
 			if(String.valueOf(s.charAt(i)).equals("1"))
 				CMC.add(oneIcon);
 			if(String.valueOf(s.charAt(i)).equals("2"))
@@ -1673,13 +1823,13 @@ public class CardOrganizer extends JFrame  {
 	/**
 	 * Refresh card values (price/owned/icon)
 	 */
-	public void refreshCardValues() {
-		if(isText!= true) {
-		table.requestFocusInWindow();
-		}
+	public void refreshCardValues(JTable j) {
 		if(selected != null) {
+			if(isText!= true) {
+					j.requestFocusInWindow();
+				}
 		try {
-			selected = (String) table.getValueAt(table.getSelectedRow(), 0);
+			selected = (String) j.getValueAt(j.getSelectedRow(), 0);
 		} catch (ArrayIndexOutOfBoundsException e1) {
 			e1.printStackTrace(); //this will not be selected at times which is ok
 		}
@@ -1740,12 +1890,7 @@ public class CardOrganizer extends JFrame  {
 			} catch (InvalidKeyException e) {
 				e.printStackTrace();
 			}
-		}
-//		String[] CMC = new String[all.length];
-//		for(int i = 0; i < all.length; i++) {
-//			CMC[i] = cards.get(i).CMC;
-//		}
-		
+		}	
 		int toRemove = dataModel.getRowCount() - s.length; //get # of rows to remove which = current rowCount - querylist length
 		for(int i = 0; i < toRemove; i++) {
 			if(dataModel.getRowCount() > 2)
@@ -1797,37 +1942,38 @@ public class CardOrganizer extends JFrame  {
 			dataModel.setValueAt(stringSet[i],i, 4);
 		}
 		for(int i = 0; i < all.length; i++) {
-			dataModel.setValueAt(owned[i],i, 5);
+			if(owned[i].equals("✓")) {
+				dataModel.setValueAt(checkIcon,i, 5);
+			} else
+			dataModel.setValueAt(xIcon,i, 5);
 		}
 		table.repaint(); 
-		refreshCardValues();
+		refreshCardValues(table);
 	}
 	
-	public void refreshCreatureTable() {
-		String[] names = new String[creatures.size()];			
-		int toRemove = dataModel2.getRowCount() - creatures.size(); //get # of rows to remove which = current rowCount - querylist length
+	public void refreshDeckTable(ArrayList<Card> al, DefaultTableModel m) {
+		String[] names = new String[al.size()];			
+		int toRemove = m.getRowCount() - al.size(); //get # of rows to remove which = current rowCount - querylist length
 		for(int i = 0; i < toRemove; i++) {
-			if(dataModel2.getRowCount() > 2)
-				dataModel2.removeRow(dataModel2.getRowCount() - 1);
+			if(m.getRowCount() > 2)
+				m.removeRow(m.getRowCount() - 1);
 		}	
-		int toAdd = creatures.size() - dataModel2.getRowCount(); //get # of rows to add if previously within shorter query = qList length - rowCount
+		int toAdd = al.size() - m.getRowCount(); //get # of rows to add if previously within shorter query = qList length - rowCount
 		for(int i = 0; i < toAdd; i++)
-			dataModel2.addRow(new Object[]{"","",""});
+			m.addRow(new Object[]{"","",""});
 		
-		for(int i = 0; i < dataModel2.getRowCount(); i++) {
-			dataModel2.setValueAt(null,i, 0);
+		for(int i = 0; i < m.getRowCount(); i++) {
+			m.setValueAt(null,i, 0);
 		}
-		for(int i = 0; i < dataModel2.getRowCount(); i++) {
-			dataModel2.setValueAt(null,i, 1);
+		for(int i = 0; i < m.getRowCount(); i++) {
+			m.setValueAt(null,i, 1);
 		}
-		for(int i = 0; i < creatures.size(); i++) {
-			dataModel2.setValueAt(creatures.get(i).name,i, 0);
+		for(int i = 0; i < al.size(); i++) {
+			m.setValueAt(al.get(i).name,i, 0);
 		}
 		for(int i = 0; i < names.length; i++) {
-			dataModel2.setValueAt(creatures.get(i).cardsInDeck,i, 1);
+			m.setValueAt(al.get(i).cardsInDeck,i, 1);
 		}
-		table.repaint(); 
-		refreshCardValues();
 	}
 
 	/**
@@ -1895,6 +2041,95 @@ public class CardOrganizer extends JFrame  {
 		strings.add(stringOwned);
 		return strings;
 	}
+	
+	/**
+	 * Save Deck
+	 * @throws IOException 
+	 */
+	
+	public void saveDeck() throws IOException {
+		ArrayList<String> deck = new ArrayList<String>();
+		for(int i = 0; i < creatures.size(); i++) {
+			deck.add(":" + creatures.get(i).name + ":" + creatures.get(i).cardsInDeck);
+		}
+		for(int i = 0; i < spells.size(); i++) {
+			deck.add(":" + spells.get(i).name + ":" + spells.get(i).cardsInDeck);
+		}
+		for(int i = 0; i < lands.size(); i++) {
+			deck.add(":" + lands.get(i).name + ":" + lands.get(i).cardsInDeck);
+		}
+		String s = "";
+		for(int i = 0; i < deck.size(); i++){
+			s += deck.get(i) + "\n";
+		}
+		String inputValue = JOptionPane.showInputDialog(null, "Enter name", "Save Deck", JOptionPane.PLAIN_MESSAGE);
+		File f = new File(home + "/Desktop/VCO/Decks/" + inputValue+ ".txt");
+		f.createNewFile();
+		PrintWriter out = new PrintWriter(home + "/Desktop/VCO/Decks/"+ inputValue +".txt");
+		out.print(s);
+		out.close();
+	}
+	
+	/**
+	 * Load deck
+	 * @throws IOException 
+	 */
+	public void loadDeck(String s) throws IOException {
+		StringBuilder sFile = new StringBuilder();
+		sFile = organizer.readFromFile(home + "/Desktop/VCO/Decks/" + s + ".txt");
+		organizer.resetDeck();
+		creatures = new ArrayList<Card>();
+		spells = new ArrayList<Card>();
+		lands = new ArrayList<Card>();
+		ArrayList<Card> temp2 = organizer.entries("deck");
+		String[] line = sFile.toString().split(":");
+		int z = 0;
+		String d = "";
+		for(int i = 1; i < line.length; i++) {
+			if(i % 2 != 0) {
+				d = line[i];
+			} else {
+				z = Integer.parseInt(line[i]);
+				for(int j = 0; j < z; j++)
+					organizer.addCardToDeck(d);
+			}	
+		}
+		ArrayList<Card> temp = organizer.entries("deck");
+		for(int i = 0; i < temp.size(); i++) {
+			Card card = temp.get(i);
+			if (card!= null) {
+			if(card.type2.equals("creature") && !creatures.contains(card)) {
+				creatures.add(card);
+			}
+			else if(card.type2.equals("instant") && !spells.contains(card)
+					|| card.type2.equals("sorcery") && !spells.contains(card)
+					||card.type2.equals("enchantment")&& !spells.contains(card)
+					||card.type2.equals("planeswalker")&& !spells.contains(card)) {
+				spells.add(card);
+			}
+			else if(card.type2.equals("land") && !lands.contains(card)) {
+				lands.add(card);
+			}
+			}
+//			if(card.type2.equals("creature") && !creatures.contains(card))
+//				creatures.add(card);
+		}
+		try{
+			refreshDeckTable(creatures, dataModel2);
+		}catch (Exception e2) {
+			e2.printStackTrace();
+			}
+		try{
+			refreshDeckTable(spells, dataModel3);
+		}catch (Exception e2) {
+			e2.printStackTrace();
+			}
+		try{
+			refreshDeckTable(lands, dataModel4);
+		}catch (Exception e2) {
+			e2.printStackTrace();
+			}
+	}
 
 	/**
 	 * Refreshes table with query
@@ -1930,7 +2165,7 @@ public class CardOrganizer extends JFrame  {
 		} else {
 			ArrayList<String[]> values = returnValues(queryList);
 			refreshTable(queryList, values);
-			refreshCardValues();	
+			refreshCardValues(table);	
 		}
 	}
 	

@@ -23,6 +23,7 @@ public class Card {
 	public String CMC;
 	public String price;
 	public int cardsInDeck;
+	public String notes;
 	
 	public Card() {}
 	
@@ -52,7 +53,8 @@ public class Card {
 		rarity = r;
 		img = null;
 		price = "0.0";
-		cardsInDeck = 1;
+		cardsInDeck = 0;
+		notes = "";
 	}
 	
 	public void setOwned(int i) {
@@ -84,27 +86,20 @@ public class Card {
 	public void setPrice(String s) {
 		price = s;
 	}
-	
+
 	public ImageIcon getImg() throws IOException {
-		BufferedImage image = null;
 		if(img == null) {
+			BufferedImage image = null;
 			try {
-				if(this.name.contains("//")) {
-					String cut = this.name.replace("//", "");
-					image = ImageIO.read(new File(home + "/Desktop/VCO/Pictures Try 2/" + cut + ".jpg"));
-				} else {
-				image = ImageIO.read(new File(home + "/Desktop/VCO/Pictures Try 2/" + this.name + ".jpg"));
-				}
+				String cut = this.name;
+				if(this.name.contains("//"))
+					cut = this.name.replace("//", "");
+				image = ImageIO.read(new File(home + "/Desktop/VCO/Pictures Try 2/" + cut + ".jpg"));
+				img = new ImageIcon(image);
+				return img;
 			} catch (Exception ex) {
-				if(this.name.contains("//")) {
-					String cut = this.name.replace("//", "");
-					System.out.println(cut);
-					image = ImageIO.read(new File("/Volumes/NIGEL/VCO/Pictures Try 2/" + cut + ".jpg"));
-				} else {
-				image = ImageIO.read(new File("/Volumes/NIGEL/VCO/Pictures Try 2/" + this.name + ".jpg"));
-				}
+				ex.printStackTrace();
 			}
-		img = new ImageIcon(image);
 		}
 		return img;
 	}

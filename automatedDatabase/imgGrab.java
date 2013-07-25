@@ -17,7 +17,7 @@ public class imgGrab {
 		CollectionMethods test = new CollectionMethods();
 		test.loadCompleteDatabase();
 		String[] all = test.getCategory("cD");
-		
+
 		//get every card into an array
 		Card[] card = new Card[all.length];
 		for(int i = 0; i < all.length; i++) {

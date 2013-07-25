@@ -102,7 +102,7 @@ public class testFilePrint {
 		String rarity = "";
 		Boolean isLand = false;
 
-		BufferedReader br = new BufferedReader(new FileReader("/Users/eorndahl/Desktop/ISD + RTR Data.txt"));
+		BufferedReader br = new BufferedReader(new FileReader("/Users/eorndahl/Desktop/Standard.txt"));
 		String sCurrentLine;
 		int counter = 0;
 		while ((sCurrentLine = br.readLine()) != null) {
@@ -200,23 +200,29 @@ public class testFilePrint {
 					if(sCurrentLine.contains("-L") ) {
 					counter++;
 					text = null;
-					} else if(sCurrentLine.contains("-R") || sCurrentLine.contains("-U") || sCurrentLine.contains("-C") || sCurrentLine.contains("-M") 
-							&& !sCurrentLine.contains("-Mizzet")) {
-						text = null;
-						counter++;
 					} else {
-						text = sCurrentLine; 
-						while(!sCurrentLine.contains("-R") || !sCurrentLine.contains("-U") || !sCurrentLine.contains("-C") || sCurrentLine.contains("-M") 
-								&& !sCurrentLine.contains("-Mizzet")) {
+						text = sCurrentLine;
+						while(!sCurrentLine.contains("-R") || !sCurrentLine.contains("-U") || !sCurrentLine.contains("-C") || sCurrentLine.contains("-M")) {
 							sCurrentLine = br.readLine();
-							if(sCurrentLine.contains("-R") || sCurrentLine.contains("-U") || sCurrentLine.contains("-C") || sCurrentLine.contains("-M") 
-									&& !sCurrentLine.contains("-Mizzet")) {
+							if(sCurrentLine == null) {
+								text = null;
+								counter++;
+								break;
+							}
+							if(sCurrentLine != null) {
+								if(sCurrentLine.contains("-R") || sCurrentLine.contains("-U") || sCurrentLine.contains("-C") || sCurrentLine.contains("-M")){
+									if(sCurrentLine.length() < 6 ) {
 									counter++;
 									break; }
-								text+= ". " + sCurrentLine;										
+									if(sCurrentLine.contains(",") & sCurrentLine.length() < 30 ) {
+									counter++;
+									break; }
+								text+= ". " + sCurrentLine;	
+								}
+							}
+							}
 						}
 					}
-				}
 				if(counter == 5) {
 					rarity = sCurrentLine;
 					int power = 0;

@@ -42,8 +42,12 @@ public class RefinedImageGrab {
 	    splits = ID.split("aspx");
 	    cURL+= splits[1] + "&type=card";
 		BufferedImage img = ImageIO.read(new URL(cURL));
-	    File outputfile = new File("/Users/eorndahl/Desktop/VCO/DGM/" + s + ".jpg");
+	    File outputfile = new File("/Users/eorndahl/Desktop/VCO/Standard/" + s + ".jpg");
+	    try{
 	    ImageIO.write(img, "jpg", outputfile);
+	    } catch (Exception ex){
+	    	System.out.println(s + " was nto found.");
+	    }
 	    driver.close();
 	    return cURL;
 	}

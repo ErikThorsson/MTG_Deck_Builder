@@ -34,7 +34,7 @@ public class Automate {
 	public static void main(String[] args) throws Exception {
 		Automate bot = new Automate();
 		bot.scanFile();
-		bot.sieveForSet("DGM");
+		//bot.sieveForSet("DGM");
 		bot.formatCards();
 	}
 	
@@ -129,7 +129,7 @@ public class Automate {
 		String rarity = "";
 		Boolean isLand = false;
 
-		BufferedReader br = new BufferedReader(new FileReader("/Users/eorndahl/Desktop/Innistrad Data.txt"));
+		BufferedReader br = new BufferedReader(new FileReader("/Users/eorndahl/Desktop/Standard.txt"));
 		String sCurrentLine;
 		int counter = 0;
 		while ((sCurrentLine = br.readLine()) != null) {
@@ -249,9 +249,12 @@ public class Automate {
 					power = Integer.parseInt(powerS);
 					toughness = Integer.parseInt(toughnessS);
 					}
+					//RefinedImageGrab img = new RefinedImageGrab();
+					//String s = img.getImgURL(name);
 					String s = "";
 					Card card = new Card(name, color, CMC, power, toughness, text, type1, type2, rarity, null, s);
 					arr.add(card);
+					System.out.print(nameQuery(card) + "\n");
 					counter = 0;
 					isLand = false;
 					continue;
