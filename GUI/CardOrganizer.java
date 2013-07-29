@@ -139,7 +139,7 @@ public class CardOrganizer extends JFrame  {
 	private String tribal = "n";
 	private JMenuBar menuBar;
 	private JMenu menu;
-	private JMenuItem menuItem, menuItem2, menuItem3, menuItem4;
+	private JMenuItem menuItem, menuItem2, menuItem3, menuItem4, menuItem5;
 	private String[][] data; 
 	private String[] queryList;
 	private boolean isQuery = false;
@@ -154,11 +154,9 @@ public class CardOrganizer extends JFrame  {
 	private boolean colorlessSelected = false;
 	private boolean multiSelected = false;
 	private boolean buttonSelected = false;
-	private boolean tribalC = false;
-	private boolean textC = false;
 	private boolean enterC = false;
-	private boolean nameC = false;
 	private boolean deckCheck = false;
+	private boolean sideboardCheck = false;
 	private DefaultTableModel dataModel;
 	private DefaultTableModel dataModel2;
 	private DefaultTableModel dataModel3;
@@ -227,6 +225,8 @@ public class CardOrganizer extends JFrame  {
 	Boolean table2Sel = false;
 	Boolean table3Sel = false;
 	Boolean table4Sel = false;
+	Boolean table5Sel = false;
+
 
 	String home = System.getProperty("user.home");
 
@@ -363,8 +363,8 @@ public class CardOrganizer extends JFrame  {
 			menu.add(menuItem3);
 			menuItem4 = new JMenuItem("Delete Deck", KeyEvent.VK_T);
 			menu.add(menuItem4);
-			
-
+			menuItem5 = new JMenuItem("New Deck", KeyEvent.VK_T);
+			menu.add(menuItem5);
 			setJMenuBar(menuBar);
 
 			//menuItem listener
@@ -414,10 +414,39 @@ public class CardOrganizer extends JFrame  {
 					}
 				}
 			});
+			
 			menuItem4.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 
+				}
+			});
+			
+			menuItem5.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					organizer.resetDeck();
+					refreshALs();
+					try{
+						refreshDeckTable(creatures, dataModel2);
+					}catch (Exception e2) {
+						e2.printStackTrace();
+						}
+					try{
+						refreshDeckTable(spells, dataModel3);
+					}catch (Exception e2) {
+						e2.printStackTrace();
+						}
+					try{
+						refreshDeckTable(lands, dataModel4);
+					}catch (Exception e2) {
+						e2.printStackTrace();
+						}
+					try{
+						refreshDeckTable(sideboard, dataModel5);
+					}catch (Exception e2) {
+						e2.printStackTrace();
+						}
 				}
 			});
 
@@ -908,44 +937,15 @@ public class CardOrganizer extends JFrame  {
 					}
 				}
 			});
-
-			tribalCheck.addActionListener(new ActionListener() {
+			
+			sideBoard.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent actionEvent) {
-					tribalC = true;
-					nameC = false;
-					textC = false;
-					enterC = false;
-				}
-			});
-
-			nameCheck.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent actionEvent) {
-					tribalC = false;
-					nameC = true;
-					textC = false;
-					enterC = false;
-				}
-			});
-
-			textCheck.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent actionEvent) {
-					tribalC = false;
-					nameC = false;
-					textC = true;
-					enterC = false;
-				}
-			});
-
-			enterCheck.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent actionEvent) {
-					tribalC = false;
-					nameC = false;
-					textC = false;
-					enterC = true;
+					if(sideboardCheck == false) {
+						sideboardCheck = true;
+					} else {
+						sideboardCheck = false;
+					}
 				}
 			});
 
@@ -1408,6 +1408,11 @@ public class CardOrganizer extends JFrame  {
 						}catch (Exception e2) {
 							e2.printStackTrace();
 							}
+						try{
+							refreshDeckTable(sideboard, dataModel5);
+						}catch (Exception e2) {
+							e2.printStackTrace();
+							}
 					}
 				}
 			});
@@ -1437,7 +1442,7 @@ public class CardOrganizer extends JFrame  {
 						refreshTable(queryList, values);
 					}
 					} else {
-						organizer.addCardToDeck(selected);
+						organizer.addCardToDeck(selected, sideboardCheck);
 						refreshALs();
 						try{
 							refreshDeckTable(creatures, dataModel2);
@@ -1451,6 +1456,11 @@ public class CardOrganizer extends JFrame  {
 							}
 						try{
 							refreshDeckTable(lands, dataModel4);
+						}catch (Exception e2) {
+							e2.printStackTrace();
+							}
+						try{
+							refreshDeckTable(sideboard, dataModel5);
 						}catch (Exception e2) {
 							e2.printStackTrace();
 							}
@@ -1583,6 +1593,20 @@ public class CardOrganizer extends JFrame  {
 					isText = false;
 					if(selected != null) {
 						refreshCardValues(table4);
+					}
+				}
+			});
+			table5.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+				@Override
+				public void valueChanged(ListSelectionEvent e) {
+					try {
+						selected = (String) table5.getValueAt(table5.getSelectedRow(), 0);
+					} catch (ArrayIndexOutOfBoundsException e1) {
+						e1.printStackTrace();
+					}
+					isText = false;
+					if(selected != null) {
+						refreshCardValues(table5);
 					}
 				}
 			});
@@ -1965,14 +1989,28 @@ public class CardOrganizer extends JFrame  {
 	
 	public void saveDeck() throws IOException {
 		ArrayList<String> deck = new ArrayList<String>();
+		if(creatures.size() > 0) {
 		for(int i = 0; i < creatures.size(); i++) {
 			deck.add(":" + creatures.get(i).name + ":" + creatures.get(i).cardsInDeck);
+			}
 		}
+		if(spells.size() > 0) {
 		for(int i = 0; i < spells.size(); i++) {
 			deck.add(":" + spells.get(i).name + ":" + spells.get(i).cardsInDeck);
+			}
 		}
+		if(lands.size() > 0) {
 		for(int i = 0; i < lands.size(); i++) {
 			deck.add(":" + lands.get(i).name + ":" + lands.get(i).cardsInDeck);
+			}
+		}
+		if(sideboard.size() > 0) {
+		for(int i = 0; i < sideboard.size(); i++) {
+			if(i == 0)
+				deck.add("::" + sideboard.get(i).name + ":" + sideboard.get(i).cardsInDeck);
+			else
+				deck.add(":" + sideboard.get(i).name + ":" + sideboard.get(i).cardsInDeck);
+			}
 		}
 		String s = "";
 		for(int i = 0; i < deck.size(); i++){
@@ -2002,23 +2040,27 @@ public class CardOrganizer extends JFrame  {
 		creatures = new ArrayList<Card>();
 		spells = new ArrayList<Card>();
 		lands = new ArrayList<Card>();
+		sideboard = new ArrayList<Card>();
 		ArrayList<Card> temp = organizer.entries("deck");
 		for(int i = 0; i < temp.size(); i++) {
 			Card card = temp.get(i);
-			if (card!= null) {
+			if (card!= null && card.inSB != true) {
 			if(card.type2.equals("creature") && !creatures.contains(card)) {
 				creatures.add(card);
 			}
 			else if(card.type2.equals("instant") && !spells.contains(card)
 					|| card.type2.equals("sorcery") && !spells.contains(card)
 					||card.type2.equals("enchantment")&& !spells.contains(card)
-					||card.type2.equals("planeswalker")&& !spells.contains(card)) {
+					||card.type2.equals("planeswalker")&& !spells.contains(card)
+					||card.type2.equals("artifact")&& !spells.contains(card)) {
 				spells.add(card);
 			}
 			else if(card.type2.equals("land") && !lands.contains(card)) {
 				lands.add(card);
+				}
+			} else if(!sideboard.contains(card) && card!= null) {
+				sideboard.add(card);
 			}
-		}
 		}
 	}
 	
@@ -2031,20 +2073,49 @@ public class CardOrganizer extends JFrame  {
 		StringBuilder sFile = new StringBuilder();
 		sFile = organizer.readFromFile(home + "/Desktop/VCO/Decks/" + s + ".txt");
 		organizer.resetDeck();
-		creatures = new ArrayList<Card>();
-		spells = new ArrayList<Card>();
-		lands = new ArrayList<Card>();
-		String[] line = sFile.toString().split(":");
+		String[] sBSplit = sFile.toString().split("::");
+//		try {
+//			for(int i = 0; i < sBSplit.length; i++)
+//				System.out.println(sBSplit[i]);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+		String sB[] = null;
+		try {
+		if(sBSplit[1] != null)
+			sB = sBSplit[1].split(":");
+//		try {
+//			for(int i = 0; i < sB.length; i++)
+//				System.out.println(sB[i]);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+		} catch (Exception e){
+		//e.printStackTrace(); there will be an array out of bounds w/o a sideboard. Tis okay
+		}
+		String[] line = sBSplit[0].toString().split(":");
 		int z = 0;
 		String d = "";
 		for(int i = 1; i < line.length; i++) {
+			//System.out.println(line[i]);
 			if(i % 2 != 0) {
 				d = line[i];
 			} else {
 				z = Integer.parseInt(line[i]);
 				for(int j = 0; j < z; j++)
-					organizer.addCardToDeck(d);
+					organizer.addCardToDeck(d, false);
 			}	
+		}
+		if(sB != null) {
+		for(int i = 0; i < sB.length; i++) {
+			if(i % 2 == 0) {
+				d = sB[i];
+			} else {
+				z = Integer.parseInt(sB[i]);
+				for(int j = 0; j < z; j++)
+					organizer.addCardToDeck(d, true);
+				}	
+			}
 		}
 		refreshALs();
 		try{
@@ -2059,6 +2130,11 @@ public class CardOrganizer extends JFrame  {
 			}
 		try{
 			refreshDeckTable(lands, dataModel4);
+		}catch (Exception e2) {
+			e2.printStackTrace();
+			}
+		try{
+			refreshDeckTable(sideboard, dataModel5);
 		}catch (Exception e2) {
 			e2.printStackTrace();
 			}
@@ -2186,7 +2262,6 @@ public class CardOrganizer extends JFrame  {
 			ArrayList<String> arr = new ArrayList<String>();
 			String[] mine = organizer.getAllArray();
 			for(int i = 0; i < mine.length; i++) {
-//				try {
 				try {
 					if(organizer.getCard(mine[i]).rarity != null)
 						if(organizer.getCard(mine[i]).rarity.contains(sel))
@@ -2194,9 +2269,6 @@ public class CardOrganizer extends JFrame  {
 				} catch (InvalidKeyException e) {
 					e.printStackTrace();
 				}
-//				} catch (Exception ex) {
-//					ex.printStackTrace(); //Not quite sure what is going wrong here buuut its small as far as I can tell
-//				}
 			}
 			all = new String[arr.size()];
 			arr.toArray(all);

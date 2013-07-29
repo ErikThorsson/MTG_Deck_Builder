@@ -24,6 +24,7 @@ public class Card {
 	public String price;
 	public int cardsInDeck;
 	public String notes;
+	public boolean inSB;
 	
 	public Card() {}
 	

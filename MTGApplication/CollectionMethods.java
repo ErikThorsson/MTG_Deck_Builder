@@ -86,14 +86,14 @@ public class CollectionMethods extends BasicTree {
 	String filepath = "/Users/eorndahl/Desktop/VCO/Decks";
 	File directory = new File(filepath);
 	String[] files = directory.list();
-	for(int i = 0; i < files.length; i++)
-		System.out.println(files[i]);
+//	for(int i = 0; i < files.length; i++)
+//		System.out.println(files[i]);
 	String[] names = new String[files.length];
 	for (int i = 0; i < names.length; i++){
 		try{
 		String[] splits = new String[2];
 		splits = files[i].split("\\.");
-		System.out.println(splits[0]);
+		//System.out.println(splits[0]);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -157,13 +157,10 @@ public class CollectionMethods extends BasicTree {
 		String[] all = getCategory("cD");
 		ArrayList<String> set = new ArrayList<String>();
 		for(int i = 0; i < all.length; i++) {
-//			try {
 			if(getCard(all[i]).rarity !=  null)
 				if(getCard(all[i]).rarity.contains(s)) //rarity contains set info too
 					set.add(all[i]);
-//			} catch (Exception ex) {
-//				ex.printStackTrace(); //Not quite sure what is going wrong here buuut its small as far as I can tell
-//			}
+
 		}
 		String[] setArr = new String[set.size()];
 		set.toArray(setArr);
@@ -228,8 +225,11 @@ public class CollectionMethods extends BasicTree {
 	/**
 	 * Adds a card to the deck
 	 */
-	public void addCardToDeck(String s) {
-	Card card = (Card) CompleteDatabase.get(s); 
+	public void addCardToDeck(String s, boolean b) {
+	Card card = (Card) CompleteDatabase.get(s);
+	if(b == true)
+		card.inSB = true;
+	//System.out.println(card.inSB);
 	if(deck.get(s) != null) { //increases owned by one if not owned 
 		card.cardsInDeck++;
 			return;}
@@ -246,6 +246,7 @@ public class CollectionMethods extends BasicTree {
 		card.cardsInDeck--;
 			return;}
 	card.cardsInDeck = 0;
+	card.inSB = false;
 	deck.remove(card.name);
 	}
 	
