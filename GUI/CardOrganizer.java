@@ -1388,7 +1388,7 @@ public class CardOrganizer extends JFrame  {
 						}
 					} else {
 						try{
-						organizer.removeCardFromDeck(selected);
+						organizer.removeCardFromDeck(selected, sideboardCheck);
 						refreshALs();
 						} catch (Exception ex) {
 							//tis fine
@@ -1912,7 +1912,10 @@ public class CardOrganizer extends JFrame  {
 			m.setValueAt(al.get(i).name,i, 0);
 		}
 		for(int i = 0; i < names.length; i++) {
-			m.setValueAt(al.get(i).cardsInDeck,i, 1);
+			if(!m.equals(dataModel5))
+				m.setValueAt(al.get(i).cardsInDeck,i, 1);
+			else 
+				m.setValueAt(al.get(i).numSB,i, 1);
 		}
 	}
 
@@ -2044,21 +2047,20 @@ public class CardOrganizer extends JFrame  {
 		ArrayList<Card> temp = organizer.entries("deck");
 		for(int i = 0; i < temp.size(); i++) {
 			Card card = temp.get(i);
-			if (card!= null && card.inSB != true) {
+			if (card!= null && card.cardsInDeck > 0) {
 			if(card.type2.equals("creature") && !creatures.contains(card)) {
 				creatures.add(card);
-			}
-			else if(card.type2.equals("instant") && !spells.contains(card)
+			} else if(card.type2.equals("instant") && !spells.contains(card)
 					|| card.type2.equals("sorcery") && !spells.contains(card)
 					||card.type2.equals("enchantment")&& !spells.contains(card)
 					||card.type2.equals("planeswalker")&& !spells.contains(card)
 					||card.type2.equals("artifact")&& !spells.contains(card)) {
 				spells.add(card);
-			}
-			else if(card.type2.equals("land") && !lands.contains(card)) {
+			} else if(card.type2.equals("land") && !lands.contains(card)) {
 				lands.add(card);
 				}
-			} else if(!sideboard.contains(card) && card!= null) {
+			}
+			if(card!= null && !sideboard.contains(card) && card.numSB > 0) {
 				sideboard.add(card);
 			}
 		}

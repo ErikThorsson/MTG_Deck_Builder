@@ -229,25 +229,46 @@ public class CollectionMethods extends BasicTree {
 	Card card = (Card) CompleteDatabase.get(s);
 	if(b == true)
 		card.inSB = true;
-	//System.out.println(card.inSB);
-	if(deck.get(s) != null) { //increases owned by one if not owned 
+	if(b == false)
+		card.inSB = false;
+	if(deck.get(s) != null && card.inSB != true) { //increases owned by one if not owned 
 		card.cardsInDeck++;
-			return;}
+		//System.out.println("in");
+			return;
+	} else if(deck.get(s) != null && card.inSB == true){
+		card.numSB++;
+		//System.out.println("sb");
+		return;
+	}
 	deck.put(card.name, card);
-	card.cardsInDeck++;
+	//System.out.println("NOPE");
+	if(b == true)
+		card.numSB++;
+	else
+		card.cardsInDeck++;
 	}
 	
 	/**
 	 * removes cards
 	 */
-	public void removeCardFromDeck(String s) {
+	public void removeCardFromDeck(String s, boolean b) {
 	Card card = (Card) deck.get(s);
-	if(card.cardsInDeck > 1) { //decreases owned by one if owned 
+	if(b == true)
+		card.inSB = true;
+	if(b == false)
+		card.inSB = false;
+	if(b == false) { //decreases owned by one if owned 
 		card.cardsInDeck--;
-			return;}
+	}
+	if(b == true) { //decreases owned by one if owned 
+		card.numSB--;
+	}
+	if(card.numSB == 0 & card.cardsInDeck == 0) {
 	card.cardsInDeck = 0;
+	card.numSB = 0;
 	card.inSB = false;
 	deck.remove(card.name);
+	}
 	}
 	
 	/**
@@ -268,6 +289,7 @@ public class CollectionMethods extends BasicTree {
 			Card card = cards.get(i);
 			if(card != null) {
 				card.cardsInDeck = 0;
+				card.numSB = 0;
 				deck.remove(card.name);
 			}
 		}

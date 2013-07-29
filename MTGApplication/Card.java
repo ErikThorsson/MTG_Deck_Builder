@@ -25,6 +25,7 @@ public class Card {
 	public int cardsInDeck;
 	public String notes;
 	public boolean inSB;
+	public int numSB;
 	
 	public Card() {}
 	
@@ -56,6 +57,7 @@ public class Card {
 		price = "0.0";
 		cardsInDeck = 0;
 		notes = "";
+		numSB = 0;
 	}
 	
 	public void setOwned(int i) {
