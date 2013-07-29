@@ -58,22 +58,48 @@ public class CollectionMethods extends BasicTree {
 //				System.out.println(card.CMC);
 				//String[] t = test.query("n", "green");
 						//test.query(s, "n", -1, -1, -1, "n", "n", "n", "n", "n", "Centaur's Herald");
-				for(int i = 0; i < s.length; i++) { //tests for card picture
-					Card card = test.getCard(s[i]);
+//				for(int i = 0; i < s.length; i++) { //tests for card picture
+//					Card card = test.getCard(s[i]);
 					//System.out.println(card.name);
-					BufferedImage image = null;
-					String home = System.getProperty("user.home");
-					try {
-						String cut = card.name;
-						if(card.name.contains("//"))
-							cut = card.name.replace("//", "");
-						image = ImageIO.read(new File(home + "/Desktop/VCO/Pictures Try 2/" + cut + ".jpg"));
-					} catch (Exception ex) {
-						System.out.println(card.name);
-					}
-			}
+//				}
+					
+//check for missing images
+					
+//					BufferedImage image = null;
+//					String home = System.getProperty("user.home");
+//					try {
+//						String cut = card.name;
+//						if(card.name.contains("//"))
+//							cut = card.name.replace("//", "");
+//						image = ImageIO.read(new File(home + "/Desktop/VCO/Pictures Try 2/" + cut + ".jpg"));
+//					} catch (Exception ex) {
+//						System.out.println(card.name);
+//					}
+					
+					test.getDecks();
 	}
-
+	
+	/**
+	 * Set JCombo list to current saved decks
+	 */
+	public void getDecks() {
+	String filepath = "/Users/eorndahl/Desktop/VCO/Decks";
+	File directory = new File(filepath);
+	String[] files = directory.list();
+	for(int i = 0; i < files.length; i++)
+		System.out.println(files[i]);
+	String[] names = new String[files.length];
+	for (int i = 0; i < names.length; i++){
+		try{
+		String[] splits = new String[2];
+		splits = files[i].split("\\.");
+		System.out.println(splits[0]);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	}
+	
 	/**
 	 * returns a String[] of the card names in a given hashtable
 	 * @param s
@@ -131,12 +157,13 @@ public class CollectionMethods extends BasicTree {
 		String[] all = getCategory("cD");
 		ArrayList<String> set = new ArrayList<String>();
 		for(int i = 0; i < all.length; i++) {
-			try {
+//			try {
+			if(getCard(all[i]).rarity !=  null)
 				if(getCard(all[i]).rarity.contains(s)) //rarity contains set info too
 					set.add(all[i]);
-			} catch (Exception ex) {
-				ex.printStackTrace(); //Not quite sure what is going wrong here buuut its small as far as I can tell
-			}
+//			} catch (Exception ex) {
+//				ex.printStackTrace(); //Not quite sure what is going wrong here buuut its small as far as I can tell
+//			}
 		}
 		String[] setArr = new String[set.size()];
 		set.toArray(setArr);
@@ -215,9 +242,10 @@ public class CollectionMethods extends BasicTree {
 	 */
 	public void removeCardFromDeck(String s) {
 	Card card = (Card) deck.get(s);
-	if(card.cardsInDeck > 0) { //decreases owned by one if owned 
+	if(card.cardsInDeck > 1) { //decreases owned by one if owned 
 		card.cardsInDeck--;
 			return;}
+	card.cardsInDeck = 0;
 	deck.remove(card.name);
 	}
 	
@@ -237,12 +265,9 @@ public class CollectionMethods extends BasicTree {
 		ArrayList<Card> cards = deck.cardEntries();
 		for(int i = 0; i < cards.size(); i++) {
 			Card card = cards.get(i);
-			int h = card.cardsInDeck;
-			for(int j = 0; j < h; j++) {
-				card.cardsInDeck--;
-				if(card.cardsInDeck == 0)
-					deck.remove(card.name);
-				//System.out.println(card.name + " " + card.cardsInDeck);
+			if(card != null) {
+				card.cardsInDeck = 0;
+				deck.remove(card.name);
 			}
 		}
 	}
@@ -733,7 +758,7 @@ public class CollectionMethods extends BasicTree {
 				card = list.get(j);
 				if(card != null && text != null)
 					if(card.text != null)
-						if(card.text.contains(text))
+						if(card.text.contains(text) || card.name.toLowerCase().contains(text) || card.type3.contains(text))
 							arr.add(card.name);
 
 			}

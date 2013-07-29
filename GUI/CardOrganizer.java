@@ -31,11 +31,13 @@ import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.security.InvalidKeyException;
 import java.util.ArrayList;
+import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -122,7 +124,9 @@ public class CardOrganizer extends JFrame  {
 	private JTextField textBox = new JTextField("Enter Here");
 	private String selected = null;
 	private JCheckBox deckBuild = new JCheckBox();
-	private JComboBox decks = new JComboBox(new Object[] {"Example1", "Example2"});
+	private JCheckBox sideBoard = new JCheckBox();
+	private JComboBox decks = new JComboBox();
+	DefaultComboBoxModel model = new DefaultComboBoxModel();
 	private String name = "n";
 	private String cardText = "n";
 	private String color = "n";
@@ -260,11 +264,12 @@ public class CardOrganizer extends JFrame  {
 	public class Interface extends JPanel {
 		private JPanel mainList;
 
+		@SuppressWarnings("unchecked")
 		public Interface() throws InvalidKeyException, IOException {
 			setLayout(new BorderLayout());
 
 			mainList = new JPanel(new GridBagLayout());
-			mainList.setPreferredSize(new Dimension(250, 590));
+			mainList.setPreferredSize(new Dimension(250, 580));
 
 			GridBagConstraints d = new GridBagConstraints();
 			d.gridwidth = GridBagConstraints.REMAINDER;
@@ -356,7 +361,7 @@ public class CardOrganizer extends JFrame  {
 			menu.add(menuItem2);
 			menuItem3 = new JMenuItem("Save Deck", KeyEvent.VK_T);
 			menu.add(menuItem3);
-			menuItem4 = new JMenuItem("Load Deck", KeyEvent.VK_T);
+			menuItem4 = new JMenuItem("Delete Deck", KeyEvent.VK_T);
 			menu.add(menuItem4);
 			
 
@@ -399,6 +404,7 @@ public class CardOrganizer extends JFrame  {
 				public void actionPerformed(ActionEvent e) {
 					try {
 						saveDeck();
+						getDecks();
 					} catch (FileNotFoundException e1) {
 						e1.printStackTrace();
 					} catch (MalformedURLException e1) {
@@ -411,16 +417,7 @@ public class CardOrganizer extends JFrame  {
 			menuItem4.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					try {
-						String inputValue = JOptionPane.showInputDialog(null, "Enter name", "Load Deck", JOptionPane.PLAIN_MESSAGE);
-						loadDeck(inputValue);
-					} catch (FileNotFoundException e1) {
-						e1.printStackTrace();
-					} catch (MalformedURLException e1) {
-						e1.printStackTrace();
-					} catch (IOException e3) {
-						e3.printStackTrace();
-					}
+
 				}
 			});
 
@@ -442,74 +439,32 @@ public class CardOrganizer extends JFrame  {
 			d.gridy = 0;
 			d.anchor = GridBagConstraints.PAGE_START;
 			panel1.add(textBox, d);
-
-
-			//TextBox Filter
-			JLabel nameL = new JLabel("Name");
-			JLabel tribalL = new JLabel("Tribal");
-			JLabel textL = new JLabel("Text");
-			JLabel enterL = new JLabel("Add");
-			nameL.setFont(new Font("Serif", Font.PLAIN, 12));
-			textL.setFont(new Font("Serif", Font.PLAIN, 12));
-			tribalL.setFont(new Font("Serif", Font.PLAIN, 12));
-			enterL.setFont(new Font("Serif", Font.PLAIN, 12));
-			JPanel radios = new JPanel(new GridLayout(1,8));
-			radios.add(nameL);
-			radios.add(nameCheck);
-			radios.add(tribalL);
-			radios.add(tribalCheck);
-			radios.add(textL);
-			radios.add(textCheck);
-			radios.add(enterL);
-			radios.add(enterCheck);
 			d.gridy = 1;
-			d.gridx = 0;
-			//d.insets = new Insets(0,0,0,0);
-			panel1.add(radios,d);
-			//d.insets = new Insets(0,0,0,0);
-
-			//ADD/REMOVE/MY/ALL
-			JPanel panel1Quarter = new JPanel(new GridBagLayout());
-			panel1Quarter.setBorder(new MatteBorder(0, 0, 1, 0, Color.GRAY)); 
-
-			d.fill = GridBagConstraints.HORIZONTAL;
 			d.ipady = 4;      //make this component tall
-			d.weightx = 0.5;
-			d.gridwidth = 1;
-			d.gridx = 0;
-			d.gridy = 0;
-			panel1Quarter.add(addCard, d);
-			d.ipady = 4;   	//make this component tall
-			d.weightx = 0.5;
-			d.gridwidth = 1;
-			d.gridx = 1;
-			d.gridy = 0;
-			panel1Quarter.add(removeCard, d);
-			d.gridx = 0;
-			d.gridy = 1;
-			panel1Quarter.add(mycards,d);
-			d.gridx = 1;
-			d.gridy = 1;
-			panel1Quarter.add(allcards,d);
+			JPanel addRemove = new JPanel(new GridLayout(1, 2));
+			addRemove.add(addCard);
+			addRemove.add(removeCard);
+			panel1.add(addRemove,d);
 
 			//SORT
-			JPanel panel1Half = new JPanel(new GridBagLayout());
-			panel1Half.setBorder(new MatteBorder(0, 0, 1, 0, Color.GRAY)); 
-
 			JLabel sort = new JLabel("Sort:");
+			JPanel panel1Quarter = new JPanel(new GridBagLayout());
+			panel1Quarter.setBorder(new MatteBorder(0, 0, 1, 0, Color.GRAY)); 
+			JPanel filter = new JPanel(new GridLayout(1,2));
+			filter.add(mycards, d);
+			filter.add(allcards,d);
+			JPanel unownedSet = new JPanel(new GridLayout(1,2));
+			unownedSet.add(unowned);
+			set.setPreferredSize(new Dimension(88, 30));
+			unownedSet.add(set);
 			d.fill = GridBagConstraints.HORIZONTAL;
 			d.gridx = 0;
 			d.gridy = 0;
-			panel1Half.add(sort,d);
-			d.gridx = 0;
+			panel1Quarter.add(sort, d);
 			d.gridy = 1;
-			panel1Half.add(unowned,d);
-			d.gridx = 1;
-			panel1Half.add(ownedC, d);
-			set.setPreferredSize(new Dimension(68, 30));
-			d.gridx = 2;
-			panel1Half.add(set, d);
-			d.ipady = 4;   	//make this component tall
+			panel1Quarter.add(filter,d);
+			d.gridy =2;
+			panel1Quarter.add(unownedSet,d);
 
 			//ColorQuery
 			JPanel panel2 = new JPanel(new GridBagLayout());
@@ -551,8 +506,6 @@ public class CardOrganizer extends JFrame  {
 			typeBox2.add(land);
 			typeBox2.add(planeswalker);
 			typeBox2.setPreferredSize(new Dimension(0,20));
-
-			//type buttons
 			JLabel typeL = new JLabel("Type:");
 			d.gridy = 3;
 			panel3.add(typeL, d);
@@ -620,29 +573,41 @@ public class CardOrganizer extends JFrame  {
 			d.gridy = 1;
 			panel6.add(tB,d);
 			
+			//combobox model
+			@SuppressWarnings("rawtypes")
+			Vector comboBoxItems=new Vector();
+		    comboBoxItems.add("Load Deck");
+			model = new DefaultComboBoxModel(comboBoxItems);
+			decks = new JComboBox(model);
+			getDecks();
+			    
 			//deckBuild
 			JPanel deckB = new JPanel(new GridBagLayout());
 			deckB.setBorder(new MatteBorder(0, 0, 1, 0, Color.GRAY));
 			JPanel dB = new JPanel(new GridBagLayout());
-			JLabel on = new JLabel("Deck Building Mode:");
+			JLabel on = new JLabel("Deck Build Mode:");
+			JLabel sb = new JLabel("Add to Sideboard:");
+			JLabel loadD = new JLabel("Load Deck:");
 			d.gridx = 0;
 			d.gridy=0;
 			dB.add(on,d);
-			d.gridx = 1;
-			d.insets = new Insets(-3,-10,0,0);
+			d.insets = new Insets(0,134,0,0);
+			dB.add(sb, d);
+			d.gridy = 0;
+			d.insets = new Insets(-4,105,0,0);
 			dB.add(deckBuild,d);
-			d.insets = new Insets(0,0,0,0);
-			d.gridx =2;
-			//decks.setPreferredSize(new Dimension(0,70));
-			dB.add(decks,d);
-			@SuppressWarnings("unused")
-			JLabel dL = new JLabel("Deck Building:");
+			d.gridx = 1;
+			d.insets = new Insets(-4,-5,0,0);
+			dB.add(sideBoard,d);
 			d.gridx = 0;
-			d.gridy = 0;
-			//deckB.add(dL, d);
-			d.gridy = 0;
+			d.insets = new Insets(0,0,0,0);
+			d.gridy = 1;
+			dB.add(loadD, d);
+			d.insets = new Insets(-2,70,0,0);
+			decks.setPreferredSize(new Dimension(100,20));
+			dB.add(decks,d);
+			d.insets = new Insets(0,0,0,0);
 			deckB.add(dB, d);
-
 
 			//add panels to mainList
 			GridBagConstraints gb = new GridBagConstraints();
@@ -662,7 +627,7 @@ public class CardOrganizer extends JFrame  {
 			gb.gridy = 5;
 			mainList.add(panel4, gb);
 			gb.gridy = 6;
-			mainList.add(panel1Half, gb);
+			//mainList.add(panel1Half, gb);
 			gb.gridy = 7;
 			mainList.add(panel5, gb);
 			gb.gridy = 8;
@@ -676,9 +641,9 @@ public class CardOrganizer extends JFrame  {
 			ArrayList<String[]> values = returnValues(cardNames);
 			queryList = cardNames;	
 			dataModel = new DefaultTableModel();
-			dataModel.setColumnCount(5);
+			dataModel.setColumnCount(4);
 			dataModel.setRowCount(organizer.getAllArray().length);
-			dataModel.setColumnIdentifiers(new String[]{"Name", "CMC", "Type", "Rarity", "Set", "Owned"});
+			dataModel.setColumnIdentifiers(new String[]{"Name", "CMC", "Type", "Rarity", "Set"});
 			table = new JTable(dataModel) {
 				private static final long serialVersionUID = 1L;
 				@Override
@@ -699,9 +664,7 @@ public class CardOrganizer extends JFrame  {
 
 			JScrollPane scrollList = new JScrollPane(table);
 			p4.add(scrollList);
-
 			JScrollPane scroll =  new JScrollPane(mainList);
-			//JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
 			ImageIcon image;
 			label = new JLabel();
@@ -851,7 +814,6 @@ public class CardOrganizer extends JFrame  {
 			
 			//card view panel
 			JPanel cardV = new JPanel(new GridBagLayout());
-			//g.insets = new Insets(0,35,40,-50);
 			g.gridx = 0;
 			g.gridy = 0;
 			g.anchor = GridBagConstraints.PAGE_START;
@@ -860,7 +822,6 @@ public class CardOrganizer extends JFrame  {
 			collectionVal.add(collectionV, g);
 			g.insets = new Insets(0,110,0,0);
 			collectionVal.add(mSign,g);
-			//d.ipady = 1;
 			g.insets = new Insets(0,120,0,0);
 			priceCollection();
 			collectionVal.add(collectionValue, g);
@@ -868,20 +829,14 @@ public class CardOrganizer extends JFrame  {
 			cardV.add(collectionVal, g);
 			g.gridy = 1;
 			cardV.add(label, g);
-//			g.insets = new Insets(0,0,0,0);
-//			d.gridx = 2;
-//			d.gridy = 0;
-//			d.insets = new Insets(347,0,0,0);
 			JPanel ownedBox = new JPanel(new GridBagLayout());
 			g.gridy = 0;
 			ownedBox.add(ownedL, g);
 			g.insets = new Insets(0,55,0,0);
 			ownedNum.setFont(new Font("Serif", Font.PLAIN, 36));
 			ownedBox.add(ownedNum, g);
-			//g.gridx = 1;
 			g.insets = new Insets(0,90,0,0);
 			ownedBox.add(priceL, g);
-			//g.gridx = 1;
 			g.insets = new Insets(0,105,0,0);
 			ownedBox.add(price, g);
 			g.insets = new Insets(0,0,0,0);
@@ -914,11 +869,6 @@ public class CardOrganizer extends JFrame  {
 			g.weighty = 0;
 			g.ipadx = 1;
 			combine.add(cardV, g);
-//			JPanel cardImage = new JPanel();
-//			cardImage.add(label);
-//			cardImage.setPreferredSize(new Dimension(500, 500));
-//			resizeImage(500, 500);
-//			add(cardImage);
 			add(combine);
 			
 			//remaps ENTER key in JTable to addCard()
@@ -1439,18 +1389,7 @@ public class CardOrganizer extends JFrame  {
 					} else {
 						try{
 						organizer.removeCardFromDeck(selected);
-						for(int i = 0; i < creatures.size(); i++) {
-							if(creatures.get(i).cardsInDeck == 0)
-								creatures.remove(i);
-						}
-						for(int i = 0; i < spells.size(); i++) {
-							if(spells.get(i).cardsInDeck == 0)
-								spells.remove(i);
-						}
-						for(int i = 0; i < lands.size(); i++) {
-							if(lands.get(i).cardsInDeck == 0)
-								lands.remove(i);
-						}
+						refreshALs();
 						} catch (Exception ex) {
 							//tis fine
 						}
@@ -1499,24 +1438,7 @@ public class CardOrganizer extends JFrame  {
 					}
 					} else {
 						organizer.addCardToDeck(selected);
-						ArrayList<Card> temp = organizer.entries("deck");
-						for(int i = 0; i < temp.size(); i++) {
-							Card card = temp.get(i);
-							if(card.type2.equals("creature") && !creatures.contains(card)) {
-								creatures.add(card);
-							}
-							else if(card.type2.equals("instant") && !spells.contains(card)
-									|| card.type2.equals("sorcery") && !spells.contains(card)
-									||card.type2.equals("enchantment")&& !spells.contains(card)
-									||card.type2.equals("planeswalker")&& !spells.contains(card)) {
-								spells.add(card);
-							}
-							else if(card.type2.equals("land") && !lands.contains(card)) {
-								lands.add(card);
-							}
-//							if(card.type2.equals("creature") && !creatures.contains(card))
-//								creatures.add(card);
-						}
+						refreshALs();
 						try{
 							refreshDeckTable(creatures, dataModel2);
 						}catch (Exception e2) {
@@ -1539,6 +1461,8 @@ public class CardOrganizer extends JFrame  {
 			mycards.addActionListener(new ActionListener() { //refreshes table to your collection
 				@Override
 				public void actionPerformed(ActionEvent actionEvent) {
+					dataModel.setColumnCount(4);
+					dataModel.setColumnIdentifiers(new String[]{"Name", "CMC", "Type", "Rarity", "Set"});
 					viewMyCards();
 				}
 			});
@@ -1546,6 +1470,8 @@ public class CardOrganizer extends JFrame  {
 			allcards.addActionListener(new ActionListener() { //refreshes table to complete database
 				@Override
 				public void actionPerformed(ActionEvent actionEvent) {
+					dataModel.setColumnCount(5);
+					dataModel.setColumnIdentifiers(new String[]{"Name", "CMC", "Type", "Rarity", "Set", "Owned"});
 					viewAll();
 				}
 			});
@@ -1553,7 +1479,23 @@ public class CardOrganizer extends JFrame  {
 			set.addItemListener(new ItemListener() { //refreshes table to query the current table by set
 				@Override
 				public void itemStateChanged(ItemEvent e) {
+					if(isMyCards == true) {
+						dataModel.setColumnCount(4);
+						dataModel.setColumnIdentifiers(new String[]{"Name", "CMC", "Type", "Rarity", "Set"});
+					}
 					viewSet();
+				}
+			});
+			
+			decks.addItemListener(new ItemListener() { //refreshes table to query the current table by set
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+				String s = (String) decks.getSelectedItem();
+				try {
+					loadDeck(s);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 				}
 			});
 
@@ -1561,61 +1503,15 @@ public class CardOrganizer extends JFrame  {
 			textBox.getDocument().addDocumentListener(new DocumentListener() {
 				@Override
 				public void changedUpdate(DocumentEvent e) {
-					if(textC == true)
-						text();
-					if(nameC == true)
-						name();
-					if(tribalC == true)
-						tribal();
+				text();
 				}
 				@Override
 				public void removeUpdate(DocumentEvent e) {
-					if(textC == true)
-						text();
-					if(nameC == true)
-						name();
-					if(tribalC == true)
-						tribal();
+				text();
 				}
 				@Override
 				public void insertUpdate(DocumentEvent e) {
-					if(textC == true)
-						text();
-					if(nameC == true)
-						name();
-					if(tribalC == true)
-						tribal();
-				}
-
-				public void tribal() {
-					isText = true;
-					if(!textBox.getText().equals("")) {
-						tribal = textBox.getText().toLowerCase();
-					} else {
-						tribal = "n";
-					}
-					query();
-					if(textBox.getText().equals("")) {
-						if(isMyCards == true) 
-							viewMyCards();
-						else
-							viewAll();
-					}
-				}
-				public void name() {
-					isText = true;
-					if(!textBox.getText().equals("")) {
-						name = textBox.getText().toLowerCase();
-					} else {
-						name = "n";
-					}
-					query();
-					if(textBox.getText().equals("")) {
-						if(isMyCards == true) 
-							viewMyCards();
-						else
-							viewAll();
-					}
+				text();
 				}
 				public void text() {
 					isText = true;
@@ -1667,7 +1563,6 @@ public class CardOrganizer extends JFrame  {
 				@Override
 				public void valueChanged(ListSelectionEvent e) {
 					try {
-						selected = (String) table3.getValueAt(table3.getSelectedRow(), 0);
 					} catch (ArrayIndexOutOfBoundsException e1) {
 						e1.printStackTrace();
 					}
@@ -1691,6 +1586,23 @@ public class CardOrganizer extends JFrame  {
 					}
 				}
 			});
+		}
+	}
+	
+	/**
+	 * Set JCombo list to current saved decks
+	 */
+	public void getDecks() {
+	String filepath = "/Users/eorndahl/Desktop/VCO/Decks";
+	File directory = new File(filepath);
+	String[] files = directory.list();
+	model.removeAllElements();
+	for (int i = 0; i < files.length; i++){
+		String[] splits = new String[2];
+		splits = files[i].split("\\.");
+		if(i != 0) {
+			model.addElement(splits[0]);
+		}
 		}
 	}
 	
@@ -1831,7 +1743,7 @@ public class CardOrganizer extends JFrame  {
 		try {
 			selected = (String) j.getValueAt(j.getSelectedRow(), 0);
 		} catch (ArrayIndexOutOfBoundsException e1) {
-			e1.printStackTrace(); //this will not be selected at times which is ok
+			//e1.printStackTrace(); //this will not be selected at times which is ok
 		}
 		try {
 			label.setIcon(organizer.getCard(selected).getImg());
@@ -1915,8 +1827,10 @@ public class CardOrganizer extends JFrame  {
 		for(int i = 0; i < dataModel.getRowCount(); i++) {
 			dataModel.setValueAt(null,i, 4);
 		}
+		if(!isMyCards) {
 		for(int i = 0; i < dataModel.getRowCount(); i++) {
 			dataModel.setValueAt(null,i, 5);
+		}
 		}
 		for(int i = 0; i < all.length; i++) {
 			dataModel.setValueAt(all[i],i, 0);
@@ -1941,11 +1855,13 @@ public class CardOrganizer extends JFrame  {
 		for(int i = 0; i < all.length; i++) {
 			dataModel.setValueAt(stringSet[i],i, 4);
 		}
+		if(!isMyCards) {
 		for(int i = 0; i < all.length; i++) {
 			if(owned[i].equals("✓")) {
 				dataModel.setValueAt(checkIcon,i, 5);
 			} else
 			dataModel.setValueAt(xIcon,i, 5);
+		}
 		}
 		table.repaint(); 
 		refreshCardValues(table);
@@ -2071,29 +1987,21 @@ public class CardOrganizer extends JFrame  {
 	}
 	
 	/**
-	 * Load deck
-	 * @throws IOException 
+	 * Delete deck
 	 */
-	public void loadDeck(String s) throws IOException {
-		StringBuilder sFile = new StringBuilder();
-		sFile = organizer.readFromFile(home + "/Desktop/VCO/Decks/" + s + ".txt");
-		organizer.resetDeck();
+	
+	public void deleteDeck() {
+		
+	}
+	
+	/**
+	 * Refresh ArrayList values
+	 */
+	
+	public void refreshALs() {
 		creatures = new ArrayList<Card>();
 		spells = new ArrayList<Card>();
 		lands = new ArrayList<Card>();
-		ArrayList<Card> temp2 = organizer.entries("deck");
-		String[] line = sFile.toString().split(":");
-		int z = 0;
-		String d = "";
-		for(int i = 1; i < line.length; i++) {
-			if(i % 2 != 0) {
-				d = line[i];
-			} else {
-				z = Integer.parseInt(line[i]);
-				for(int j = 0; j < z; j++)
-					organizer.addCardToDeck(d);
-			}	
-		}
 		ArrayList<Card> temp = organizer.entries("deck");
 		for(int i = 0; i < temp.size(); i++) {
 			Card card = temp.get(i);
@@ -2110,10 +2018,35 @@ public class CardOrganizer extends JFrame  {
 			else if(card.type2.equals("land") && !lands.contains(card)) {
 				lands.add(card);
 			}
-			}
-//			if(card.type2.equals("creature") && !creatures.contains(card))
-//				creatures.add(card);
 		}
+		}
+	}
+	
+	/**
+	 * Load deck
+	 * @throws IOException 
+	 */
+	@SuppressWarnings("static-access")
+	public void loadDeck(String s) throws IOException {
+		StringBuilder sFile = new StringBuilder();
+		sFile = organizer.readFromFile(home + "/Desktop/VCO/Decks/" + s + ".txt");
+		organizer.resetDeck();
+		creatures = new ArrayList<Card>();
+		spells = new ArrayList<Card>();
+		lands = new ArrayList<Card>();
+		String[] line = sFile.toString().split(":");
+		int z = 0;
+		String d = "";
+		for(int i = 1; i < line.length; i++) {
+			if(i % 2 != 0) {
+				d = line[i];
+			} else {
+				z = Integer.parseInt(line[i]);
+				for(int j = 0; j < z; j++)
+					organizer.addCardToDeck(d);
+			}	
+		}
+		refreshALs();
 		try{
 			refreshDeckTable(creatures, dataModel2);
 		}catch (Exception e2) {
@@ -2253,12 +2186,17 @@ public class CardOrganizer extends JFrame  {
 			ArrayList<String> arr = new ArrayList<String>();
 			String[] mine = organizer.getAllArray();
 			for(int i = 0; i < mine.length; i++) {
+//				try {
 				try {
-					if(organizer.getCard(mine[i]).rarity.contains(sel))
-						arr.add(mine[i]);
-				} catch (Exception ex) {
-					ex.printStackTrace(); //Not quite sure what is going wrong here buuut its small as far as I can tell
+					if(organizer.getCard(mine[i]).rarity != null)
+						if(organizer.getCard(mine[i]).rarity.contains(sel))
+							arr.add(mine[i]);
+				} catch (InvalidKeyException e) {
+					e.printStackTrace();
 				}
+//				} catch (Exception ex) {
+//					ex.printStackTrace(); //Not quite sure what is going wrong here buuut its small as far as I can tell
+//				}
 			}
 			all = new String[arr.size()];
 			arr.toArray(all);
