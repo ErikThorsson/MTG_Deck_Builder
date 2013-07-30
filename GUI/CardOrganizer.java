@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.security.InvalidKeyException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -54,6 +55,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -77,6 +79,7 @@ import MTGApplication.CollectionMethods;
 public class CardOrganizer extends JFrame  {
 	protected ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 	protected JTextArea notes = new JTextArea();
+	protected JTextArea oracleText = new JTextArea();
 	protected JButton addCard = new JButton("+");
 	protected JButton removeCard = new JButton("-");
 	private JButton viewDatabase = new JButton("All Cards");
@@ -179,6 +182,9 @@ public class CardOrganizer extends JFrame  {
 	private JLabel collectionV = new JLabel("Collection Value: ");
 	private JLabel mSign = new JLabel("$");
 	private JLabel collectionValue = new JLabel("0.0");
+	private JLabel deckV = new JLabel("Deck Value: ");
+	private JLabel deckMSign = new JLabel("$");
+	private JLabel deckValue = new JLabel("0.0");
 	private JRadioButton nameCheck = new JRadioButton();
 	private JRadioButton tribalCheck = new JRadioButton();
 	private JRadioButton textCheck = new JRadioButton();
@@ -289,8 +295,7 @@ public class CardOrganizer extends JFrame  {
 			group.add(tribalCheck);
 			group.add(textCheck);
 			group.add(enterCheck);
-
-
+			
 			//button images
 			red = new JToggleButton(new ImageIcon(home + "/Desktop/red.png"));
 			blue = new JToggleButton(new ImageIcon(home + "/Desktop/blue.png"));
@@ -299,8 +304,6 @@ public class CardOrganizer extends JFrame  {
 			colorless = new JToggleButton(new ImageIcon(home + "/Desktop/colorless.png"));
 			multi = new JToggleButton(new ImageIcon(home + "/Desktop/multi.png"));
 			green = new JToggleButton(new ImageIcon(home + "/Desktop/green.png"));
-			
-			
 			
 			//rarity icons and buttons	private JToggleButton common = new JToggleButton("C");
 			mythicIcon = new ImageIcon(home + "/Desktop/mythic.png");
@@ -603,11 +606,6 @@ public class CardOrganizer extends JFrame  {
 			panel6.add(tB,d);
 			
 			//combobox model
-			@SuppressWarnings("rawtypes")
-			Vector comboBoxItems=new Vector();
-		    comboBoxItems.add("Load Deck");
-			model = new DefaultComboBoxModel(comboBoxItems);
-			decks = new JComboBox(model);
 			getDecks();
 			    
 			//deckBuild
@@ -679,7 +677,7 @@ public class CardOrganizer extends JFrame  {
 				public boolean isCellEditable(int row, int column) {                
 					return false;  
 				};
-				@SuppressWarnings({ "unchecked", "rawtypes" })
+				@SuppressWarnings({ "rawtypes" })
 				@Override
 				public Class getColumnClass(int columnIndex) {
 				    if(columnIndex == 1 || columnIndex == 3 || columnIndex == 5){
@@ -871,13 +869,28 @@ public class CardOrganizer extends JFrame  {
 			g.insets = new Insets(0,0,0,0);
 			g.gridy = 2;
 			cardV.add(ownedBox, g);
-			JLabel notesL = new JLabel("Notes:");
 			g.gridx = 0;
 			g.gridy = 3;
-			cardV.add(notesL, g);
-			notes.setPreferredSize(new Dimension(0, 280));
+			g.insets = new Insets(0,0,0,0);
+			cardV.add(deckV, g);
+			g.insets = new Insets(0,75,0,0);
+			cardV.add(deckMSign, g);
+			g.insets = new Insets(0,85,0,0);
+			cardV.add(deckValue, g);
+			g.insets = new Insets(0,0,0,0);
+			JPanel notebox = new JPanel();
+			notebox.add(notes);
+			JTabbedPane tabbedPane = new JTabbedPane();
+			JScrollPane noteScroll = new JScrollPane(notes); 
+			tabbedPane.addTab("Deck Notes:", noteScroll);
+			tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
+			tabbedPane.addTab("Oracle Text", oracleText);
+			tabbedPane.setMnemonicAt(1, KeyEvent.VK_2);
+			tabbedPane.setPreferredSize(new Dimension(220,280));
+			notes.setLineWrap(true);
+			notes.setWrapStyleWord(true);			
 			g.gridy = 4;
-			cardV.add(notes,g);
+			cardV.add(tabbedPane,g);
 		
 			//combine tB and cV
 			JPanel combine = new JPanel(new GridBagLayout());
@@ -1367,7 +1380,7 @@ public class CardOrganizer extends JFrame  {
 							queryList = myCards;
 							ArrayList<String[]> values = returnValues(queryList);
 							refreshTable(queryList, values);
-							return;
+							//return;
 						}
 					viewMyCards();
 					}
@@ -1382,10 +1395,15 @@ public class CardOrganizer extends JFrame  {
 							}
 							ArrayList<String[]> values = returnValues(queryList);
 							refreshTable(queryList, values);
-							return;
+							//return;
 							}
 						viewAll(); 
 						}
+					try { //price collection on remove
+						priceCollection();
+					} catch (InvalidKeyException e1) {
+						e1.printStackTrace();
+					}
 					} else {
 						try{
 						organizer.removeCardFromDeck(selected, sideboardCheck);
@@ -1440,6 +1458,11 @@ public class CardOrganizer extends JFrame  {
 					} else if(isQuery == true) { 	//determine if query view and refresh
 						ArrayList<String[]> values = returnValues(queryList);
 						refreshTable(queryList, values);
+					}
+					try { //price collection on add
+						priceCollection();
+					} catch (InvalidKeyException e1) {
+						e1.printStackTrace();
 					}
 					} else {
 						organizer.addCardToDeck(selected, sideboardCheck);
@@ -1547,7 +1570,7 @@ public class CardOrganizer extends JFrame  {
 					try {
 						selected = (String) table.getValueAt(table.getSelectedRow(), 0);
 					} catch (ArrayIndexOutOfBoundsException e1) {
-						e1.printStackTrace();
+						//e1.printStackTrace();
 					}
 					isText = false;
 					if(selected != null) {
@@ -1621,6 +1644,10 @@ public class CardOrganizer extends JFrame  {
 	File directory = new File(filepath);
 	String[] files = directory.list();
 	model.removeAllElements();
+	Vector comboBoxItems=new Vector();
+    comboBoxItems.add("Load Deck");
+	model = new DefaultComboBoxModel(comboBoxItems);
+	decks = new JComboBox(model);
 	for (int i = 0; i < files.length; i++){
 		String[] splits = new String[2];
 		splits = files[i].split("\\.");
@@ -1802,9 +1829,29 @@ public class CardOrganizer extends JFrame  {
 				sum += value2;
 			}
 		}
-		sum = (double)((int)(sum * 100))/100;
-		String total = Double.toString(sum);
-		collectionValue.setText(total);
+		NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance();
+		collectionValue.setText(currencyFormatter.format(sum));
+	}
+	
+	/**
+	 * Price deck
+	 */
+	public void priceDeck(){
+		double sum = 0;
+		ArrayList<Card> temp = organizer.entries("deck");
+		for(int i = 0; i < temp.size(); i++) {
+			Card card = temp.get(i);
+			double value = 0;
+			if(card != null) {
+				value = Double.parseDouble(card.price);
+			if(card.owned > 0) {
+				sum+= value * card.cardsInDeck + value * card.numSB;
+			} else 
+				sum += value;
+			}
+		}
+		NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance();
+		deckValue.setText(currencyFormatter.format(sum));
 	}
 
 	/**
@@ -2010,9 +2057,9 @@ public class CardOrganizer extends JFrame  {
 		if(sideboard.size() > 0) {
 		for(int i = 0; i < sideboard.size(); i++) {
 			if(i == 0)
-				deck.add("::" + sideboard.get(i).name + ":" + sideboard.get(i).cardsInDeck);
+				deck.add("::" + sideboard.get(i).name + ":" + sideboard.get(i).numSB);
 			else
-				deck.add(":" + sideboard.get(i).name + ":" + sideboard.get(i).cardsInDeck);
+				deck.add(":" + sideboard.get(i).name + ":" + sideboard.get(i).numSB);
 			}
 		}
 		String s = "";
@@ -2072,26 +2119,16 @@ public class CardOrganizer extends JFrame  {
 	 */
 	@SuppressWarnings("static-access")
 	public void loadDeck(String s) throws IOException {
+		if(!s.equals("Load Deck")) {
+		priceDeck();
 		StringBuilder sFile = new StringBuilder();
 		sFile = organizer.readFromFile(home + "/Desktop/VCO/Decks/" + s + ".txt");
 		organizer.resetDeck();
 		String[] sBSplit = sFile.toString().split("::");
-//		try {
-//			for(int i = 0; i < sBSplit.length; i++)
-//				System.out.println(sBSplit[i]);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
 		String sB[] = null;
 		try {
 		if(sBSplit[1] != null)
 			sB = sBSplit[1].split(":");
-//		try {
-//			for(int i = 0; i < sB.length; i++)
-//				System.out.println(sB[i]);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
 		} catch (Exception e){
 		//e.printStackTrace(); there will be an array out of bounds w/o a sideboard. Tis okay
 		}
@@ -2140,6 +2177,7 @@ public class CardOrganizer extends JFrame  {
 		}catch (Exception e2) {
 			e2.printStackTrace();
 			}
+		}
 	}
 
 	/**
