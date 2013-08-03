@@ -37,7 +37,7 @@ public class GoogleImageRobot {
 	    robot.mousePress(InputEvent.BUTTON1_MASK);
 	    robot.mouseRelease(InputEvent.BUTTON1_MASK);
 	    Thread.sleep(1000);
-	    robot.mouseMove(630, 375);
+	    robot.mouseMove(650, 375);
 	    Thread.sleep(1000);
 	    robot.mousePress(InputEvent.BUTTON1_MASK);
 	    robot.mouseRelease(InputEvent.BUTTON1_MASK);

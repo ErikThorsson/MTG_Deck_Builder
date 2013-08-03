@@ -128,8 +128,8 @@ public class CardOrganizer extends JFrame  {
 	private String selected = null;
 	private JCheckBox deckBuild = new JCheckBox();
 	private JCheckBox sideBoard = new JCheckBox();
-	private JComboBox decks = new JComboBox();
 	DefaultComboBoxModel model = new DefaultComboBoxModel();
+	private JComboBox decks = new JComboBox(model);
 	private String name = "n";
 	private String cardText = "n";
 	private String color = "n";
@@ -142,7 +142,7 @@ public class CardOrganizer extends JFrame  {
 	private String tribal = "n";
 	private JMenuBar menuBar;
 	private JMenu menu;
-	private JMenuItem menuItem, menuItem2, menuItem3, menuItem4, menuItem5;
+	private JMenuItem menuItem, menuItem2, menuItem3, menuItem4, menuItem5, menuItemSaveDeck;
 	private String[][] data; 
 	private String[] queryList;
 	private boolean isQuery = false;
@@ -232,9 +232,8 @@ public class CardOrganizer extends JFrame  {
 	Boolean table3Sel = false;
 	Boolean table4Sel = false;
 	Boolean table5Sel = false;
-
-
 	String home = System.getProperty("user.home");
+	String currentDeck = "";
 
 	
 	public static void main(String[] args) throws InvalidKeyException, IOException, AWTException {
@@ -289,12 +288,32 @@ public class CardOrganizer extends JFrame  {
 			} catch (Exception ex) {
 				System.out.print("Not available in your OS");
 			}
-
-			ButtonGroup group = new ButtonGroup();
-			group.add(nameCheck);
-			group.add(tribalCheck);
-			group.add(textCheck);
-			group.add(enterCheck);
+			
+			//use mac searchbox
+			try {
+			textBox.putClientProperty("JTextField.variant", "search");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			addCard.putClientProperty("JButton.buttonType", "roundRect");
+			removeCard.putClientProperty("JButton.buttonType", "roundRect");
+			and.putClientProperty("JButton.buttonType", "roundRect");
+			or.putClientProperty("JButton.buttonType", "roundRect");
+			common.putClientProperty("JButton.buttonType", "textured");
+			uncommon.putClientProperty("JButton.buttonType", "textured");
+			rare.putClientProperty("JButton.buttonType", "textured");
+			mythic.putClientProperty("JButton.buttonType", "textured");
+			creature.putClientProperty("JButton.buttonType",  "bevel");
+			enchantment.putClientProperty("JButton.buttonType",  "bevel");
+			instant.putClientProperty("JButton.buttonType",  "bevel");
+			sorcery.putClientProperty("JButton.buttonType", "bevel");
+			artifact.putClientProperty("JButton.buttonType", "bevel");
+			planeswalker.putClientProperty("JButton.buttonType", "bevel");
+			land.putClientProperty("JButton.buttonType", "bevel");
+//			mycards.putClientProperty("JButton.buttonType", "bevel");
+//			allcards.putClientProperty("JButton.buttonType", "bevel");
+//			unowned.putClientProperty("JButton.buttonType", "bevel");
 			
 			//button images
 			red = new JToggleButton(new ImageIcon(home + "/Desktop/red.png"));
@@ -343,6 +362,10 @@ public class CardOrganizer extends JFrame  {
 			checkIcon = new ImageIcon(home + "/Desktop/Icons/rsz_check2.png");
 			xIcon = new ImageIcon(home + "/Desktop/Icons/cross16.png");
 			XIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_X_mana.gif");
+			common.putClientProperty("JButton.buttonType", "roundRect");
+			uncommon.putClientProperty("JButton.buttonType", "roundRect");
+			rare.putClientProperty("JButton.buttonType", "roundRect");
+			mythic.putClientProperty("JButton.buttonType", "roundRect");
 			
 			//Create the menu bar.
 			menuBar = new JMenuBar();
@@ -354,37 +377,39 @@ public class CardOrganizer extends JFrame  {
 			menuBar.add(menu);
 
 			//a group of JMenuItems
-			menuItem = new JMenuItem("Save Collection",KeyEvent.VK_T);
-			menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, ActionEvent.ALT_MASK));
-			menuItem.getAccessibleContext().setAccessibleDescription("Save");
-			menu.add(menuItem);
-			menuItem2 = new JMenuItem("Backup Collection", KeyEvent.VK_T);
-			menuItem2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2, ActionEvent.ALT_MASK));
-			menuItem2.getAccessibleContext().setAccessibleDescription("Backup");
-			menu.add(menuItem2);
-			menuItem3 = new JMenuItem("Save Deck", KeyEvent.VK_T);
+//			menuItem = new JMenuItem("Save Collection",KeyEvent.VK_T);
+//			menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, ActionEvent.ALT_MASK));
+//			menuItem.getAccessibleContext().setAccessibleDescription("Save");
+//			menu.add(menuItem);
+			menuItemSaveDeck = new JMenuItem("Save Deck", KeyEvent.VK_T);
+			menu.add(menuItemSaveDeck);
+			menuItem3 = new JMenuItem("Save As", KeyEvent.VK_T);
 			menu.add(menuItem3);
 			menuItem4 = new JMenuItem("Delete Deck", KeyEvent.VK_T);
 			menu.add(menuItem4);
 			menuItem5 = new JMenuItem("New Deck", KeyEvent.VK_T);
 			menu.add(menuItem5);
+			menuItem2 = new JMenuItem("Backup Collection", KeyEvent.VK_T);
+			menuItem2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2, ActionEvent.ALT_MASK));
+			menuItem2.getAccessibleContext().setAccessibleDescription("Backup");
+			menu.add(menuItem2);
 			setJMenuBar(menuBar);
 
 			//menuItem listener
-			menuItem.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					try {
-						organizer.save();
-					} catch (InvalidKeyException e1) {
-						e1.printStackTrace();
-					} catch (FileNotFoundException e1) {
-						e1.printStackTrace();
-					} catch (MalformedURLException e1) {
-						e1.printStackTrace();
-					}
-				}
-			});
+//			menuItem.addActionListener(new ActionListener() {
+//				@Override
+//				public void actionPerformed(ActionEvent e) {
+//					try {
+//						organizer.save();
+//					} catch (InvalidKeyException e1) {
+//						e1.printStackTrace();
+//					} catch (FileNotFoundException e1) {
+//						e1.printStackTrace();
+//					} catch (MalformedURLException e1) {
+//						e1.printStackTrace();
+//					}
+//				}
+//			});
 
 			//menuItem2 listener
 			menuItem2.addActionListener(new ActionListener() {
@@ -402,11 +427,26 @@ public class CardOrganizer extends JFrame  {
 				}
 			});
 			
+			menuItemSaveDeck.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					try {
+						saveDeck(false);
+					} catch (FileNotFoundException e1) {
+						e1.printStackTrace();
+					} catch (MalformedURLException e1) {
+						e1.printStackTrace();
+					} catch (IOException e3) {
+						e3.printStackTrace();
+					}
+				}
+			});
+			
 			menuItem3.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					try {
-						saveDeck();
+						saveDeck(true);
 						getDecks();
 					} catch (FileNotFoundException e1) {
 						e1.printStackTrace();
@@ -421,7 +461,7 @@ public class CardOrganizer extends JFrame  {
 			menuItem4.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-
+					deleteDeck();
 				}
 			});
 			
@@ -607,6 +647,7 @@ public class CardOrganizer extends JFrame  {
 			
 			//combobox model
 			getDecks();
+			decks = new JComboBox(model);
 			    
 			//deckBuild
 			JPanel deckB = new JPanel(new GridBagLayout());
@@ -717,7 +758,7 @@ public class CardOrganizer extends JFrame  {
 			c.weightx = 5;
 			c.weighty = 5;
 			c.fill = GridBagConstraints.BOTH;
-			scroll.setPreferredSize(new Dimension(300, 503));
+			//scroll.setPreferredSize(new Dimension(300, 503));
 			JPanel queryContainer = new JPanel(new GridBagLayout());
 			queryContainer.setPreferredSize(new Dimension(300, 470));
 			queryContainer.add(scroll, c);
@@ -731,7 +772,7 @@ public class CardOrganizer extends JFrame  {
 			c.weighty = 1;
 
 			//JTable
-			c.insets = new Insets(0,0,0,0);
+			c.insets = new Insets(3,0,0,0);
 			c.fill = GridBagConstraints.BOTH;
 			c.gridx = 1;
 			c.gridy = 0;
@@ -741,6 +782,7 @@ public class CardOrganizer extends JFrame  {
 			c.anchor = GridBagConstraints.PAGE_START;
 			box.add(scrollList, c);
 			p3.add(box,c);
+			c.insets = new Insets(0,0,0,0);
 			
 			//make deck builder window
 			JPanel deck = new JPanel(new GridBagLayout());
@@ -848,8 +890,6 @@ public class CardOrganizer extends JFrame  {
 			g.insets = new Insets(0,0,0,0);
 			collectionVal.add(collectionV, g);
 			g.insets = new Insets(0,110,0,0);
-			collectionVal.add(mSign,g);
-			g.insets = new Insets(0,120,0,0);
 			priceCollection();
 			collectionVal.add(collectionValue, g);
 			g.insets = new Insets(0,0,0,0);
@@ -873,8 +913,6 @@ public class CardOrganizer extends JFrame  {
 			g.gridy = 3;
 			g.insets = new Insets(0,0,0,0);
 			cardV.add(deckV, g);
-			g.insets = new Insets(0,75,0,0);
-			cardV.add(deckMSign, g);
 			g.insets = new Insets(0,85,0,0);
 			cardV.add(deckValue, g);
 			g.insets = new Insets(0,0,0,0);
@@ -1432,6 +1470,15 @@ public class CardOrganizer extends JFrame  {
 							e2.printStackTrace();
 							}
 					}
+					try {
+						organizer.save();
+					} catch (InvalidKeyException e1) {
+						e1.printStackTrace();
+					} catch (FileNotFoundException e1) {
+						e1.printStackTrace();
+					} catch (MalformedURLException e1) {
+						e1.printStackTrace();
+					}
 				}
 			});
 
@@ -1488,6 +1535,15 @@ public class CardOrganizer extends JFrame  {
 							e2.printStackTrace();
 							}
 						}
+					try {
+						organizer.save();
+					} catch (InvalidKeyException e1) {
+						e1.printStackTrace();
+					} catch (FileNotFoundException e1) {
+						e1.printStackTrace();
+					} catch (MalformedURLException e1) {
+						e1.printStackTrace();
+					}
 					}
 			});
 			
@@ -1524,10 +1580,13 @@ public class CardOrganizer extends JFrame  {
 				@Override
 				public void itemStateChanged(ItemEvent e) {
 				String s = (String) decks.getSelectedItem();
+				currentDeck = s;
+				if (s != null) {
 				try {
 					loadDeck(s);
 				} catch (IOException e1) {
 					e1.printStackTrace();
+				}
 				}
 				}
 			});
@@ -1639,21 +1698,19 @@ public class CardOrganizer extends JFrame  {
 	/**
 	 * Set JCombo list to current saved decks
 	 */
+	@SuppressWarnings("unchecked")
 	public void getDecks() {
 	String filepath = "/Users/eorndahl/Desktop/VCO/Decks";
 	File directory = new File(filepath);
 	String[] files = directory.list();
 	model.removeAllElements();
-	Vector comboBoxItems=new Vector();
-    comboBoxItems.add("Load Deck");
-	model = new DefaultComboBoxModel(comboBoxItems);
-	decks = new JComboBox(model);
+	model.addElement("Load Deck");
 	for (int i = 0; i < files.length; i++){
 		String[] splits = new String[2];
 		splits = files[i].split("\\.");
-		if(i != 0) {
+		if(!splits[0].equals("")) {
 			model.addElement(splits[0]);
-		}
+			}
 		}
 	}
 	
@@ -2037,7 +2094,7 @@ public class CardOrganizer extends JFrame  {
 	 * @throws IOException 
 	 */
 	
-	public void saveDeck() throws IOException {
+	public void saveDeck(boolean b) throws IOException {
 		ArrayList<String> deck = new ArrayList<String>();
 		if(creatures.size() > 0) {
 		for(int i = 0; i < creatures.size(); i++) {
@@ -2066,10 +2123,17 @@ public class CardOrganizer extends JFrame  {
 		for(int i = 0; i < deck.size(); i++){
 			s += deck.get(i) + "\n";
 		}
+		PrintWriter out;
+		if(b == true) {
 		String inputValue = JOptionPane.showInputDialog(null, "Enter name", "Save Deck", JOptionPane.PLAIN_MESSAGE);
 		File f = new File(home + "/Desktop/VCO/Decks/" + inputValue+ ".txt");
 		f.createNewFile();
-		PrintWriter out = new PrintWriter(home + "/Desktop/VCO/Decks/"+ inputValue +".txt");
+		out = new PrintWriter(home + "/Desktop/VCO/Decks/"+ inputValue +".txt");
+		} else {
+			File f = new File(home + "/Desktop/VCO/Decks/" + currentDeck + ".txt");
+			f.createNewFile();
+			out = new PrintWriter(home + "/Desktop/VCO/Decks/"+ currentDeck +".txt");
+		}
 		out.print(s);
 		out.close();
 	}
@@ -2079,7 +2143,16 @@ public class CardOrganizer extends JFrame  {
 	 */
 	
 	public void deleteDeck() {
-		
+		int reply = JOptionPane.showConfirmDialog(
+	            null,
+	            "Are you sure you want to delete this deck?",
+	            "",
+	            JOptionPane.YES_NO_OPTION);
+		if(reply == JOptionPane.YES_NO_OPTION) {
+			File file = new File(home + "/Desktop/VCO/Decks/"+ currentDeck +".txt");
+			file.delete();
+			getDecks();
+		}
 	}
 	
 	/**

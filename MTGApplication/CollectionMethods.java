@@ -1,5 +1,6 @@
 package MTGApplication;
 
+import java.awt.AWTException;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -19,6 +20,7 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 import automatedDatabase.GetPrice;
+import automatedDatabase.GoogleImageRobot;
 
 import dataStructures.BasicTree;
 import dataStructures.HashTableMap;
@@ -49,7 +51,7 @@ public class CollectionMethods extends BasicTree {
 		loadPrices();
 	}
 
-	public static void main(String[] args) throws InvalidKeyException, IOException {
+	public static void main(String[] args) throws InvalidKeyException, IOException, InterruptedException, AWTException {
 		CollectionMethods test = new CollectionMethods();
 				test.loadCompleteDatabase();
 				//test.printNameAndPrice();
@@ -58,10 +60,10 @@ public class CollectionMethods extends BasicTree {
 //				System.out.println(card.CMC);
 				//String[] t = test.query("n", "green");
 						//test.query(s, "n", -1, -1, -1, "n", "n", "n", "n", "n", "Centaur's Herald");
-//				for(int i = 0; i < s.length; i++) { //tests for card picture
-//					Card card = test.getCard(s[i]);
-					//System.out.println(card.name);
-//				}
+				for(int i = 0; i < s.length; i++) { //tests for card picture
+				GoogleImageRobot bot = new GoogleImageRobot();
+				bot.getImgURL(s[i]);	
+				}
 					
 //check for missing images
 					
