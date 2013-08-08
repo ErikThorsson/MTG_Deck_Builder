@@ -102,7 +102,7 @@ public class testFilePrint {
 		String rarity = "";
 		Boolean isLand = false;
 
-		BufferedReader br = new BufferedReader(new FileReader("/Users/eorndahl/Desktop/Standard.txt"));
+		BufferedReader br = new BufferedReader(new FileReader("/Users/eorndahl/Desktop/Standard Cards.txt"));
 		String sCurrentLine;
 		int counter = 0;
 		while ((sCurrentLine = br.readLine()) != null) {
@@ -201,11 +201,14 @@ public class testFilePrint {
 					counter++;
 					text = null;
 					} else {
-						text = sCurrentLine;
-						while(!sCurrentLine.contains("-R") || !sCurrentLine.contains("-U") || !sCurrentLine.contains("-C") || sCurrentLine.contains("-M")) {
+						text = "";
+						String temp = sCurrentLine;
+						while(!sCurrentLine.contains("-R") || !sCurrentLine.contains("-U") || !sCurrentLine.contains("-C") || !sCurrentLine.contains("-M")) {
+							text += sCurrentLine;
 							sCurrentLine = br.readLine();
 							if(sCurrentLine == null) {
 								text = null;
+								sCurrentLine = temp;
 								counter++;
 								break;
 							}

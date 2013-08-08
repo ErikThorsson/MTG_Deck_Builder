@@ -83,7 +83,7 @@ public class CardOrganizer extends JFrame  {
 	protected JButton addCard = new JButton("+");
 	protected JButton removeCard = new JButton("-");
 	private JButton viewDatabase = new JButton("All Cards");
-	protected JComboBox set = new JComboBox(new Object[] {"Set", "Return to Ravnica", "Gatecrash", "Dragon's Maze", "Innistrad", "Dark Ascension", "Avacyn Restored"});
+	protected JComboBox set = new JComboBox(new Object[] {"Set", "Return to Ravnica", "Gatecrash", "Dragon's Maze", "Innistrad", "Dark Ascension", "Avacyn Restored", "Magic 2012", "Magic 2013", "Magic 2014"});
 	private JToggleButton red = new JToggleButton("R");
 	private JToggleButton white = new JToggleButton("W");
 	private JToggleButton blue = new JToggleButton("U");
@@ -117,6 +117,15 @@ public class CardOrganizer extends JFrame  {
 	private JToggleButton fiveT = new JToggleButton("5");
 	private JToggleButton sixT = new JToggleButton("6");
 	private JToggleButton sevenT = new JToggleButton("7");
+	private JToggleButton oneC = new JToggleButton("1");
+	private JToggleButton twoC = new JToggleButton("2");
+	private JToggleButton threeC = new JToggleButton("3");
+	private JToggleButton fourC = new JToggleButton("4");
+	private JToggleButton fiveC = new JToggleButton("5");
+	private JToggleButton sixC = new JToggleButton("6");
+	private JToggleButton sevenC = new JToggleButton("7");
+	private JToggleButton eightC = new JToggleButton("8");
+	private JToggleButton nineC = new JToggleButton("9+");
 	private JToggleButton land = new JToggleButton("Land");
 	private JToggleButton unowned = new JToggleButton("Missing");
 	private JToggleButton ownedC = new JToggleButton("Owned");
@@ -136,6 +145,7 @@ public class CardOrganizer extends JFrame  {
 	private int power = -1;
 	private int toughness = -1;
 	private int owned = -1;
+	private int CMC = -1;
 	private String type1 = "n";
 	private String type2 = "n";
 	private String rarityC = "n";
@@ -182,9 +192,11 @@ public class CardOrganizer extends JFrame  {
 	private JLabel collectionV = new JLabel("Collection Value: ");
 	private JLabel mSign = new JLabel("$");
 	private JLabel collectionValue = new JLabel("0.0");
-	private JLabel deckV = new JLabel("Deck Value: ");
+	private JLabel deckV = new JLabel("");
 	private JLabel deckMSign = new JLabel("$");
-	private JLabel deckValue = new JLabel("0.0");
+	private JLabel deckValue = new JLabel("");
+	private JLabel deckCount = new JLabel("");
+	private JLabel deckNum = new JLabel("");
 	private JRadioButton nameCheck = new JRadioButton();
 	private JRadioButton tribalCheck = new JRadioButton();
 	private JRadioButton textCheck = new JRadioButton();
@@ -234,7 +246,6 @@ public class CardOrganizer extends JFrame  {
 	Boolean table5Sel = false;
 	String home = System.getProperty("user.home");
 	String currentDeck = "";
-
 	
 	public static void main(String[] args) throws InvalidKeyException, IOException, AWTException {
 		new CardOrganizer();
@@ -274,7 +285,7 @@ public class CardOrganizer extends JFrame  {
 			setLayout(new BorderLayout());
 
 			mainList = new JPanel(new GridBagLayout());
-			mainList.setPreferredSize(new Dimension(250, 580));
+			mainList.setPreferredSize(new Dimension(250, 640));
 
 			GridBagConstraints d = new GridBagConstraints();
 			d.gridwidth = GridBagConstraints.REMAINDER;
@@ -645,6 +656,27 @@ public class CardOrganizer extends JFrame  {
 			d.gridy = 1;
 			panel6.add(tB,d);
 			
+			//CMC buttons
+			JPanel cmc = new JPanel(new GridBagLayout());
+			cmc.setBorder(new MatteBorder(0,0,1,0, Color.GRAY));
+			JPanel cmcB = new JPanel(new GridLayout(1,9));
+			cmcB.add(oneC);
+			cmcB.add(twoC);
+			cmcB.add(threeC);
+			cmcB.add(fourC);
+			cmcB.add(fiveC);
+			cmcB.add(sixC);
+			cmcB.add(sevenC);
+			cmcB.add(eightC);
+			cmcB.add(nineC);
+			cmcB.setPreferredSize(new Dimension(0,23));
+			JLabel cmcL = new JLabel("CMC: ");
+			d.gridx = 0;
+			d.gridy = 0;
+			cmc.add(cmcL, d);
+			d.gridy = 1;
+			cmc.add(cmcB, d);
+			
 			//combobox model
 			getDecks();
 			decks = new JComboBox(model);
@@ -701,6 +733,8 @@ public class CardOrganizer extends JFrame  {
 			gb.gridy = 8;
 			gb.weighty = 1.0;
 			mainList.add(panel6, gb);
+			gb.gridy = 9;
+			mainList.add(cmc, gb);
 
 
 			//JTable
@@ -913,20 +947,28 @@ public class CardOrganizer extends JFrame  {
 			g.gridy = 3;
 			g.insets = new Insets(0,0,0,0);
 			cardV.add(deckV, g);
-			g.insets = new Insets(0,85,0,0);
+			g.insets = new Insets(0,75,0,0);
 			cardV.add(deckValue, g);
+			g.insets = new Insets(0,135,0,0);
+			cardV.add(deckCount, g);
+			g.insets = new Insets(0,190,0,0);
+			deckNum.setText("");
+			cardV.add(deckNum, g);
 			g.insets = new Insets(0,0,0,0);
 			JPanel notebox = new JPanel();
 			notebox.add(notes);
 			JTabbedPane tabbedPane = new JTabbedPane();
 			JScrollPane noteScroll = new JScrollPane(notes); 
+			JScrollPane oracleScroll = new JScrollPane(oracleText); 
 			tabbedPane.addTab("Deck Notes:", noteScroll);
 			tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
-			tabbedPane.addTab("Oracle Text", oracleText);
+			tabbedPane.addTab("Oracle Text", oracleScroll);
 			tabbedPane.setMnemonicAt(1, KeyEvent.VK_2);
 			tabbedPane.setPreferredSize(new Dimension(220,280));
 			notes.setLineWrap(true);
-			notes.setWrapStyleWord(true);			
+			notes.setWrapStyleWord(true);
+			oracleText.setLineWrap(true);
+			oracleText.setWrapStyleWord(true);
 			g.gridy = 4;
 			cardV.add(tabbedPane,g);
 		
@@ -944,6 +986,8 @@ public class CardOrganizer extends JFrame  {
 			add(try3);
 			g.anchor = GridBagConstraints.FIRST_LINE_START;
 			combine.add(try3, g);
+			g.weightx = 1;
+			g.weighty = 1;
 			g.gridx = 1;
 			g.weightx = 0;
 			g.weighty = 0;
@@ -1170,6 +1214,114 @@ public class CardOrganizer extends JFrame  {
 					toughness = 7;
 					if(buttonSelected == false)
 						toughness = -1;
+					query();
+				}
+			});
+			
+			oneC.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent actionEvent) {
+					AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
+					buttonSelected = abstractButton.getModel().isSelected();
+					CMC = 1;
+					if(buttonSelected == false)
+						CMC = -1;
+					query();
+				}
+			});
+			
+			twoC.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent actionEvent) {
+					AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
+					buttonSelected = abstractButton.getModel().isSelected();
+					CMC = 2;
+					if(buttonSelected == false)
+						CMC = -1;
+					query();
+				}
+			});
+			
+			threeC.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent actionEvent) {
+					AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
+					buttonSelected = abstractButton.getModel().isSelected();
+					CMC = 3;
+					if(buttonSelected == false)
+						CMC = -1;
+					query();
+				}
+			});
+			
+			fourC.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent actionEvent) {
+					AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
+					buttonSelected = abstractButton.getModel().isSelected();
+					CMC = 4;
+					if(buttonSelected == false)
+						CMC = -1;
+					query();
+				}
+			});
+			
+			fiveC.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent actionEvent) {
+					AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
+					buttonSelected = abstractButton.getModel().isSelected();
+					CMC = 5;
+					if(buttonSelected == false)
+						CMC = -1;
+					query();
+				}
+			});
+			
+			sixC.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent actionEvent) {
+					AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
+					buttonSelected = abstractButton.getModel().isSelected();
+					CMC = 6;
+					if(buttonSelected == false)
+						CMC = -1;
+					query();
+				}
+			});
+			
+			sevenC.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent actionEvent) {
+					AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
+					buttonSelected = abstractButton.getModel().isSelected();
+					CMC = 7;
+					if(buttonSelected == false)
+						CMC = -1;
+					query();
+				}
+			});
+			
+			eightC.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent actionEvent) {
+					AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
+					buttonSelected = abstractButton.getModel().isSelected();
+					CMC = 8;
+					if(buttonSelected == false)
+						CMC = -1;
+					query();
+				}
+			});
+			
+			nineC.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent actionEvent) {
+					AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
+					buttonSelected = abstractButton.getModel().isSelected();
+					CMC = 9;
+					if(buttonSelected == false)
+						CMC = -1;
 					query();
 				}
 			});
@@ -1427,7 +1579,7 @@ public class CardOrganizer extends JFrame  {
 							organizer.removeCard(selected, "cD");
 						if(isQuery == true) {
 							try {
-								queryList = organizer.query(queryList, color, power,toughness,owned, type1, type2, rarityC, tribal, cardText, name);
+								queryList = organizer.query(queryList, color, power,toughness,owned, type1, type2, rarityC, tribal, cardText, name,	CMC);
 							} catch (InvalidKeyException e2) {
 								e2.printStackTrace();
 							}
@@ -1442,9 +1594,19 @@ public class CardOrganizer extends JFrame  {
 					} catch (InvalidKeyException e1) {
 						e1.printStackTrace();
 					}
+					try {
+						organizer.save();
+					} catch (InvalidKeyException e1) {
+						e1.printStackTrace();
+					} catch (FileNotFoundException e1) {
+						e1.printStackTrace();
+					} catch (MalformedURLException e1) {
+						e1.printStackTrace();
+					}
 					} else {
 						try{
 						organizer.removeCardFromDeck(selected, sideboardCheck);
+						countDeck();
 						refreshALs();
 						} catch (Exception ex) {
 							//tis fine
@@ -1469,15 +1631,6 @@ public class CardOrganizer extends JFrame  {
 						}catch (Exception e2) {
 							e2.printStackTrace();
 							}
-					}
-					try {
-						organizer.save();
-					} catch (InvalidKeyException e1) {
-						e1.printStackTrace();
-					} catch (FileNotFoundException e1) {
-						e1.printStackTrace();
-					} catch (MalformedURLException e1) {
-						e1.printStackTrace();
 					}
 				}
 			});
@@ -1511,8 +1664,18 @@ public class CardOrganizer extends JFrame  {
 					} catch (InvalidKeyException e1) {
 						e1.printStackTrace();
 					}
+					try {
+						organizer.save();
+					} catch (InvalidKeyException e1) {
+						e1.printStackTrace();
+					} catch (FileNotFoundException e1) {
+						e1.printStackTrace();
+					} catch (MalformedURLException e1) {
+						e1.printStackTrace();
+					}
 					} else {
 						organizer.addCardToDeck(selected, sideboardCheck);
+						countDeck();
 						refreshALs();
 						try{
 							refreshDeckTable(creatures, dataModel2);
@@ -1535,15 +1698,6 @@ public class CardOrganizer extends JFrame  {
 							e2.printStackTrace();
 							}
 						}
-					try {
-						organizer.save();
-					} catch (InvalidKeyException e1) {
-						e1.printStackTrace();
-					} catch (FileNotFoundException e1) {
-						e1.printStackTrace();
-					} catch (MalformedURLException e1) {
-						e1.printStackTrace();
-					}
 					}
 			});
 			
@@ -1629,7 +1783,6 @@ public class CardOrganizer extends JFrame  {
 					try {
 						selected = (String) table.getValueAt(table.getSelectedRow(), 0);
 					} catch (ArrayIndexOutOfBoundsException e1) {
-						//e1.printStackTrace();
 					}
 					isText = false;
 					if(selected != null) {
@@ -1654,7 +1807,16 @@ public class CardOrganizer extends JFrame  {
 			table3.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 				@Override
 				public void valueChanged(ListSelectionEvent e) {
+//					try {
+//					table.getSelectionModel().clearSelection();
+//					table2.getSelectionModel().clearSelection();
+//					table4.getSelectionModel().clearSelection();
+//					table5.getSelectionModel().clearSelection();
+//					} catch (Exception e1) {
+//						e1.printStackTrace();
+//					}
 					try {
+						selected = (String) table3.getValueAt(table3.getSelectedRow(), 0);
 					} catch (ArrayIndexOutOfBoundsException e1) {
 						e1.printStackTrace();
 					}
@@ -1667,6 +1829,14 @@ public class CardOrganizer extends JFrame  {
 			table4.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 				@Override
 				public void valueChanged(ListSelectionEvent e) {
+//					try {
+//					table2.getSelectionModel().clearSelection();
+//					table3.getSelectionModel().clearSelection();
+//					table.getSelectionModel().clearSelection();
+//					table5.getSelectionModel().clearSelection();
+//					} catch (Exception e1) {
+//						e1.printStackTrace();
+//					}
 					try {
 						selected = (String) table4.getValueAt(table4.getSelectedRow(), 0);
 					} catch (ArrayIndexOutOfBoundsException e1) {
@@ -1681,6 +1851,14 @@ public class CardOrganizer extends JFrame  {
 			table5.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 				@Override
 				public void valueChanged(ListSelectionEvent e) {
+//					try {
+//					table.getSelectionModel().clearSelection();
+//					table3.getSelectionModel().clearSelection();
+//					table4.getSelectionModel().clearSelection();
+//					table2.getSelectionModel().clearSelection();
+//					} catch (Exception e1) {
+//						e1.printStackTrace();
+//					}
 					try {
 						selected = (String) table5.getValueAt(table5.getSelectedRow(), 0);
 					} catch (ArrayIndexOutOfBoundsException e1) {
@@ -1866,6 +2044,15 @@ public class CardOrganizer extends JFrame  {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+		Card card;
+		try {
+			card = organizer.getCard(selected);
+			String text = "";
+			text = card.text;
+			oracleText.setText(text);
+		} catch (InvalidKeyException e) {
+			e.printStackTrace();
+		}
 		}
 	}
 	/**
@@ -1908,7 +2095,25 @@ public class CardOrganizer extends JFrame  {
 			}
 		}
 		NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance();
+		deckV.setText("Deck Value: ");
 		deckValue.setText(currencyFormatter.format(sum));
+	}
+	
+	/**
+	 * Count cards in deck
+	 */
+	
+	public void countDeck() {
+		int sum = 0;
+		ArrayList<Card> temp = organizer.entries("deck");
+		for(int i = 0; i < temp.size(); i++) {
+			Card card = temp.get(i);
+			if(card != null) {
+			sum += card.cardsInDeck;
+			}
+		}
+		deckCount.setText("# Cards: ");
+		deckNum.setText(Integer.toString(sum));		
 	}
 
 	/**
@@ -2194,6 +2399,7 @@ public class CardOrganizer extends JFrame  {
 	public void loadDeck(String s) throws IOException {
 		if(!s.equals("Load Deck")) {
 		priceDeck();
+		countDeck();
 		StringBuilder sFile = new StringBuilder();
 		sFile = organizer.readFromFile(home + "/Desktop/VCO/Decks/" + s + ".txt");
 		organizer.resetDeck();
@@ -2268,14 +2474,14 @@ public class CardOrganizer extends JFrame  {
 		} else 
 			querySet = allCards;
 		try {
-			queryList = organizer.query(querySet, color, power,toughness,owned, type1, type2, rarityC, tribal, cardText, name);
+			queryList = organizer.query(querySet, color, power,toughness,owned, type1, type2, rarityC, tribal, cardText, name, CMC);
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			}
 		java.util.Arrays.sort(queryList);
 		if(owned == -1 && color.equals("n") && type1.equals("n") && type2.equals("n") 
 				&& power == -1 && toughness == -1 && rarityC.equals("n") && tribal.equals("n") 
-				&& cardText.equals("n") && name.equals("n")) { //if no input for query
+				&& cardText.equals("n") && name.equals("n") && CMC == -1) { //if no input for query
 			isQuery = false;
 			if (isMyCards == true) {
 				viewMyCards();
@@ -2303,7 +2509,7 @@ public class CardOrganizer extends JFrame  {
 			my = organizer.getAllArray();
 		} else {
 		try {
-			my = organizer.query(organizer.getCategory("cD"), color, power,toughness,owned, type1, type2, rarityC, tribal, cardText, name);
+			my = organizer.query(organizer.getCategory("cD"), color, power,toughness,owned, type1, type2, rarityC, tribal, cardText, name, CMC);
 		} catch (InvalidKeyException e) {
 			e.printStackTrace();
 			}
@@ -2337,7 +2543,7 @@ public class CardOrganizer extends JFrame  {
 			all = organizer.getCategory("cD");
 		} else {
 			try {
-				all = organizer.query(organizer.getCategory("cD"), color, power,toughness,owned, type1, type2, rarityC, tribal, cardText, name);
+				all = organizer.query(organizer.getCategory("cD"), color, power,toughness,owned, type1, type2, rarityC, tribal, cardText, name, CMC);
 			} catch (InvalidKeyException e) {
 				e.printStackTrace();
 			}
@@ -2365,6 +2571,12 @@ public class CardOrganizer extends JFrame  {
 			sel = "DKA-";
 		if(sel.equals("Avacyn Restored"))
 			sel = "AVR-";
+		if(sel.equals("Magic 2012"))
+			sel = "M12-";
+		if(sel.equals("Magic 2013"))
+			sel = "M13-";
+		if(sel.equals("Magic 2014"))
+			sel = "M14-";
 		String[] all = null;
 		try {
 			all = organizer.getSet(sel);

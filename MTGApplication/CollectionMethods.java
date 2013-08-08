@@ -56,14 +56,18 @@ public class CollectionMethods extends BasicTree {
 				test.loadCompleteDatabase();
 				//test.printNameAndPrice();
 				String[] s = test.getCategory("cD");
-//				Card card = test.getCard("Azor's Elocutors");
+//				Card card = test.getCard("Howlpack Alpha");
+//				System.out.print(test.cmcCount(card.CMC));
 //				System.out.println(card.CMC);
-				//String[] t = test.query("n", "green");
-						//test.query(s, "n", -1, -1, -1, "n", "n", "n", "n", "n", "Centaur's Herald");
-				for(int i = 0; i < s.length; i++) { //tests for card picture
-				GoogleImageRobot bot = new GoogleImageRobot();
-				bot.getImgURL(s[i]);	
+//				//String[] t = test.query("n", "green");
+				String[] j = test.query(s, "n", -1, -1, -1, "n", "n", "n", "n", "n", "n", 9);
+				for (int i = 0; i < j.length; i++) {
+					System.out.println(j[i]);
 				}
+//				for(int i = 0; i < s.length; i++) { //tests for card picture
+//				GoogleImageRobot bot = new GoogleImageRobot();
+//				bot.getImgURL(s[i]);	
+//				}
 					
 //check for missing images
 					
@@ -78,7 +82,7 @@ public class CollectionMethods extends BasicTree {
 //						System.out.println(card.name);
 //					}
 					
-					test.getDecks();
+//					test.getDecks();
 	}
 	
 	/**
@@ -672,88 +676,30 @@ public class CollectionMethods extends BasicTree {
 	}
 	
 	/**
-	 * Dynamic query attempt
+	 * New query (sieve method)
 	 */
-//	public String[] query(String t3, String s2) throws InvalidKeyException {
-//		int count = 0;
-//		boolean nameON = false;
-//		boolean colorON = false;
-//		String v1 = "";
-//		String name = t3.toLowerCase();
-//		String color = s2;
-//			if (!name.equals("n")) {
-//				count++;
-//				nameON = true;
-//			}
-//			if (!color.equals("n")) {
-//				count++;
-//				colorON = true;
-//			}
-//			
-//		if (nameON == true && v1.equals("")) {
-//			v1 = "name";
-//		}
-//		if(colorON == true && v1.equals(""))
-//			v1 = "color";
-//		String[] li = getAllArray();
-//		ArrayList<String> arr = new ArrayList();
-//		ArrayList<Card> list = new ArrayList<Card>();
-//		for(int z = 0; z < li.length; z++)
-//			list.add(getCard(li[z]));
-//		
-//			
-//		if(count == 1) {
-//			Card card = new Card();
-//			for(int j = 0; j < list.size(); j++) {
-//				card = list.get(j);
-//					if(card.v1 != null)
-//						if(card.getValue(v1).toLowerCase().contains(v1))
-//							arr.add(card.getValue(v1));
-//			}
-//			String[] arr2= new String[arr.size()];
-//			arr.toArray(arr2);
-//			return  arr2;
-//		}
-//		return null;
-//	}
-
-	//Query for cards based on multiple characteristics. To omit a value use -1 for integers or "" for Strings. Most combinations
-	//should work
-	/**
-	 * I NEED to make this less procedural and make a new method that creates the query based on what input I get in here...Otherwise
-	 * I'll end up with factorial operations...with 7 parameters that's 5040 combinations...sooo yeah...
-	 * @param lis
-	 * @param s
-	 * @param i
-	 * @param i2
-	 * @param i3
-	 * @param s2
-	 * @param s3
-	 * @param s4
-	 * @param t
-	 * @return
-	 * @throws InvalidKeyException
-	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public String[] query(String[] lis, String s, int i, int i2, int i3, String s2, String s3, String s4, String t, String t2, String t3) throws InvalidKeyException {
+	public String[] query(String[] lis, String s, int i, int i2, int i3, String s2, String s3, String s4, String t, String t2, String t3, int i4) throws InvalidKeyException {
 		String color = s;
 		String[] li = lis;
 		int power = i;
 		int toughness = i2;
 		int owned = i3;
+		int cManaC = i4;
 		String type1 = s2;
 		String type2 = s3;
 		String rarity = s4;
 		String tribal = t;
 		String text = t2;
 		String name = t3.toLowerCase();
-
-		ArrayList<String> arr = new ArrayList();
+		
+		ArrayList<Card> filtered = new ArrayList<Card>();
+		ArrayList<Card> temp = new ArrayList<Card>();
 		ArrayList<Card> list = new ArrayList<Card>();
 
 		for(int z = 0; z < li.length; z++) {
 			list.add(getCard(li[z]));
 		}
+		filtered = (ArrayList<Card>) list.clone();
 		if(rarity.equals("common"))
 			rarity = "-C";
 		if(rarity.equals("uncommon"))
@@ -763,704 +709,206 @@ public class CollectionMethods extends BasicTree {
 		if(rarity.equals("mythic"))
 			rarity = "-M";
 		
-		if(!name.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.name != null)
-						if(card.name.toLowerCase().contains(name))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
+	if(power != -1) {
+		filtered.clear();
+		Card card = new Card();
+		for(int j = 0; j < list.size(); j++) {
+			card = list.get(j);
+			if(card != null)
+				if(card.power == power)
+					filtered.add(card);
 		}
-		
+	}
+
+	if(toughness != -1) {
+		Card card = new Card();
+		for(int j = 0; j < filtered.size(); j++) {
+			try{
+			card = filtered.get(j);
+			} catch (Exception e) {
+				card = list.get(j);
+			}
+			if(card != null)
+				if(card.toughness == toughness) {
+					temp.add(card);
+				}
+		}
+		filtered = (ArrayList<Card>) temp.clone();
+		temp.clear();
+	}
+
+	if(!type1.equals("n")) {
+		Card card = new Card();
+		for(int j = 0; j < filtered.size(); j++) {
+			try{
+				card = filtered.get(j);
+				} catch (Exception e) {
+					card = list.get(j);
+				}
+			if(card != null)
+				if(card.type1 != null)
+					if((card.type1).equals(type1)) {
+						temp.add(card);
+						}
+			}
+			filtered = (ArrayList<Card>) temp.clone();
+			temp.clear();
+	}
+	
+	if(!type2.equals("n")) {
+		Card card = new Card();
+		for(int j = 0; j < filtered.size(); j++) {
+			try{
+				card = filtered.get(j);
+				} catch (Exception e) {
+					card = list.get(j);
+				}			if(card != null)
+				if(card.type2 != null)
+					if((card.type2).equals(type2)) {
+						temp.add(card);
+					}
+		}
+		filtered = (ArrayList<Card>) temp.clone();
+		temp.clear();
+	}
+	
+	if(owned != -1) {
+		Card card = new Card();
+		for(int j = 0; j < filtered.size(); j++) {
+			try{
+				card = filtered.get(j);
+				} catch (Exception e) {
+					card = list.get(j);
+				}	
+			if(card != null)
+				if(card.owned == owned) {
+					temp.add(card);
+				}
+	}
+	filtered = (ArrayList<Card>) temp.clone();
+	temp.clear();
+	}
+	
+	if(!color.equals("n")) {
+		Card card = new Card();
+		for(int j = 0; j < filtered.size(); j++) {
+			try{
+				card = filtered.get(j);
+				} catch (Exception e) {
+					card = list.get(j);
+				} 
+			if(card != null)
+				if(card.color != null)
+					if(card.color.equals(color)) { 
+						temp.add(card);
+					}
+		}
+		filtered = (ArrayList<Card>) temp.clone();
+		temp.clear();
+	}
+	
+	if(!rarity.equals("n")) {
+		Card card = new Card();
+		for(int j = 0; j < filtered.size(); j++) {
+			try{
+				card = filtered.get(j);
+				} catch (Exception e) {
+					card = list.get(j);
+				} 
+			if(card != null)
+				if(card.rarity != null)
+					if(card.rarity.contains(rarity)) {
+						temp.add(card);
+					}
+		}
+		filtered = (ArrayList<Card>) temp.clone();
+		temp.clear();
+	}
 		if(!text.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null && text != null)
+		Card card = new Card();
+		for(int j = 0; j < filtered.size(); j++) {
+			try{
+				card = filtered.get(j);
+				} catch (Exception e) {
+					card = list.get(j);
+				}if(card != null && text != null)
 					if(card.text != null)
-						if(card.text.contains(text) || card.name.toLowerCase().contains(text) || card.type3.contains(text))
-							arr.add(card.name);
-
+						if(card.text.contains(text) || card.name.toLowerCase().contains(text) || card.type3.contains(text)) {
+							temp.add(card);
+						}
 			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		if(power != -1 && toughness != -1 && !color.equals("n") && owned != -1 && !type1.equals("n") && !type2.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(!card.color.equals(null) && !card.type1.equals(null) && !card.type2.equals(null))
-						if(card.power == power && card.toughness == toughness && card.color.equals(color) && card.owned == owned
-						&& card.type1.equals(type1) && card.type2.equals(type2))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-		if(power != -1 && toughness != -1 && !color.equals("n") && owned != -1 && !type1.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)	
-					if(!card.color.equals(null) && !card.type1.equals(null))
-						if(card.power == power && card.toughness == toughness && card.color.equals(color) && card.owned == owned
-						&& card.type1.equals(type1))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-		if(power != -1 && toughness != -1 && !color.equals("n") && owned != -1) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(!card.color.equals(null))
-						if(card.power == power && card.toughness == toughness && card.color.equals(color) && card.owned == owned)
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-		if(power != -1 && toughness != -1 && !color.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.power == power && card.toughness == toughness && card.color.equals(color))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		if(owned != -1 && !color.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.owned == owned && card.color.equals(color))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		if(power != -1 && !color.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.power == power && card.color.equals(color))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		if(toughness != -1 && !color.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.toughness == toughness && card.color.equals(color))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		if(power != -1 && toughness != -1 && !color.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.power == power && card.toughness == toughness && card.color.equals(color))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		if(!type1.equals("n") && !type2.equals("n") && !color.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type1.equals(type1) && card.type2.equals(type2) && card.color.equals(color))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		if(!type1.equals("n") && !type2.equals("n") && !color.equals("n") && !rarity.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type1.equals(type1) && card.type2.equals(type2) && card.color.equals(color) && card.rarity.contains(rarity))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		if(!type1.equals("n") && !type2.equals("n") && !rarity.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type1.equals(type1) && card.type2.equals(type2) && card.rarity.contains(rarity))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		if(!type1.equals("n") && !color.equals("n") && !rarity.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type1.equals(type1) && card.color.equals(color) && card.rarity.contains(rarity))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		if(!type2.equals("n") && !color.equals("n") && !rarity.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type2.equals(type2) && card.color.equals(color) && card.rarity.contains(rarity))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		if(!type1.equals("n") && !type2.equals("n") && !color.equals("n") && !rarity.equals("n") && !tribal.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type1.equals(type1) && card.type2.equals(type2) && card.color.equals(color) && card.rarity.contains(rarity) 
-								&& card.type3.equals(tribal))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		if(!type1.equals("n") && !type2.equals("n") && !color.equals("n") && !tribal.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type1.equals(type1) && card.type2.equals(type2) && card.color.equals(color) 
-								&& card.type3.equals(tribal))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		if(!type1.equals("n") && !type2.equals("n") && !rarity.equals("n") && !tribal.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type1.equals(type1) && card.type2.equals(type2) && card.rarity.contains(rarity) 
-								&& card.type3.equals(tribal))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		if(!type1.equals("n") && !color.equals("n") && !rarity.equals("n") && !tribal.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type1.equals(type1) && card.color.equals(color) && card.rarity.contains(rarity) 
-								&& card.type3.equals(tribal))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		if(!type2.equals("n") && !color.equals("n") && !rarity.equals("n") && !tribal.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type2.equals(type2) && card.color.equals(color) && card.rarity.contains(rarity) 
-								&& card.type3.equals(tribal))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		//Type1, Type2, Tribal
-		if(!type1.equals("n") && !type2.equals("n") && !tribal.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type1.equals(type1) && card.type2.equals(type2) && card.type3.equals(tribal))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		//Type2, Tribal, Rarity
-		if(!type2.equals("n") && !tribal.equals("n") && !rarity.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type2.equals(type2) && card.type3.equals(tribal) && card.rarity.contains(rarity))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		//Type1, Tribal, Rarity
-		if(!type1.equals("n") && !tribal.equals("n") && !rarity.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type1.equals(type1) && card.type3.equals(tribal) && card.rarity.contains(rarity))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		//Rarity, Color, Tribal
-		if(!color.equals("n") && !tribal.equals("n") && !rarity.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.color.equals(color) && card.type3.contains(tribal) && card.rarity.contains(rarity))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		//Type1, Color, Rarity
-		if(!type1.equals("n") && !color.equals("n") && !rarity.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type1.equals(type1) && card.color.equals(color) && card.rarity.contains(rarity))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		//Type2, Color, Rarity
-		if(!type2.equals("n") && !color.equals("n") && !rarity.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type2.equals(type2) && card.color.equals(color) && card.rarity.contains(rarity))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		//Type2, Color, Tribal
-		if(!type2.equals("n") && !color.equals("n") && !tribal.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type2.equals(type2) && card.color.equals(color) && card.rarity.contains(rarity))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		//Type1, Color, Tribal
-		if(!type1.equals("n") && !color.equals("n") && !tribal.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type1.equals(type1) && card.color.equals(color) && card.rarity.contains(rarity))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		if(!color.equals("n") && !tribal.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.color.equals(color) && card.type3.contains(tribal))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		if(!type1.equals("n") && !tribal.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type1.equals(type1) && card.type3.contains(tribal))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-
-		if(!color.equals("n") && !rarity.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.color.equals(color) && card.rarity.contains(rarity))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		if(!type1.equals("n") && !rarity.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type1.equals(type1) && card.rarity.contains(rarity))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		if(!type2.equals("n") && !rarity.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type2.equals(type2) && card.rarity.contains(rarity))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
+			filtered = (ArrayList<Card>) temp.clone();
+			temp.clear();
+	}
 		
-		if(!type2.equals("n") && !tribal.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type2.equals(type2) && card.type3.equals(tribal))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		if(!rarity.equals("n") && !tribal.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null) {
-						if(card.rarity.contains(rarity) && card.type3.contains(tribal))
-							arr.add(card.name);
+		if(cManaC != -1) {
+		Card card = new Card();
+		int cmcCount = 0;
+		for(int j = 0; j < filtered.size(); j++) {
+			try{
+				card = filtered.get(j);
+				} catch (Exception e) {
+					card = list.get(j);
+				} 
+			if(card != null)
+				if(card.CMC != null) {
+					cmcCount = cmcCount(card.CMC);
+						if(cManaC == 9) {
+							if(cmcCount >= 9)
+								temp.add(card);
+						} else if(cmcCount == cManaC) 
+							temp.add(card);
 					}
 			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		if(power != -1 && toughness != -1) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.power == power && card.toughness == toughness)
-						arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
+			filtered = (ArrayList<Card>) temp.clone();
+			temp.clear();
 		}
 		
-		
-
-		if(owned != -1 && !type1.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.owned == owned && card.type1.equals(type1))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
+		String[] namesList= new String[filtered.size()];
+		for(int j = 0; j < filtered.size(); j++) {
+			namesList[j] = filtered.get(j).name;
 		}
-
-		if(owned != -1 && !type2.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.owned == owned && card.type2.equals(type2))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		if(!type1.equals("n") && !color.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type1.equals(type1) && card.color.equals(color))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		if(!type2.equals("n") && !color.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.type2.equals(type2) && card.color.equals(color))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-		
-		if(!(type1).equals("n") && !type2.equals("n"))  {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if((card.type1) != null && card.type2 != null) 
-						if((card.type1).equals(type1) && (card.type2).equals(type2))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		if(power != -1) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.power == power)
-						arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		if(toughness != -1) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.toughness == toughness)
-						arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-
-		if(!type1.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.type1 != null)
-						if((card.type1).equals(type1))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-		if(!type2.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.type2 != null)
-						if((card.type2).equals(type2))
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-		if(owned != -1) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.owned == owned)
-						arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-		if(!color.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.color != null)
-						if(card.color.equals(color)) 
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-		
-		if(!rarity.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.rarity != null)
-						if(card.rarity.contains(rarity)) 
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-		if(!tribal.equals("n")) {
-			Card card = new Card();
-			for(int j = 0; j < list.size(); j++) {
-				card = list.get(j);
-				if(card != null)
-					if(card.type3 != null)
-						if(card.type3.contains(tribal)) 
-							arr.add(card.name);
-			}
-			String[] arr2= new String[arr.size()];
-			arr.toArray(arr2);
-			return  arr2;
-		}
-		String[]arrr = new String[1];
-		arrr[0] = "None Found";
-		return arrr;
+		return  namesList;
 	}
+	
+	/**
+	 * Count the CMC
+	 */
+	
+	public int cmcCount(String s) {
+		int count = 0;
+		int nextInt = -1;
+		if(!s.contains("Land")) {
+		for(int i = 0; i < s.length(); i++) {
+				int current = Character.getNumericValue(s.charAt(i));
+				try {
+				nextInt = Character.getNumericValue(s.charAt(i + 1)); 
+				if(nextInt < 10 && nextInt > 0 && current < 10 && current > 0)
+					i++;
+				} catch (Exception e) {
+					//e.printStackTrace();
+				}
+				if(nextInt != -1 && current != -1 && nextInt < 10 && current < 10) {
+					System.out.println(nextInt);
+					System.out.println(current);
+					char[] array = {s.charAt(i), s.charAt(i + 1)};
+					String number = new String(array);
+					count += Integer.parseInt(number);
+				} else if (current < 10 && current > 0)
+					count += current;
+				else if (current == -1) {
+					i++;i++;
+					i++;i++;
+					count++;
+				} else
+					count++;
+		}
+		}
+		return count;
+	}
+	
+	
+
 
 	//SOP the card's data
 	public String nameQuery(String s) {
@@ -1687,7 +1135,7 @@ public class CollectionMethods extends BasicTree {
 			text = lines[i + cur]; cur++;
 			picURL = lines[i + cur]; cur++;
 			i += 10;
-
+			//System.out.println(name);
 			int power = Integer.parseInt(powerS);
 			int toughness = Integer.parseInt(toughnessS);
 
