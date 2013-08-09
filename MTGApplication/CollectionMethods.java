@@ -60,7 +60,7 @@ public class CollectionMethods extends BasicTree {
 //				System.out.print(test.cmcCount(card.CMC));
 //				System.out.println(card.CMC);
 //				//String[] t = test.query("n", "green");
-				String[] j = test.query(s, "n", -1, -1, -1, "n", "n", "n", "n", "n", "n", 9);
+				String[] j = test.query(s, "n", -1, -1, -1, "n", "n", "n", "n", "n", "n", -1, "BG");
 				for (int i = 0; i < j.length; i++) {
 					System.out.println(j[i]);
 				}
@@ -678,7 +678,8 @@ public class CollectionMethods extends BasicTree {
 	/**
 	 * New query (sieve method)
 	 */
-	public String[] query(String[] lis, String s, int i, int i2, int i3, String s2, String s3, String s4, String t, String t2, String t3, int i4) throws InvalidKeyException {
+	public String[] query(String[] lis, String s, int i, int i2, int i3, String s2, 
+			String s3, String s4, String t, String t2, String t3, int i4, String s5) throws InvalidKeyException {
 		String color = s;
 		String[] li = lis;
 		int power = i;
@@ -691,6 +692,7 @@ public class CollectionMethods extends BasicTree {
 		String tribal = t;
 		String text = t2;
 		String name = t3.toLowerCase();
+		String colors = s5;
 		
 		ArrayList<Card> filtered = new ArrayList<Card>();
 		ArrayList<Card> temp = new ArrayList<Card>();
@@ -862,6 +864,92 @@ public class CollectionMethods extends BasicTree {
 			}
 			filtered = (ArrayList<Card>) temp.clone();
 			temp.clear();
+		}
+		
+		if(!colors.equals("")) {
+			Card card = new Card();
+			for(int z = 0; z < colors.length(); z++) {
+				if(colors.charAt(z) == 85) {
+					for(int j = 0; j < filtered.size(); j++) {
+						try{
+							card = filtered.get(j);
+							} catch (Exception e) {
+								card = list.get(j);
+							} 
+						if(card != null)
+							if(card.CMC != null)
+								if(card.CMC.contains("U")) {
+									temp.add(card);
+								}
+						}
+					filtered = (ArrayList<Card>) temp.clone();
+					temp.clear();
+				}
+				if(colors.charAt(z) == 82) {
+					for(int j = 0; j < filtered.size(); j++) {
+						try{
+							card = filtered.get(j);
+							} catch (Exception e) {
+								card = list.get(j);
+							} 
+						if(card != null)
+							if(card.CMC != null)
+								if(card.CMC.contains("R")) {
+									temp.add(card);
+								}
+						}
+					filtered = (ArrayList<Card>) temp.clone();
+					temp.clear();
+				}
+				if(colors.charAt(z) == 87) {
+					for(int j = 0; j < filtered.size(); j++) {
+						try{
+							card = filtered.get(j);
+							} catch (Exception e) {
+								card = list.get(j);
+							} 
+						if(card != null)
+							if(card.CMC != null)
+								if(card.CMC.contains("W")) {
+									temp.add(card);
+								}
+						}
+					filtered = (ArrayList<Card>) temp.clone();
+					temp.clear();
+				}
+				if(colors.charAt(z) == 71) {
+					for(int j = 0; j < filtered.size(); j++) {
+						try{
+							card = filtered.get(j);
+							} catch (Exception e) {
+								card = list.get(j);
+							} 
+						if(card != null)
+							if(card.CMC != null)
+								if(card.CMC.contains("G")) {
+									temp.add(card);
+								}
+						}
+					filtered = (ArrayList<Card>) temp.clone();
+					temp.clear();
+				}
+				if(colors.charAt(z) == 66) {
+					for(int j = 0; j < filtered.size(); j++) {
+						try{
+							card = filtered.get(j);
+							} catch (Exception e) {
+								card = list.get(j);
+							} 
+						if(card != null)
+							if(card.CMC != null)
+								if(card.CMC.contains("B")) {
+									temp.add(card);
+								}
+						}
+					filtered = (ArrayList<Card>) temp.clone();
+					temp.clear();
+				}
+			}
 		}
 		
 		String[] namesList= new String[filtered.size()];

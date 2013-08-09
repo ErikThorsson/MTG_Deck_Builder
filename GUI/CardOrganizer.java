@@ -150,11 +150,13 @@ public class CardOrganizer extends JFrame  {
 	private String type2 = "n";
 	private String rarityC = "n";
 	private String tribal = "n";
+	private String combinedColors = "";
 	private JMenuBar menuBar;
 	private JMenu menu;
 	private JMenuItem menuItem, menuItem2, menuItem3, menuItem4, menuItem5, menuItemSaveDeck;
 	private String[][] data; 
 	private String[] queryList;
+	private boolean isAnd = false;
 	private boolean isQuery = false;
 	private boolean isText = false;
 	private boolean isMyCards = true;
@@ -983,7 +985,7 @@ public class CardOrganizer extends JFrame  {
 			topBottom.setPreferredSize(new Dimension(880, 800));
 			JPanel try3 = new JPanel();
 			try3.add(topBottom);
-			add(try3);
+			//add(try3);
 			g.anchor = GridBagConstraints.FIRST_LINE_START;
 			combine.add(try3, g);
 			g.weightx = 1;
@@ -1003,6 +1005,7 @@ public class CardOrganizer extends JFrame  {
 					if(enterC == true) { //use textbox string if checked
 						selected = textBox.getText();
 					}
+					if(deckCheck!= true){
 					try {
 						if(selected != null)
 							organizer.addCard(selected);
@@ -1019,6 +1022,45 @@ public class CardOrganizer extends JFrame  {
 						ArrayList<String[]> values = returnValues(queryList);
 						refreshTable(queryList, values);
 					}
+					try { //price collection on add
+						priceCollection();
+					} catch (InvalidKeyException e1) {
+						e1.printStackTrace();
+					}
+					try {
+						organizer.save();
+					} catch (InvalidKeyException e1) {
+						e1.printStackTrace();
+					} catch (FileNotFoundException e1) {
+						e1.printStackTrace();
+					} catch (MalformedURLException e1) {
+						e1.printStackTrace();
+					}
+					} else {
+						organizer.addCardToDeck(selected, sideboardCheck);
+						countDeck();
+						refreshALs();
+						try{
+							refreshDeckTable(creatures, dataModel2);
+						}catch (Exception e2) {
+							e2.printStackTrace();
+							}
+						try{
+							refreshDeckTable(spells, dataModel3);
+						}catch (Exception e2) {
+							e2.printStackTrace();
+							}
+						try{
+							refreshDeckTable(lands, dataModel4);
+						}catch (Exception e2) {
+							e2.printStackTrace();
+							}
+						try{
+							refreshDeckTable(sideboard, dataModel5);
+						}catch (Exception e2) {
+							e2.printStackTrace();
+							}
+						}
 				}
 			});
 			
@@ -1416,8 +1458,16 @@ public class CardOrganizer extends JFrame  {
 					AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
 					redSelected = abstractButton.getModel().isSelected();
 					color = "red";
-					if(redSelected == false)
+					if(isAnd == true) {
+						combinedColors += stringToChar();
 						color = "n";
+					}
+					if(redSelected == false) {
+						color = "n";
+						if(isAnd == true) {
+							combinedColors = combinedColors.replace("R", "");
+							}
+					}
 					query();
 				}
 			});
@@ -1428,8 +1478,16 @@ public class CardOrganizer extends JFrame  {
 					AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
 					whiteSelected = abstractButton.getModel().isSelected();
 					color = "white";
-					if(whiteSelected == false)
+					if(isAnd == true) {
+						combinedColors += stringToChar();
 						color = "n";
+					}
+					if(whiteSelected == false) {
+						color = "n";
+						if(isAnd == true) {
+							combinedColors = combinedColors.replace("W", "");
+							}
+					}
 					query();
 				}
 			});
@@ -1440,8 +1498,16 @@ public class CardOrganizer extends JFrame  {
 					AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
 					blueSelected = abstractButton.getModel().isSelected();
 					color = "blue";
-					if(blueSelected == false)
+					if(isAnd == true) {
+						combinedColors += stringToChar();
 						color = "n";
+					}
+					if(blueSelected == false) {
+						color = "n";
+						if(isAnd == true) {
+							combinedColors = combinedColors.replace("U", "");
+							}
+					}
 					query();
 				}
 			});
@@ -1452,8 +1518,16 @@ public class CardOrganizer extends JFrame  {
 					AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
 					greenSelected = abstractButton.getModel().isSelected();
 					color = "green";
-					if(greenSelected == false)
+					if(isAnd == true) {
+						combinedColors += stringToChar();
 						color = "n";
+					}
+					if(greenSelected == false) {
+						color = "n";
+						if(isAnd == true) {
+							combinedColors = combinedColors.replace("G", "");
+							}
+					}
 					query();
 				}
 			});
@@ -1464,8 +1538,16 @@ public class CardOrganizer extends JFrame  {
 					AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
 					blackSelected = abstractButton.getModel().isSelected();
 					color = "black";
-					if(blackSelected == false)
+					if(isAnd == true && blackSelected == true) {
+						combinedColors += stringToChar();
 						color = "n";
+					}
+					if(blackSelected == false) {
+						color = "n";
+						if(isAnd == true) {
+							combinedColors = combinedColors.replace("B", "");
+							}
+					}
 					query();
 				}
 			});
@@ -1476,8 +1558,9 @@ public class CardOrganizer extends JFrame  {
 					AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
 					colorlessSelected = abstractButton.getModel().isSelected();
 					color = "colorless";
-					if(colorlessSelected == false)
+					if(colorlessSelected == false) {
 						color = "n";
+					}	
 					query();
 				}
 			});
@@ -1542,6 +1625,40 @@ public class CardOrganizer extends JFrame  {
 				}
 			});
 			
+			unowned.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent actionEvent) {
+					AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
+					buttonSelected = abstractButton.getModel().isSelected();
+					unowned();
+					if(buttonSelected == false) {
+						if (isMyCards == true) {
+							viewMyCards();
+						} else if(isSet == true) {
+							viewSet();
+						} else {
+							viewAll();
+						}
+					}
+				}
+			});
+			
+			and.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent actionEvent) {
+					AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
+					buttonSelected = abstractButton.getModel().isSelected();
+					char color = stringToChar();
+					isAnd = true;
+					if(color != 97)
+						combinedColors = Character.toString(color);
+					if(buttonSelected == false) {
+						combinedColors = "";
+						isAnd = false;
+					}
+				}
+			});
+			
 			removeCard.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {			
@@ -1579,7 +1696,8 @@ public class CardOrganizer extends JFrame  {
 							organizer.removeCard(selected, "cD");
 						if(isQuery == true) {
 							try {
-								queryList = organizer.query(queryList, color, power,toughness,owned, type1, type2, rarityC, tribal, cardText, name,	CMC);
+								queryList = organizer.query(queryList, color, power,toughness,owned, 
+										type1, type2, rarityC, tribal, cardText, name,	CMC, combinedColors);
 							} catch (InvalidKeyException e2) {
 								e2.printStackTrace();
 							}
@@ -1607,6 +1725,7 @@ public class CardOrganizer extends JFrame  {
 						try{
 						organizer.removeCardFromDeck(selected, sideboardCheck);
 						countDeck();
+						priceDeck();
 						refreshALs();
 						} catch (Exception ex) {
 							//tis fine
@@ -1676,6 +1795,7 @@ public class CardOrganizer extends JFrame  {
 					} else {
 						organizer.addCardToDeck(selected, sideboardCheck);
 						countDeck();
+						priceDeck();
 						refreshALs();
 						try{
 							refreshDeckTable(creatures, dataModel2);
@@ -1871,6 +1991,48 @@ public class CardOrganizer extends JFrame  {
 				}
 			});
 		}
+	}
+	
+	/**
+	 * String color to char abbreviation
+	 */
+	public char stringToChar() {
+	char x =  97;
+		if(color.equals("blue"))
+			x = 85;
+		if(color.equals("white"))
+			x = 87;
+		if(color.equals("red"))
+			x = 82;
+		if(color.equals("black"))
+			x = 66;
+		if(color.equals("green"))
+			x = 71;
+	return x;
+	}
+	
+	/**
+	 * Unowned filter
+	 */
+	
+	public void unowned() {
+		ArrayList<String> unownedCards = new ArrayList<String>();
+		for(int i = 0; i < queryList.length; i++) {
+			Card card = null;
+			try {
+				card = organizer.getCard(queryList[i]);
+			} catch (InvalidKeyException e) {
+				e.printStackTrace();
+			}
+			if(card.owned == 0)
+				unownedCards.add(card.name);
+		}
+		String[] unowned = new String[unownedCards.size()];
+		unownedCards.toArray(unowned);
+		queryList = unowned;
+		ArrayList<String[]> values = returnValues(queryList);
+		refreshTable(queryList, values);
+		refreshCardValues(table);	
 	}
 	
 	/**
@@ -2324,6 +2486,8 @@ public class CardOrganizer extends JFrame  {
 				deck.add(":" + sideboard.get(i).name + ":" + sideboard.get(i).numSB);
 			}
 		}
+		if(notes.getText() != null)
+			deck.add("::///" + notes.getText());
 		String s = "";
 		for(int i = 0; i < deck.size(); i++){
 			s += deck.get(i) + "\n";
@@ -2415,7 +2579,6 @@ public class CardOrganizer extends JFrame  {
 		int z = 0;
 		String d = "";
 		for(int i = 1; i < line.length; i++) {
-			//System.out.println(line[i]);
 			if(i % 2 != 0) {
 				d = line[i];
 			} else {
@@ -2434,6 +2597,12 @@ public class CardOrganizer extends JFrame  {
 					organizer.addCardToDeck(d, true);
 				}	
 			}
+		}
+		String[] noteS = sFile.toString().split("///");
+		try {
+		notes.setText(noteS[1]);
+		} catch (Exception e) {
+			notes.setText("");
 		}
 		refreshALs();
 		try{
@@ -2462,7 +2631,7 @@ public class CardOrganizer extends JFrame  {
 	/**
 	 * Refreshes table with query
 	 */
-	public void query() {		
+	public void query() {	
 		isQuery = true;
 		String[] querySet = null;
 		String[] myCards = organizer.getAllArray();
@@ -2474,14 +2643,15 @@ public class CardOrganizer extends JFrame  {
 		} else 
 			querySet = allCards;
 		try {
-			queryList = organizer.query(querySet, color, power,toughness,owned, type1, type2, rarityC, tribal, cardText, name, CMC);
+			queryList = organizer.query(querySet, color, power,toughness,owned, type1, type2, 
+					rarityC, tribal, cardText, name, CMC, combinedColors);
 		} catch (Exception e1) {
 			e1.printStackTrace();
-			}
+		}
 		java.util.Arrays.sort(queryList);
 		if(owned == -1 && color.equals("n") && type1.equals("n") && type2.equals("n") 
 				&& power == -1 && toughness == -1 && rarityC.equals("n") && tribal.equals("n") 
-				&& cardText.equals("n") && name.equals("n") && CMC == -1) { //if no input for query
+				&& cardText.equals("n") && name.equals("n") && CMC == -1 && combinedColors.equals("")) { //if no input for query
 			isQuery = false;
 			if (isMyCards == true) {
 				viewMyCards();
@@ -2509,7 +2679,8 @@ public class CardOrganizer extends JFrame  {
 			my = organizer.getAllArray();
 		} else {
 		try {
-			my = organizer.query(organizer.getCategory("cD"), color, power,toughness,owned, type1, type2, rarityC, tribal, cardText, name, CMC);
+			my = organizer.query(organizer.getCategory("cD"), color, power,toughness,
+					owned, type1, type2, rarityC, tribal, cardText, name, CMC, combinedColors);
 		} catch (InvalidKeyException e) {
 			e.printStackTrace();
 			}
@@ -2543,7 +2714,8 @@ public class CardOrganizer extends JFrame  {
 			all = organizer.getCategory("cD");
 		} else {
 			try {
-				all = organizer.query(organizer.getCategory("cD"), color, power,toughness,owned, type1, type2, rarityC, tribal, cardText, name, CMC);
+				all = organizer.query(organizer.getCategory("cD"), color, power,toughness,owned, 
+						type1, type2, rarityC, tribal, cardText, name, CMC, combinedColors);
 			} catch (InvalidKeyException e) {
 				e.printStackTrace();
 			}
