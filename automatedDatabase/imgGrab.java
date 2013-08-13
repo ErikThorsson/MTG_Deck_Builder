@@ -1,5 +1,6 @@
 package automatedDatabase;
 
+import java.awt.AWTException;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -32,7 +33,7 @@ public class imgGrab {
 			BufferedImage img = ImageIO.read(new URL(card[i].imgURL));
 		    File outputfile = new File("/Users/eorndahl/Desktop/VCO/Pictures Try 2/" + card[i].name + ".jpg");
 		    ImageIO.write(img, "jpg", outputfile);
-		} catch (IOException e) {
+		} catch (IOException e) {	
 		}
 		}
 	}

@@ -4,8 +4,10 @@ import java.awt.AWTException;
 import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
@@ -16,9 +18,12 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.LayoutManager;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
@@ -33,7 +38,6 @@ import java.security.InvalidKeyException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Vector;
-
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
@@ -68,9 +72,9 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
+
+import org.imgscalr.Scalr;
 
 import MTGApplication.Card;
 import MTGApplication.CollectionMethods;
@@ -154,7 +158,6 @@ public class CardOrganizer extends JFrame  {
 	private JMenuBar menuBar;
 	private JMenu menu;
 	private JMenuItem menuItem, menuItem2, menuItem3, menuItem4, menuItem5, menuItemSaveDeck;
-	private String[][] data; 
 	private String[] queryList;
 	private boolean isAnd = false;
 	private boolean isQuery = false;
@@ -192,17 +195,11 @@ public class CardOrganizer extends JFrame  {
 	private JLabel priceL = new JLabel("$");
 	private JLabel price = new JLabel("0.0");
 	private JLabel collectionV = new JLabel("Collection Value: ");
-	private JLabel mSign = new JLabel("$");
 	private JLabel collectionValue = new JLabel("0.0");
 	private JLabel deckV = new JLabel("");
-	private JLabel deckMSign = new JLabel("$");
 	private JLabel deckValue = new JLabel("");
 	private JLabel deckCount = new JLabel("");
 	private JLabel deckNum = new JLabel("");
-	private JRadioButton nameCheck = new JRadioButton();
-	private JRadioButton tribalCheck = new JRadioButton();
-	private JRadioButton textCheck = new JRadioButton();
-	private JRadioButton enterCheck = new JRadioButton();
 	private ImageIcon mythicIcon = new ImageIcon();
 	private ImageIcon rareIcon = new ImageIcon();		  
 	private ImageIcon uncommonIcon = new ImageIcon();		  
@@ -248,6 +245,11 @@ public class CardOrganizer extends JFrame  {
 	Boolean table5Sel = false;
 	String home = System.getProperty("user.home");
 	String currentDeck = "";
+	Dimension imgSize = new Dimension(500, 100);
+	Dimension boundary = new Dimension(200, 200);
+	JPanel cardV = new JPanel(new GridBagLayout());
+	JPanel fixedTopBottom = new JPanel(new FlowLayout(FlowLayout.LEFT));
+	int oldWidth = 223;
 	
 	public static void main(String[] args) throws InvalidKeyException, IOException, AWTException {
 		new CardOrganizer();
@@ -329,52 +331,52 @@ public class CardOrganizer extends JFrame  {
 //			unowned.putClientProperty("JButton.buttonType", "bevel");
 			
 			//button images
-			red = new JToggleButton(new ImageIcon(home + "/Desktop/red.png"));
-			blue = new JToggleButton(new ImageIcon(home + "/Desktop/blue.png"));
-			black = new JToggleButton(new ImageIcon(home + "/Desktop/black.png"));
-			white = new JToggleButton(new ImageIcon(home + "/Desktop/white.png"));
-			colorless = new JToggleButton(new ImageIcon(home + "/Desktop/colorless.png"));
-			multi = new JToggleButton(new ImageIcon(home + "/Desktop/multi.png"));
-			green = new JToggleButton(new ImageIcon(home + "/Desktop/green.png"));
+			red = new JToggleButton(new ImageIcon(home + "/Desktop/VCO/Icons/red.png"));
+			blue = new JToggleButton(new ImageIcon(home + "/Desktop/VCO/Icons/blue.png"));
+			black = new JToggleButton(new ImageIcon(home + "/Desktop/VCO/Icons/black.png"));
+			white = new JToggleButton(new ImageIcon(home + "/Desktop/VCO/Icons/white.png"));
+			colorless = new JToggleButton(new ImageIcon(home + "/Desktop/VCO/Icons/colorless.png"));
+			multi = new JToggleButton(new ImageIcon(home + "/Desktop/VCO/Icons/multi.png"));
+			green = new JToggleButton(new ImageIcon(home + "/Desktop/VCO/Icons/green.png"));
 			
 			//rarity icons and buttons	private JToggleButton common = new JToggleButton("C");
-			mythicIcon = new ImageIcon(home + "/Desktop/mythic.png");
-			rareIcon = new ImageIcon(home + "/Desktop/rare.png");		  
-			uncommonIcon = new ImageIcon(home + "/Desktop/uncommon.png");		  
-			commonIcon = new ImageIcon(home + "/Desktop/common.png");	
+			mythicIcon = new ImageIcon(home + "/Desktop/VCO/Icons/mythic.png");
+			rareIcon = new ImageIcon(home + "/Desktop/VCO/Icons/rare.png");		  
+			uncommonIcon = new ImageIcon(home + "/Desktop/VCO/Icons/uncommon.png");		  
+			commonIcon = new ImageIcon(home + "/Desktop/VCO/Icons/common.png");	
 			common = new JToggleButton(commonIcon);
 			uncommon = new JToggleButton(uncommonIcon);
 			rare = new JToggleButton(rareIcon);
 			mythic = new JToggleButton(mythicIcon);
-			blackIcon = new ImageIcon(home + "/Desktop/Icons/black_mana.gif");
-			greenIcon = new ImageIcon(home + "/Desktop/Icons/green_mana.gif");
-			blueIcon = new ImageIcon(home + "/Desktop/Icons/blue_mana.gif");
-			whiteIcon = new ImageIcon(home + "/Desktop/Icons/white_mana.gif");
-			redIcon = new ImageIcon(home + "/Desktop/Icons/red_mana.gif");
-			oneIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_1_mana.gif");
-			twoIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_2_mana.gif");
-			threeIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_3_mana.gif");
-			fourIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_4_mana.gif");
-			fiveIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_5_mana.gif");
-			sixIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_6_mana.gif");
-			sevenIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_7_mana.gif");
-			eightIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_8_mana.gif");
-			nineIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_9_mana.gif");
-			tenIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_10_mana.gif");
-			elevenIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_11_mana.gif");
-			bgIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_BG_mana.gif");
-			buIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_UB_mana.gif");
-			brIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_BR_mana.gif");
-			bwIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_WB_mana.gif");
-			ugIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_GU_mana.gif");
-			urIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_UR_mana.gif");
-			uwIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_WU_mana.gif");
-			wgIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_GW_mana.gif");
-			wrIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_RW_mana.gif");
-			grIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_RG_mana.gif");
-			checkIcon = new ImageIcon(home + "/Desktop/Icons/rsz_check2.png");
-			xIcon = new ImageIcon(home + "/Desktop/Icons/cross16.png");
-			XIcon = new ImageIcon(home + "/Desktop/Icons/Symbol_X_mana.gif");
+			blackIcon = new ImageIcon(home + "/Desktop/VCO/Icons/black_mana.gif");
+			greenIcon = new ImageIcon(home + "/Desktop/VCO/Icons/green_mana.gif");
+			blueIcon = new ImageIcon(home + "/Desktop/VCO/Icons/blue_mana.gif");
+			whiteIcon = new ImageIcon(home + "/Desktop/VCO/Icons/white_mana.gif");
+			redIcon = new ImageIcon(home + "/Desktop/VCO/Icons/red_mana.gif");
+			oneIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_1_mana.gif");
+			twoIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_2_mana.gif");
+			threeIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_3_mana.gif");
+			fourIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_4_mana.gif");
+			fiveIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_5_mana.gif");
+			sixIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_6_mana.gif");
+			sevenIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_7_mana.gif");
+			eightIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_8_mana.gif");
+			nineIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_9_mana.gif");
+			tenIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_10_mana.gif");
+			elevenIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_11_mana.gif");
+			bgIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_BG_mana.gif");
+			buIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_UB_mana.gif");
+			brIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_BR_mana.gif");
+			bwIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_WB_mana.gif");
+			ugIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_GU_mana.gif");
+			urIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_UR_mana.gif");
+			uwIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_WU_mana.gif");
+			wgIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_GW_mana.gif");
+			wrIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_RW_mana.gif");
+			grIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_RG_mana.gif");
+			checkIcon = new ImageIcon(home + "/Desktop/VCO/Icons/rsz_check2.png");
+			xIcon = new ImageIcon(home + "/Desktop/VCO/Icons/cross16.png");
+			XIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_X_mana.gif");
 			common.putClientProperty("JButton.buttonType", "roundRect");
 			uncommon.putClientProperty("JButton.buttonType", "roundRect");
 			rare.putClientProperty("JButton.buttonType", "roundRect");
@@ -518,7 +520,7 @@ public class CardOrganizer extends JFrame  {
 			scrollQuery = new JScrollPane(p2);
 
 			d.fill = GridBagConstraints.HORIZONTAL;
-			d.weightx = 1.0;
+			d.weightx = 1;
 			d.gridwidth = 1;
 			d.gridx = 0;
 			d.gridy = 0;
@@ -729,7 +731,6 @@ public class CardOrganizer extends JFrame  {
 			gb.gridy = 5;
 			mainList.add(panel4, gb);
 			gb.gridy = 6;
-			//mainList.add(panel1Half, gb);
 			gb.gridy = 7;
 			mainList.add(panel5, gb);
 			gb.gridy = 8;
@@ -740,7 +741,6 @@ public class CardOrganizer extends JFrame  {
 
 
 			//JTable
-			JPanel p4 = new JPanel();
 			String[] cardNames = organizer.getAllArray();
 			ArrayList<String[]> values = returnValues(cardNames);
 			queryList = cardNames;	
@@ -767,7 +767,6 @@ public class CardOrganizer extends JFrame  {
 			refreshTable(cardNames, values);
 
 			JScrollPane scrollList = new JScrollPane(table);
-			p4.add(scrollList);
 			JScrollPane scroll =  new JScrollPane(mainList);
 
 			ImageIcon image;
@@ -791,40 +790,33 @@ public class CardOrganizer extends JFrame  {
 			c.insets = new Insets(0,5,0,0);
 			c.gridx = 0;
 			c.gridy = 0;
-			c.weightx = 5;
-			c.weighty = 5;
-			c.fill = GridBagConstraints.BOTH;
-			//scroll.setPreferredSize(new Dimension(300, 503));
-			JPanel queryContainer = new JPanel(new GridBagLayout());
-			queryContainer.setPreferredSize(new Dimension(300, 470));
-			queryContainer.add(scroll, c);
-			JPanel try2 = new JPanel();
-			try2.add(queryContainer);
-			add(try2);
-			c.insets = new Insets(0,-30,0,0);
-			c.anchor = GridBagConstraints.WEST;	
-			p3.add(try2, c);
 			c.weightx = 1;
 			c.weighty = 1;
-
+			c.fill = GridBagConstraints.BOTH;
+			JPanel queryContainer = new JPanel(new GridBagLayout());
+			queryContainer.setPreferredSize(new Dimension(300, 460));
+			queryContainer.add(scroll, c);
+			JPanel queryScroll = new JPanel();
+			queryScroll.add(queryContainer);
+			c.insets = new Insets(-10,-20, 0, 0);
+			p3.add(queryScroll, c);
+						
 			//JTable
 			c.insets = new Insets(3,0,0,0);
 			c.fill = GridBagConstraints.BOTH;
+			c.weightx = 1;
+			c.weighty = 1;
 			c.gridx = 1;
 			c.gridy = 0;
 			JPanel box = new JPanel(new GridBagLayout());
-			c.weightx = 10;
-			c.weighty = 10;
-			c.anchor = GridBagConstraints.PAGE_START;
 			box.add(scrollList, c);
+			scrollList.setPreferredSize(new Dimension(500, 400));
 			p3.add(box,c);
 			c.insets = new Insets(0,0,0,0);
-			
+		
 			//make deck builder window
 			JPanel deck = new JPanel(new GridBagLayout());
-			deck.setPreferredSize(new Dimension(1400, 310));
-			p3.setPreferredSize(new Dimension(1400, 490));
-			
+						
 			dataModel2 = new DefaultTableModel();
 			dataModel2.setColumnCount(2);
 			dataModel2.setRowCount(0);
@@ -889,7 +881,6 @@ public class CardOrganizer extends JFrame  {
 			b.fill = GridBagConstraints.BOTH;
 			b.weightx = 1;
 			b.weighty = 1;
-			b.anchor = GridBagConstraints.PAGE_START;
 			deck.add(scrollList2, b);
 			b.gridx = 1;
 			deck.add(scrollList3, b);
@@ -897,31 +888,39 @@ public class CardOrganizer extends JFrame  {
 			deck.add(scrollList4, b);
 			b.gridx = 3;
 			deck.add(scrollList5, b);
+			deck.setPreferredSize(new Dimension(800, 200));
+
 			
 			//deckbuild and query Panel
 			GridBagConstraints g = new GridBagConstraints();
-			g.anchor = GridBagConstraints.PAGE_START;
 			g.fill = GridBagConstraints.BOTH;			
 			JPanel topBottom = new JPanel(new GridBagLayout());
 			g.weightx = 1;
 			g.weighty = 1;
-			g.gridwidth =3;
 			g.gridx = 0;
 			g.gridy = 0;
-			g.ipady = 140;      
+			g.ipady = 0;
+			JPanel top = new JPanel();
+			top.add(p3);
+			g.insets = new Insets(0,0,0,0);
 			topBottom.add(p3, g);
+			g.ipady = 0;
 			g.gridy = 1;
-			g.ipady = 0; 
+			g.weightx = 1;
+			g.weighty = 1;
+			JPanel bottom = new JPanel();
+			bottom.add(deck);
+			deck.setPreferredSize(new Dimension(800, 236));
 			topBottom.add(deck,g);
-			g.ipady = 0; 
+			g.weightx = 0;
+			g.weighty = 0;
 			g.gridx = 0;
 			g.gridy = 0;
-			
+			topBottom.setPreferredSize(new Dimension(820, 850));
+						
 			//card view panel
-			JPanel cardV = new JPanel(new GridBagLayout());
 			g.gridx = 0;
 			g.gridy = 0;
-			g.anchor = GridBagConstraints.PAGE_START;
 			JPanel collectionVal = new JPanel(new GridBagLayout());
 			g.insets = new Insets(0,0,0,0);
 			collectionVal.add(collectionV, g);
@@ -932,6 +931,7 @@ public class CardOrganizer extends JFrame  {
 			cardV.add(collectionVal, g);
 			g.gridy = 1;
 			cardV.add(label, g);
+			g.insets = new Insets(0,0,0,0);
 			JPanel ownedBox = new JPanel(new GridBagLayout());
 			g.gridy = 0;
 			ownedBox.add(ownedL, g);
@@ -966,37 +966,44 @@ public class CardOrganizer extends JFrame  {
 			tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
 			tabbedPane.addTab("Oracle Text", oracleScroll);
 			tabbedPane.setMnemonicAt(1, KeyEvent.VK_2);
-			tabbedPane.setPreferredSize(new Dimension(220,280));
 			notes.setLineWrap(true);
 			notes.setWrapStyleWord(true);
 			oracleText.setLineWrap(true);
 			oracleText.setWrapStyleWord(true);
 			g.gridy = 4;
+			g.weightx = 1;
+			g.weighty = 1;
+			g.fill = GridBagConstraints.BOTH;
+			g.ipady = 200;
 			cardV.add(tabbedPane,g);
-		
+			g.ipady = 0;
+			g.weightx = 0;
+			g.weighty = 0;
+
 			//combine tB and cV
 			JPanel combine = new JPanel(new GridBagLayout());
 			g.fill = GridBagConstraints.BOTH;
-			g.weightx = 1;
-			g.weighty = 1;
-			g.gridx = 0;
-			g.gridy = 0;
-			g.gridwidth = 1;
-			topBottom.setPreferredSize(new Dimension(880, 800));
-			JPanel try3 = new JPanel();
-			try3.add(topBottom);
-			//add(try3);
-			g.anchor = GridBagConstraints.FIRST_LINE_START;
-			combine.add(try3, g);
-			g.weightx = 1;
-			g.weighty = 1;
-			g.gridx = 1;
 			g.weightx = 0;
 			g.weighty = 0;
-			g.ipadx = 1;
+			g.gridx = 0;
+			g.gridy = 0;
+			g.ipadx = 0;
+			g.ipady = 0;			
+			//fixedTopBottom.add(topBottom);
+			topBottom.setMinimumSize(new Dimension(800, 800));
+			combine.add(topBottom, g);
+			g.gridx = 1;
+			g.weightx = 1;
+			g.weighty = 1;
+			g.ipadx = 0;
+			g.ipady = 0;
 			combine.add(cardV, g);
 			add(combine);
-			
+			//add(cardV);
+			//add(fixedTopBottom);
+			//add(topBottom);
+			//add(deck);
+
 			//remaps ENTER key in JTable to addCard()
 			table.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "Enter");
 			table.getActionMap().put("Enter", new AbstractAction() {
@@ -1864,6 +1871,12 @@ public class CardOrganizer extends JFrame  {
 				}
 				}
 			});
+			
+		  	label.addComponentListener(new ComponentAdapter() {
+		        public void componentResized(ComponentEvent e) {
+		        	resizeL();
+		        }
+		    });
 
 			//listens for textBox input
 			textBox.getDocument().addDocumentListener(new DocumentListener() {
@@ -2130,6 +2143,7 @@ public class CardOrganizer extends JFrame  {
 		Icon icon = new CompoundIcon(icons);
 		return icon;
 	}
+	
 	/**
 	 * Icon to image
 	 * @param icon
@@ -2155,31 +2169,30 @@ public class CardOrganizer extends JFrame  {
 		 }
 	
 	/**
-	 * we want the x and o to be resized when the JFrame is resized
+	 * resize label in proper aspect ratio
 	 */
-	public void resizeImage(int biggerWidth, int biggerHeight) throws InvalidKeyException, IOException {
-	    int type = BufferedImage.TYPE_INT_ARGB;
-
-	    BufferedImage resizedImage = new BufferedImage(biggerWidth, biggerHeight, type);
-	    Graphics2D g = resizedImage.createGraphics();
-
-	    g.setComposite(AlphaComposite.Src);
-	    g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-	    g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-	    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-	    
-	    ImageIcon icon = new ImageIcon(ImageIO.read(new File(home +"/Desktop/VCO/Pictures Try 2/" + "card_back" + ".jpg")));
-	    Image card = iconToImage(icon);
-	    g.drawImage(card, 0, 0, biggerWidth, biggerHeight, this);
-	    g.dispose();
-	    Image image = (Image)resizedImage;
+	
+	public void resizeL() {
+	BufferedImage img = null;
 		try {
-			label.setIcon((Icon) image);
-		} catch (Exception ex) {
-			label.setIcon(organizer.getCard("card_back").getImg());
+			img = ImageIO.read(new File(home +"/Desktop/VCO/Pictures Try 2/" + selected + ".jpg"));
+		} catch (IOException e1) {
+			try {
+				img = ImageIO.read(new File(home +"/Desktop/VCO/Pictures Try 2/" + "card_back" + ".jpg"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		}
+		if(cardV.getWidth() != 243) {
+		BufferedImage card =
+				  Scalr.resize(img, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH,
+				               cardV.getWidth(), 100, Scalr.OP_ANTIALIAS);
+		ImageIcon i = new ImageIcon(card);
+		label.setIcon(i);
 		}
 	}
-	
+
 	/**
 	 * Refresh card values (price/owned/icon)
 	 */
@@ -2193,13 +2206,16 @@ public class CardOrganizer extends JFrame  {
 		} catch (ArrayIndexOutOfBoundsException e1) {
 			//e1.printStackTrace(); //this will not be selected at times which is ok
 		}
-		try {
-			label.setIcon(organizer.getCard(selected).getImg());
-		} catch (InvalidKeyException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		if(cardV.getWidth() == 243)
+			try {
+				label.setIcon(organizer.getCard(selected).getImg());
+			} catch (InvalidKeyException e1) {
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		else
+			resizeL();
 		try {
 			ownedNum.setText(Integer.toString(organizer.getCard(selected).getOwned()));
 			price.setText(organizer.getCard(selected).price);

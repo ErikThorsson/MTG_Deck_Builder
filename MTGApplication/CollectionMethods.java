@@ -60,14 +60,14 @@ public class CollectionMethods extends BasicTree {
 //				System.out.print(test.cmcCount(card.CMC));
 //				System.out.println(card.CMC);
 //				//String[] t = test.query("n", "green");
-				String[] j = test.query(s, "n", -1, -1, -1, "n", "n", "n", "n", "n", "n", -1, "BG");
-				for (int i = 0; i < j.length; i++) {
-					System.out.println(j[i]);
-				}
-//				for(int i = 0; i < s.length; i++) { //tests for card picture
-//				GoogleImageRobot bot = new GoogleImageRobot();
-//				bot.getImgURL(s[i]);	
+//				String[] j = test.query(s, "n", -1, -1, -1, "n", "n", "n", "n", "n", "n", -1, "BG");
+//				for (int i = 0; i < j.length; i++) {
+//					System.out.println(j[i]);
 //				}
+				for(int i = 0; i < s.length; i++) { //tests for card picture
+				GoogleImageRobot bot = new GoogleImageRobot();
+				bot.getImgURL(s[i]);	
+				}
 					
 //check for missing images
 					
