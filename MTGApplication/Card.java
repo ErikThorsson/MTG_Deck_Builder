@@ -54,7 +54,7 @@ public class Card {
 		imgURL = url;
 		rarity = r;
 		img = null;
-		price = "0.0";
+		price = "0.00";
 		cardsInDeck = 0;
 		notes = "";
 		numSB = 0;

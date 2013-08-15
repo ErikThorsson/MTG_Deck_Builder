@@ -1,6 +1,8 @@
 package automatedDatabase;
 
 import java.awt.AWTException;
+import java.awt.Robot;
+import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -21,7 +23,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 public class RefinedImageGrab {
 	public static void main(String[] args) throws InterruptedException, AWTException, MalformedURLException, IOException {
 		RefinedImageGrab bot = new RefinedImageGrab();
-		bot.getImgURL("Goblin Electromancer");
+		bot.getImgURL("Shivan Dragon");
 	}
 	public String getImgURL(String s) throws InterruptedException, AWTException, MalformedURLException, IOException {
 		//removes logger error statements
@@ -46,7 +48,26 @@ public class RefinedImageGrab {
 	    try{
 	    ImageIO.write(img, "jpg", outputfile);
 	    } catch (Exception ex){
-	    	System.out.println(s + " was nto found.");
+	    	try {
+	    	Robot robot = new Robot();
+		    robot.mouseMove(170, 650);
+		    robot.mousePress(InputEvent.BUTTON1_MASK);
+		    Thread.sleep(1000);
+		    robot.mousePress(InputEvent.BUTTON1_MASK);
+		    robot.mouseRelease(InputEvent.BUTTON1_MASK);
+		    Thread.sleep(1000);
+		    robot.mousePress(InputEvent.BUTTON1_MASK);
+		    robot.mouseRelease(InputEvent.BUTTON1_MASK);
+		    Thread.sleep(1000);
+		    ID = driver.getCurrentUrl();
+		    cURL = "http://gatherer.wizards.com/Handlers/Image.ashx";
+		    splits = ID.split("aspx");
+		    cURL+= splits[1] + "&type=card";
+			img = ImageIO.read(new URL(cURL));
+		    ImageIO.write(img, "jpg", outputfile);
+	    	} catch ( Exception e) {
+	    	System.out.println(s + " was not found.");
+	    	}
 	    }
 	    driver.close();
 	    return cURL;

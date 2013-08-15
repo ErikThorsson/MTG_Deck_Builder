@@ -190,10 +190,8 @@ public class CardOrganizer extends JFrame  {
 	private JScrollPane scrollList;
 	private JScrollPane scrollQuery;
 	private JLabel label = new JLabel();
-	private JLabel ownedL = new JLabel("Owned: ");
-	private JLabel ownedNum = new JLabel("0");
-	private JLabel priceL = new JLabel("$");
-	private JLabel price = new JLabel("0.0");
+	private JLabel ownedAndPrice = new JLabel("");
+	private JLabel ownedL = new JLabel("");
 	private JLabel collectionV = new JLabel("Collection Value: ");
 	private JLabel collectionValue = new JLabel("0.0");
 	private JLabel deckV = new JLabel("");
@@ -778,9 +776,7 @@ public class CardOrganizer extends JFrame  {
 				label.setIcon(organizer.getCard("card_back").getImg());
 			}
 	
-			ownedNum.setFont(new Font("Serif", Font.PLAIN, 36));
-			price.setFont(new Font("Serif", Font.PLAIN, 36));
-			priceL.setFont(new Font("Serif", Font.PLAIN, 26));
+			ownedAndPrice.setFont(new Font("Serif", Font.PLAIN, 30));
 
 			//final formatting
 			JPanel p3 = new JPanel(new GridBagLayout());
@@ -888,7 +884,6 @@ public class CardOrganizer extends JFrame  {
 			deck.add(scrollList4, b);
 			b.gridx = 3;
 			deck.add(scrollList5, b);
-			deck.setPreferredSize(new Dimension(800, 200));
 
 			
 			//deckbuild and query Panel
@@ -910,18 +905,19 @@ public class CardOrganizer extends JFrame  {
 			g.weighty = 1;
 			JPanel bottom = new JPanel();
 			bottom.add(deck);
-			deck.setPreferredSize(new Dimension(800, 236));
+			deck.setPreferredSize(new Dimension(800, 200));
 			topBottom.add(deck,g);
 			g.weightx = 0;
 			g.weighty = 0;
 			g.gridx = 0;
 			g.gridy = 0;
-			topBottom.setPreferredSize(new Dimension(820, 850));
 						
 			//card view panel
 			g.gridx = 0;
 			g.gridy = 0;
 			JPanel collectionVal = new JPanel(new GridBagLayout());
+			g.anchor = GridBagConstraints.WEST;
+			g.fill = GridBagConstraints.NONE;
 			g.insets = new Insets(0,0,0,0);
 			collectionVal.add(collectionV, g);
 			g.insets = new Insets(0,110,0,0);
@@ -931,21 +927,17 @@ public class CardOrganizer extends JFrame  {
 			cardV.add(collectionVal, g);
 			g.gridy = 1;
 			cardV.add(label, g);
-			g.insets = new Insets(0,0,0,0);
-			JPanel ownedBox = new JPanel(new GridBagLayout());
-			g.gridy = 0;
-			ownedBox.add(ownedL, g);
-			g.insets = new Insets(0,55,0,0);
-			ownedNum.setFont(new Font("Serif", Font.PLAIN, 36));
-			ownedBox.add(ownedNum, g);
-			g.insets = new Insets(0,90,0,0);
-			ownedBox.add(priceL, g);
-			g.insets = new Insets(0,105,0,0);
-			ownedBox.add(price, g);
-			g.insets = new Insets(0,0,0,0);
-			g.gridy = 2;
-			cardV.add(ownedBox, g);
 			g.gridx = 0;
+			JPanel stats = new JPanel(new GridBagLayout());
+			g.insets = new Insets(0,0,0,0);
+			stats.add(ownedL, g);
+			g.gridx = 1;
+			g.insets = new Insets(0,5,0,0);
+			stats.add(ownedAndPrice, g);
+			g.insets = new Insets(0,0,0,0);
+			g.gridx = 0;
+			g.gridy = 2;
+			cardV.add(stats, g);
 			g.gridy = 3;
 			g.insets = new Insets(0,0,0,0);
 			cardV.add(deckV, g);
@@ -989,8 +981,7 @@ public class CardOrganizer extends JFrame  {
 			g.gridy = 0;
 			g.ipadx = 0;
 			g.ipady = 0;			
-			//fixedTopBottom.add(topBottom);
-			topBottom.setMinimumSize(new Dimension(800, 800));
+			topBottom.setMinimumSize(new Dimension(800, 700));
 			combine.add(topBottom, g);
 			g.gridx = 1;
 			g.weightx = 1;
@@ -2174,23 +2165,32 @@ public class CardOrganizer extends JFrame  {
 	
 	public void resizeL() {
 	BufferedImage img = null;
-		try {
-			img = ImageIO.read(new File(home +"/Desktop/VCO/Pictures Try 2/" + selected + ".jpg"));
-		} catch (IOException e1) {
-			try {
-				img = ImageIO.read(new File(home +"/Desktop/VCO/Pictures Try 2/" + "card_back" + ".jpg"));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
+	String cut = selected;
+	if(selected != null && selected.contains("//")) {
+		cut = selected.replace("//", "");
+	try {
+		img = ImageIO.read(new File(home +"/Desktop/VCO/Pictures Try 2/" + cut + ".jpg"));
+	} catch (IOException e1) {
+		e1.printStackTrace();
 		}
-		if(cardV.getWidth() != 243) {
+	} else {
+	try {
+		img = ImageIO.read(new File(home +"/Desktop/VCO/Pictures Try 2/" + selected + ".jpg"));
+	} catch (IOException e1) {
+		try {
+			img = ImageIO.read(new File(home +"/Desktop/VCO/Pictures Try 2/" + "card_back" + ".jpg"));
+		} catch (IOException e) {
+			e.printStackTrace();
+			}
+		}
+	}
+	if(cardV.getWidth() != 243) {
 		BufferedImage card =
-				  Scalr.resize(img, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH,
-				               cardV.getWidth(), 100, Scalr.OP_ANTIALIAS);
+				Scalr.resize(img, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH,
+						cardV.getWidth(), 100, Scalr.OP_ANTIALIAS);
 		ImageIcon i = new ImageIcon(card);
 		label.setIcon(i);
-		}
+	}
 	}
 
 	/**
@@ -2204,7 +2204,7 @@ public class CardOrganizer extends JFrame  {
 		try {
 			selected = (String) j.getValueAt(j.getSelectedRow(), 0);
 		} catch (ArrayIndexOutOfBoundsException e1) {
-			//e1.printStackTrace(); //this will not be selected at times which is ok
+			e1.printStackTrace(); //this will not be selected at times which is ok
 		}
 		if(cardV.getWidth() == 243)
 			try {
@@ -2217,8 +2217,11 @@ public class CardOrganizer extends JFrame  {
 		else
 			resizeL();
 		try {
-			ownedNum.setText(Integer.toString(organizer.getCard(selected).getOwned()));
-			price.setText(organizer.getCard(selected).price);
+			NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance();
+			double pric = Double.parseDouble(organizer.getCard(selected).price);
+			String owned = Integer.toString(organizer.getCard(selected).getOwned());
+			ownedL.setText("Owned:");
+			ownedAndPrice.setText(String.format(owned + "  " + "%-5s", currencyFormatter.format(pric)));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -2374,6 +2377,7 @@ public class CardOrganizer extends JFrame  {
 			dataModel.setValueAt(xIcon,i, 5);
 		}
 		}
+		table.getColumnModel().getColumn(0).setPreferredWidth(150);
 		table.repaint(); 
 		refreshCardValues(table);
 	}
