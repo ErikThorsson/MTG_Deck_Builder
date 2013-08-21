@@ -1,11 +1,13 @@
 package GUI;
 
+import java.awt.AWTEvent;
 import java.awt.AWTException;
 import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Event;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -20,12 +22,14 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.RenderingHints;
+import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -41,10 +45,14 @@ import java.util.Vector;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
+import javax.swing.Action;
+import javax.swing.ActionMap;
 import javax.swing.ButtonGroup;
+import javax.swing.ComponentInputMap;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -66,12 +74,14 @@ import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.MatteBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.plaf.ActionMapUIResource;
 import javax.swing.table.DefaultTableModel;
 
 import org.imgscalr.Scalr;
@@ -137,7 +147,7 @@ public class CardOrganizer extends JFrame  {
 	private JButton allcards = new JButton("All Cards");
 	protected JButton goQuery = new JButton("Query!");
 	protected JButton viewAll = new JButton("My Cards");
-	private JTextField textBox = new JTextField("Enter Here");
+	private JTextField textBox = new JTextField("");
 	private String selected = null;
 	private JCheckBox deckBuild = new JCheckBox();
 	private JCheckBox sideBoard = new JCheckBox();
@@ -248,6 +258,8 @@ public class CardOrganizer extends JFrame  {
 	JPanel cardV = new JPanel(new GridBagLayout());
 	JPanel fixedTopBottom = new JPanel(new FlowLayout(FlowLayout.LEFT));
 	int oldWidth = 223;
+	String[] myCards = organizer.getAllArray();
+	String[] allCards = organizer.getCategory("cD");
 	
 	public static void main(String[] args) throws InvalidKeyException, IOException, AWTException {
 		new CardOrganizer();
@@ -740,7 +752,6 @@ public class CardOrganizer extends JFrame  {
 
 			//JTable
 			String[] cardNames = organizer.getAllArray();
-			ArrayList<String[]> values = returnValues(cardNames);
 			queryList = cardNames;	
 			dataModel = new DefaultTableModel();
 			dataModel.setColumnCount(4);
@@ -762,7 +773,7 @@ public class CardOrganizer extends JFrame  {
 				}
 			};
 			table.getColumnModel().getColumn(0).setPreferredWidth(150);
-			refreshTable(cardNames, values);
+			refreshTable(cardNames, null);
 
 			JScrollPane scrollList = new JScrollPane(table);
 			JScrollPane scroll =  new JScrollPane(mainList);
@@ -917,27 +928,24 @@ public class CardOrganizer extends JFrame  {
 			g.gridy = 0;
 			JPanel collectionVal = new JPanel(new GridBagLayout());
 			g.anchor = GridBagConstraints.WEST;
-			g.fill = GridBagConstraints.NONE;
 			g.insets = new Insets(0,0,0,0);
-			collectionVal.add(collectionV, g);
+			cardV.add(collectionV, g);
 			g.insets = new Insets(0,110,0,0);
 			priceCollection();
-			collectionVal.add(collectionValue, g);
+			cardV.add(collectionValue, g);
 			g.insets = new Insets(0,0,0,0);
-			cardV.add(collectionVal, g);
 			g.gridy = 1;
 			cardV.add(label, g);
 			g.gridx = 0;
 			JPanel stats = new JPanel(new GridBagLayout());
-			g.insets = new Insets(0,0,0,0);
-			stats.add(ownedL, g);
-			g.gridx = 1;
-			g.insets = new Insets(0,5,0,0);
-			stats.add(ownedAndPrice, g);
-			g.insets = new Insets(0,0,0,0);
 			g.gridx = 0;
 			g.gridy = 2;
-			cardV.add(stats, g);
+			g.insets = new Insets(0,0,0,0);
+			cardV.add(ownedL, g);
+			g.insets = new Insets(0,50,0,0);
+			cardV.add(ownedAndPrice, g);
+			g.insets = new Insets(0,0,0,0);
+			g.fill = GridBagConstraints.BOTH;
 			g.gridy = 3;
 			g.insets = new Insets(0,0,0,0);
 			cardV.add(deckV, g);
@@ -990,75 +998,134 @@ public class CardOrganizer extends JFrame  {
 			g.ipady = 0;
 			combine.add(cardV, g);
 			add(combine);
-			//add(cardV);
-			//add(fixedTopBottom);
-			//add(topBottom);
-			//add(deck);
 
-			//remaps ENTER key in JTable to addCard()
-			table.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "Enter");
-			table.getActionMap().put("Enter", new AbstractAction() {
+			//remaps ENTER key in JTables to addCard()
+
+			table.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "add");
+			table.getActionMap().put("add", new AbstractAction() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if(enterC == true) { //use textbox string if checked
-						selected = textBox.getText();
-					}
-					if(deckCheck!= true){
-					try {
-						if(selected != null)
-							organizer.addCard(selected);
-					} catch (InvalidKeyException e1) {
-						e1.printStackTrace();
-					}
-					//determine view and refresh
-					if(isQuery != true) {
-						if(isMyCards == true)
-							viewMyCards(); 
-						else
-							viewAll();
-					} else if(isQuery == true) { 	//determine if query view and refresh
-						ArrayList<String[]> values = returnValues(queryList);
-						refreshTable(queryList, values);
-					}
-					try { //price collection on add
-						priceCollection();
-					} catch (InvalidKeyException e1) {
-						e1.printStackTrace();
-					}
-					try {
-						organizer.save();
-					} catch (InvalidKeyException e1) {
-						e1.printStackTrace();
-					} catch (FileNotFoundException e1) {
-						e1.printStackTrace();
-					} catch (MalformedURLException e1) {
-						e1.printStackTrace();
-					}
-					} else {
-						organizer.addCardToDeck(selected, sideboardCheck);
-						countDeck();
-						refreshALs();
-						try{
-							refreshDeckTable(creatures, dataModel2);
-						}catch (Exception e2) {
-							e2.printStackTrace();
-							}
-						try{
-							refreshDeckTable(spells, dataModel3);
-						}catch (Exception e2) {
-							e2.printStackTrace();
-							}
-						try{
-							refreshDeckTable(lands, dataModel4);
-						}catch (Exception e2) {
-							e2.printStackTrace();
-							}
-						try{
-							refreshDeckTable(sideboard, dataModel5);
-						}catch (Exception e2) {
-							e2.printStackTrace();
-							}
-						}
+					addCard();
+				}
+			});
+			
+			table2.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "add");
+			table2.getActionMap().put("add", new AbstractAction() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					addCard();
+				}
+			});
+			
+			table3.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "add");
+			table3.getActionMap().put("add", new AbstractAction() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					addCard();
+				}
+			});
+			
+			table4.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "add");
+			table4.getActionMap().put("add", new AbstractAction() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					addCard();
+				}
+			});
+			
+			table5.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "add");
+			table5.getActionMap().put("add", new AbstractAction() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					addCard();
+				}
+			});
+			//maps backslash to remove card
+			
+			table.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SLASH, 0), "subtract");
+			table.getActionMap().put("subtract", new AbstractAction() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					removeCard();
+				}
+			});
+			
+			table2.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SLASH, 0), "subtract");
+			table2.getActionMap().put("subtract", new AbstractAction() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					removeCard();
+				}
+			});
+			
+			table3.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SLASH, 0), "subtract");
+			table3.getActionMap().put("subtract", new AbstractAction() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					removeCard();
+				}
+			});
+			
+			table4.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SLASH, 0), "subtract");
+			table4.getActionMap().put("subtract", new AbstractAction() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					removeCard();
+				}
+			});
+			
+			table5.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SLASH, 0), "subtract");
+			table5.getActionMap().put("subtract", new AbstractAction() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					removeCard();
+				}
+			});
+			
+			//maps subtract to sideboard to ]
+			table2.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET, 0), "subtractToSB");
+			table2.getActionMap().put("subtractToSB", new AbstractAction() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					sideboardCheck = true;
+					addCard();
+					sideboardCheck = false;
+					removeCard();
+				}
+			});
+			
+			table4.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET, 0), "subtractToSB");
+			table4.getActionMap().put("subtractToSB", new AbstractAction() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					sideboardCheck = true;
+					addCard();
+					sideboardCheck = false;
+					removeCard();
+				}
+			});
+			
+			table3.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET, 0), "subtractToSB");
+			table3.getActionMap().put("subtractToSB", new AbstractAction() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					sideboardCheck = true;
+					addCard();
+					sideboardCheck = false;
+					removeCard();
+				}
+			});
+			
+			//maps subtract from sideboard to deck to [
+			
+			table5.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET, 0), "subtractToDeck");
+			table5.getActionMap().put("subtractToDeck", new AbstractAction() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					sideboardCheck = false;
+					addCard();
+					sideboardCheck = true;
+					removeCard();
 				}
 			});
 			
@@ -1870,20 +1937,28 @@ public class CardOrganizer extends JFrame  {
 		    });
 
 			//listens for textBox input
-			textBox.getDocument().addDocumentListener(new DocumentListener() {
-				@Override
-				public void changedUpdate(DocumentEvent e) {
-				text();
-				}
-				@Override
-				public void removeUpdate(DocumentEvent e) {
-				text();
-				}
-				@Override
-				public void insertUpdate(DocumentEvent e) {
-				text();
-				}
-				public void text() {
+//			textBox.getDocument().addDocumentListener(new DocumentListener() {
+//				@Override
+//				public void changedUpdate(DocumentEvent e) {
+//				text();
+//				}
+//				@Override
+//				public void removeUpdate(DocumentEvent e) {
+//				text();
+//				}
+//				@Override
+//				public void insertUpdate(DocumentEvent e) {
+//				text();
+//				}
+		  	textBox.addKeyListener(new KeyAdapter() {
+	            public void keyReleased(KeyEvent e) {
+//	            	if(textBox.getText().equals("")) {
+//						if(isMyCards == true) 
+//							viewMyCards();
+//						else
+//							viewAll();
+//					}
+	            	if(e.getKeyCode() == KeyEvent.VK_ENTER){
 					isText = true;
 					if(!textBox.getText().equals("")) {
 						cardText = textBox.getText().toLowerCase();
@@ -1891,13 +1966,8 @@ public class CardOrganizer extends JFrame  {
 						cardText = "n";
 					}
 					query();
-					if(textBox.getText().equals("")) {
-						if(isMyCards == true) 
-							viewMyCards();
-						else
-							viewAll();
-					}
 				}
+	            }
 			});
 
 			//detects selected table row and updates image icon
@@ -1907,6 +1977,7 @@ public class CardOrganizer extends JFrame  {
 					try {
 						selected = (String) table.getValueAt(table.getSelectedRow(), 0);
 					} catch (ArrayIndexOutOfBoundsException e1) {
+						e1.printStackTrace();
 					}
 					isText = false;
 					if(selected != null) {
@@ -2201,11 +2272,11 @@ public class CardOrganizer extends JFrame  {
 			if(isText!= true) {
 					j.requestFocusInWindow();
 				}
-		try {
-			selected = (String) j.getValueAt(j.getSelectedRow(), 0);
-		} catch (ArrayIndexOutOfBoundsException e1) {
-			e1.printStackTrace(); //this will not be selected at times which is ok
-		}
+//		try {
+//			selected = (String) j.getValueAt(j.getSelectedRow(), 0);
+//		} catch (ArrayIndexOutOfBoundsException e1) {
+//			e1.printStackTrace(); //this will not be selected at times which is ok
+//		}
 		if(cardV.getWidth() == 243)
 			try {
 				label.setIcon(organizer.getCard(selected).getImg());
@@ -2306,76 +2377,58 @@ public class CardOrganizer extends JFrame  {
 	 */
 	public void refreshTable(String[] s, ArrayList<String[]> l) {
 		String[] all = s;
-		String[] stringSet = l.get(0);
-		String[] rarity = l.get(1);
-		String[] owned = l.get(2);
-		ArrayList<Card> cards = new ArrayList<Card>();
-		for(int i = 0; i < all.length; i++) {
-			try {
-				cards.add(organizer.getCard(all[i]));
-			} catch (InvalidKeyException e) {
-				e.printStackTrace();
-			}
-		}	
-		int toRemove = dataModel.getRowCount() - s.length; //get # of rows to remove which = current rowCount - querylist length
+		ArrayList<Card> cards = new ArrayList<Card>();	
+		
+		int toRemove = dataModel.getRowCount() - s.length; //get # of rows to remove which = current rowCount - querylist length	
 		for(int i = 0; i < toRemove; i++) {
 			if(dataModel.getRowCount() > 2)
 				dataModel.removeRow(dataModel.getRowCount() - 1);
 		}	
-		int toAdd = s.length - dataModel.getRowCount(); //get # of rows to add if previously within shorter query = qList length - rowCount
+		int toAdd = 0;
+		toAdd = s.length - dataModel.getRowCount(); //get # of rows to add if previously within shorter query = qList length - rowCount
 		for(int i = 0; i < toAdd; i++)
 			dataModel.addRow(new Object[]{"","",""});
 		
-		for(int i = 0; i < dataModel.getRowCount(); i++) {
-			dataModel.setValueAt(null,i, 0);
-		}
-		for(int i = 0; i < dataModel.getRowCount(); i++) {
-			dataModel.setValueAt(null,i, 1);
-		}
-		for(int i = 0; i < dataModel.getRowCount(); i++) {
-			dataModel.setValueAt(null,i, 2);
-		}
-		for(int i = 0; i < dataModel.getRowCount(); i++) {
-			dataModel.setValueAt(null,i, 3);
-		}
-		for(int i = 0; i < dataModel.getRowCount(); i++) {
-			dataModel.setValueAt(null,i, 4);
-		}
-		if(!isMyCards) {
-		for(int i = 0; i < dataModel.getRowCount(); i++) {
-			dataModel.setValueAt(null,i, 5);
-		}
-		}
-		for(int i = 0; i < all.length; i++) {
-			dataModel.setValueAt(all[i],i, 0);
-		}
-		for(int i = 0; i < all.length; i++) {
-			dataModel.setValueAt(iconCombine(cards.get(i).CMC),i, 1);
-		}
-		for(int i = 0; i < all.length; i++) {
-			dataModel.setValueAt(cards.get(i).type2,i, 2);
-		}
-		for(int i = 0; i < all.length; i++) {
-			if(rarity[i] == "Mythic") {
-				dataModel.setValueAt(mythicIcon,i, 3);
-			} else if(rarity[i] == "Rare"){
-			dataModel.setValueAt(rareIcon,i, 3); 
-			} else if(rarity[i] == "Uncommon"){
-				dataModel.setValueAt(uncommonIcon,i, 3); 
-			} else if(rarity[i] == "Common"){
-				dataModel.setValueAt(commonIcon,i, 3); 
+		for(int i = 0; i < s.length; i++) {
+			try {
+				try {
+					cards.add(organizer.getCard(all[i]));
+				} catch (InvalidKeyException e) {
+					e.printStackTrace();
+				}
+				if(!cards.get(i).name.equals("card_back")) {
+				if(!isMyCards) 
+					dataModel.setValueAt(null,i, 5);
+				dataModel.setValueAt(cards.get(i).name,i, 0);
+				dataModel.setValueAt(iconCombine(cards.get(i).CMC),i, 1);
+				dataModel.setValueAt(cards.get(i).type2,i, 2);
+				if(cards.get(i).rarity.contains("-M")) {
+					dataModel.setValueAt(mythicIcon,i, 3);
+				} else if(cards.get(i).rarity.contains("-R")){
+				dataModel.setValueAt(rareIcon,i, 3); 
+				} else if(cards.get(i).rarity.contains("-U")){
+					dataModel.setValueAt(uncommonIcon,i, 3); 
+				} else if(cards.get(i).rarity.contains("-C")){
+					dataModel.setValueAt(commonIcon,i, 3); 
+				}
+				//set
+				String set = "";
+				String[] splitR = new String[2];
+					splitR = cards.get(i).rarity.split(",");
+				String[] splitSet = new String[2];
+				splitSet = splitR[0].split("-");
+					set = splitSet[0];
+				dataModel.setValueAt(set,i, 4);
+				if(!isMyCards) {
+					if(cards.get(i).owned > 0) {
+						dataModel.setValueAt(checkIcon,i, 5);
+					} else
+					dataModel.setValueAt(xIcon,i, 5);
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		}
-		for(int i = 0; i < all.length; i++) {
-			dataModel.setValueAt(stringSet[i],i, 4);
-		}
-		if(!isMyCards) {
-		for(int i = 0; i < all.length; i++) {
-			if(owned[i].equals("✓")) {
-				dataModel.setValueAt(checkIcon,i, 5);
-			} else
-			dataModel.setValueAt(xIcon,i, 5);
-		}
 		}
 		table.getColumnModel().getColumn(0).setPreferredWidth(150);
 		table.repaint(); 
@@ -2461,7 +2514,7 @@ public class CardOrganizer extends JFrame  {
 						if(splitSet[1].equals("M"))
 							rarity[i] = "Mythic";
 					}catch (ArrayIndexOutOfBoundsException ex) {
-						//ex.printStackTrace(); //probably messed up b/c of cardback which is basically empty
+						ex.printStackTrace(); //probably messed up b/c of cardback which is basically empty
 					}
 				}
 			} catch (InvalidKeyException e) {
@@ -2652,10 +2705,10 @@ public class CardOrganizer extends JFrame  {
 	 * Refreshes table with query
 	 */
 	public void query() {	
-		isQuery = true;
-		String[] querySet = null;
 		String[] myCards = organizer.getAllArray();
 		String[] allCards = organizer.getCategory("cD");
+		isQuery = true;
+		String[] querySet = null;
 		if(isSet == true) {
 			querySet = queryList;
 		} else if(isMyCards) {
@@ -2740,8 +2793,14 @@ public class CardOrganizer extends JFrame  {
 				e.printStackTrace();
 			}
 		}
+//		for (int i = 0; i < all.length; i++) {
+//			System.out.println(all[i]);
+//		}
 		queryList = all;
-		ArrayList<String[]> values = returnValues(all);
+		ArrayList<String[]> values = null;//returnValues(all);
+//		for (int i = 0; i < values.get(0).length; i++) {
+//			System.out.println(values.get(0));
+//		}
 		refreshTable(all, values);
 	}
 
@@ -2793,5 +2852,159 @@ public class CardOrganizer extends JFrame  {
 		queryList = all;
 		ArrayList<String[]> values = returnValues(all);
 		refreshTable(all, values);
+	}
+	
+	public void addCard() {
+		if(enterC == true) { //use textbox string if checked
+			selected = textBox.getText();
+		}
+		if(deckCheck!= true){
+		try {
+			if(selected != null)
+				organizer.addCard(selected);
+		} catch (InvalidKeyException e1) {
+			e1.printStackTrace();
+		}
+		//determine view and refresh
+		if(isQuery != true) {
+			if(isMyCards == true)
+				viewMyCards(); 
+			else
+				viewAll();
+		} else if(isQuery == true) { 	//determine if query view and refresh
+			ArrayList<String[]> values = returnValues(queryList);
+			refreshTable(queryList, values);
+		}
+		try { //price collection on add
+			priceCollection();
+		} catch (InvalidKeyException e1) {
+			e1.printStackTrace();
+		}
+		try {
+			organizer.save();
+		} catch (InvalidKeyException e1) {
+			e1.printStackTrace();
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		} catch (MalformedURLException e1) {
+			e1.printStackTrace();
+		}
+		} else {
+			organizer.addCardToDeck(selected, sideboardCheck);
+			countDeck();
+			refreshALs();
+			try{
+				refreshDeckTable(creatures, dataModel2);
+			}catch (Exception e2) {
+				e2.printStackTrace();
+				}
+			try{
+				refreshDeckTable(spells, dataModel3);
+			}catch (Exception e2) {
+				e2.printStackTrace();
+				}
+			try{
+				refreshDeckTable(lands, dataModel4);
+			}catch (Exception e2) {
+				e2.printStackTrace();
+				}
+			try{
+				refreshDeckTable(sideboard, dataModel5);
+			}catch (Exception e2) {
+				e2.printStackTrace();
+				}
+		}
+	}
+	
+	public void removeCard() {
+		isRemoved = false;
+		if(enterC == true) { 
+			selected = textBox.getText();
+		}
+		if(deckCheck!= true){
+		if(isMyCards == true) {
+			if(selected != null)
+				organizer.removeCard(selected, "root");
+			if(isQuery == true) {
+				ArrayList<String> filterOwned = new ArrayList<String>(); //filters out owned = 0 cards 
+				for (int i = 0; i < queryList.length; i++) {
+					Card card = null;
+					try {
+						card = organizer.getCard(queryList[i]);
+					} catch (InvalidKeyException e2) {
+						e2.printStackTrace();
+					}
+					if(card.owned != 0)
+						filterOwned.add(queryList[i]);
+				}
+				String[] myCards = new String[filterOwned.size()];
+				filterOwned.toArray(myCards);
+				queryList = myCards;
+				ArrayList<String[]> values = returnValues(queryList);
+				refreshTable(queryList, values);
+				//return;
+			}
+		viewMyCards();
+		}
+		if(isMyCards != true) {
+			if(selected != null)
+				organizer.removeCard(selected, "cD");
+			if(isQuery == true) {
+				try {
+					queryList = organizer.query(queryList, color, power,toughness,owned, 
+							type1, type2, rarityC, tribal, cardText, name,	CMC, combinedColors);
+				} catch (InvalidKeyException e2) {
+					e2.printStackTrace();
+				}
+				ArrayList<String[]> values = returnValues(queryList);
+				refreshTable(queryList, values);
+				//return;
+				}
+			viewAll(); 
+			}
+		try { //price collection on remove
+			priceCollection();
+		} catch (InvalidKeyException e1) {
+			e1.printStackTrace();
+		}
+		try {
+			organizer.save();
+		} catch (InvalidKeyException e1) {
+			e1.printStackTrace();
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		} catch (MalformedURLException e1) {
+			e1.printStackTrace();
+		}
+		} else {
+			try{
+			organizer.removeCardFromDeck(selected, sideboardCheck);
+			countDeck();
+			priceDeck();
+			refreshALs();
+			} catch (Exception ex) {
+				//tis fine
+			}
+			try{
+				refreshDeckTable(creatures, dataModel2);
+			}catch (Exception e2) {
+				e2.printStackTrace();
+				}
+			try{
+				refreshDeckTable(spells, dataModel3);
+			}catch (Exception e2) {
+				e2.printStackTrace();
+				}
+			try{
+				refreshDeckTable(lands, dataModel4);
+			}catch (Exception e2) {
+				e2.printStackTrace();
+				}
+			try{
+				refreshDeckTable(sideboard, dataModel5);
+			}catch (Exception e2) {
+				e2.printStackTrace();
+				}
+		}
 	}
 }

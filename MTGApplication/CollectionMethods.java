@@ -54,34 +54,50 @@ public class CollectionMethods extends BasicTree {
 	public static void main(String[] args) throws InvalidKeyException, IOException, InterruptedException, AWTException {
 		CollectionMethods test = new CollectionMethods();
 				test.loadCompleteDatabase();
-				//test.printNameAndPrice();
-				String[] s = test.getCategory("cD");
+				test.printNameAndPrice();
+//				String[] s = test.getCategory("cD");
+				
 //				Card card = test.getCard("Howlpack Alpha");
 //				System.out.print(test.cmcCount(card.CMC));
 //				System.out.println(card.CMC);
 //				//String[] t = test.query("n", "green");
-//				String[] j = test.query(s, "n", -1, -1, -1, "n", "n", "n", "n", "n", "n", -1, "BG");
+//				String[] j = test.query(s, "n", -1, -1, -1, "n", "n", "n", "n", "n", "n", -1, "n");
 //				for (int i = 0; i < j.length; i++) {
 //					System.out.println(j[i]);
 //				}
-				for(int i = 0; i < s.length; i++) { //tests for card picture
-				GoogleImageRobot bot = new GoogleImageRobot();
-				bot.getImgURL(s[i]);	
-				}
+				
+//				ArrayList<Card> redL = test.red.cardEntries();
+//				for (int i = 0; i < redL.size(); i++) {
+//					System.out.println(redL.get(i).name);
+//				}
+//				for(int i = 0; i < s.length; i++) { //tests for card picture
+//				GoogleImageRobot bot = new GoogleImageRobot();
+//				bot.getImgURL(s[i]);	
+//				}
 					
-//check for missing images
-					
+//check for missing images					
 //					BufferedImage image = null;
 //					String home = System.getProperty("user.home");
+//					ArrayList<String> notFound = new ArrayList<String>();
+//					for(int i = 0; i < s.length; i++) {
+//					Card card = test.getCard(s[i]);
 //					try {
 //						String cut = card.name;
 //						if(card.name.contains("//"))
 //							cut = card.name.replace("//", "");
 //						image = ImageIO.read(new File(home + "/Desktop/VCO/Pictures Try 2/" + cut + ".jpg"));
 //					} catch (Exception ex) {
+//						notFound.add(card.name);
 //						System.out.println(card.name);
+//						}
 //					}
-					
+//					String names = "";
+//					for(int i = 0; i< notFound.size(); i++) {
+//					names += notFound.get(i) + "\n";
+//					PrintWriter out = new PrintWriter(home + "/Desktop/Missing Pictures.txt");
+//					out.print(names);
+//					out.close();
+//					}
 //					test.getDecks();
 	}
 	
@@ -331,19 +347,19 @@ public class CollectionMethods extends BasicTree {
 		if(card.color!= null) {
 		if(card.color.equals("red")) {
 			red.put(card.name, card);
-			if (card.type1 == "permanent") 
+			if (card.type1.equals("permanent")) 
 				redPermanents.put(card.name, card);
-			if(card.type2 == "creature")
+			if(card.type2.equals("creature"))
 				redCreatures.put(card.name, card);
-			if(card.type2 == "planeswalker")
+			if(card.type2.equals("planeswalker"))
 				redPlaneswalkers.put(card.name, card);
-			if(card.type2 == "enchantment")
+			if(card.type2.equals("enchantment"))
 				redEnchantments.put(card.name, card);
 			else
 				redNonPermanents.put(card.name, card);
-			if(card.type2 == "instant")
+			if(card.type2.equals("instant"))
 				redInstants.put(card.name, card);
-			if(card.type2 == "sorcery")
+			if(card.type2.equals("sorcery"))
 				redSorcery.put(card.name, card);
 			}
 		}
@@ -674,7 +690,7 @@ public class CollectionMethods extends BasicTree {
 		ArrayList<Card> list = h.cardEntries();
 		return list;
 	}
-	
+
 	/**
 	 * New query (sieve method)
 	 */
@@ -689,9 +705,7 @@ public class CollectionMethods extends BasicTree {
 		String type1 = s2;
 		String type2 = s3;
 		String rarity = s4;
-		String tribal = t;
 		String text = t2;
-		String name = t3.toLowerCase();
 		String colors = s5;
 		
 		ArrayList<Card> filtered = new ArrayList<Card>();
@@ -702,6 +716,9 @@ public class CollectionMethods extends BasicTree {
 			list.add(getCard(li[z]));
 		}
 		filtered = (ArrayList<Card>) list.clone();
+//		if (color.equals("red")) {
+//			filtered = red.cardEntries();
+//		}
 		if(rarity.equals("common"))
 			rarity = "-C";
 		if(rarity.equals("uncommon"))
@@ -710,151 +727,152 @@ public class CollectionMethods extends BasicTree {
 			rarity = "-R";
 		if(rarity.equals("mythic"))
 			rarity = "-M";
-		
-	if(power != -1) {
-		filtered.clear();
-		Card card = new Card();
-		for(int j = 0; j < list.size(); j++) {
-			card = list.get(j);
-			if(card != null)
-				if(card.power == power)
-					filtered.add(card);
-		}
-	}
 
-	if(toughness != -1) {
-		Card card = new Card();
-		for(int j = 0; j < filtered.size(); j++) {
-			try{
-			card = filtered.get(j);
-			} catch (Exception e) {
+		if(power != -1) {
+			filtered.clear();
+			Card card = new Card();
+			for(int j = 0; j < list.size(); j++) {
 				card = list.get(j);
+				if(card != null)
+					if(card.power == power)
+						filtered.add(card);
 			}
-			if(card != null)
-				if(card.toughness == toughness) {
-					temp.add(card);
-				}
 		}
-		filtered = (ArrayList<Card>) temp.clone();
-		temp.clear();
-	}
 
-	if(!type1.equals("n")) {
-		Card card = new Card();
-		for(int j = 0; j < filtered.size(); j++) {
-			try{
-				card = filtered.get(j);
+		if(toughness != -1) {
+			Card card = new Card();
+			for(int j = 0; j < filtered.size(); j++) {
+				try{
+					card = filtered.get(j);
 				} catch (Exception e) {
 					card = list.get(j);
 				}
-			if(card != null)
-				if(card.type1 != null)
-					if((card.type1).equals(type1)) {
+				if(card != null)
+					if(card.toughness == toughness) {
 						temp.add(card);
-						}
+					}
 			}
 			filtered = (ArrayList<Card>) temp.clone();
 			temp.clear();
-	}
-	
-	if(!type2.equals("n")) {
-		Card card = new Card();
-		for(int j = 0; j < filtered.size(); j++) {
-			try{
-				card = filtered.get(j);
-				} catch (Exception e) {
-					card = list.get(j);
-				}			if(card != null)
-				if(card.type2 != null)
-					if((card.type2).equals(type2)) {
-						temp.add(card);
-					}
 		}
-		filtered = (ArrayList<Card>) temp.clone();
-		temp.clear();
-	}
-	
-	if(owned != -1) {
-		Card card = new Card();
-		for(int j = 0; j < filtered.size(); j++) {
-			try{
-				card = filtered.get(j);
+
+		if(!type1.equals("n")) {
+			Card card = new Card();
+			for(int j = 0; j < filtered.size(); j++) {
+				try{
+					card = filtered.get(j);
 				} catch (Exception e) {
 					card = list.get(j);
-				}	
-			if(card != null)
-				if(card.owned == owned) {
-					temp.add(card);
 				}
-	}
-	filtered = (ArrayList<Card>) temp.clone();
-	temp.clear();
-	}
-	
-	if(!color.equals("n")) {
-		Card card = new Card();
-		for(int j = 0; j < filtered.size(); j++) {
-			try{
-				card = filtered.get(j);
-				} catch (Exception e) {
-					card = list.get(j);
-				} 
-			if(card != null)
-				if(card.color != null)
-					if(card.color.equals(color)) { 
-						temp.add(card);
-					}
-		}
-		filtered = (ArrayList<Card>) temp.clone();
-		temp.clear();
-	}
-	
-	if(!rarity.equals("n")) {
-		Card card = new Card();
-		for(int j = 0; j < filtered.size(); j++) {
-			try{
-				card = filtered.get(j);
-				} catch (Exception e) {
-					card = list.get(j);
-				} 
-			if(card != null)
-				if(card.rarity != null)
-					if(card.rarity.contains(rarity)) {
-						temp.add(card);
-					}
-		}
-		filtered = (ArrayList<Card>) temp.clone();
-		temp.clear();
-	}
-		if(!text.equals("n")) {
-		Card card = new Card();
-		for(int j = 0; j < filtered.size(); j++) {
-			try{
-				card = filtered.get(j);
-				} catch (Exception e) {
-					card = list.get(j);
-				}if(card != null && text != null)
-					if(card.text != null)
-						if(card.text.contains(text) || card.name.toLowerCase().contains(text) || card.type3.contains(text)) {
+				if(card != null)
+					if(card.type1 != null)
+						if((card.type1).equals(type1)) {
 							temp.add(card);
 						}
 			}
 			filtered = (ArrayList<Card>) temp.clone();
 			temp.clear();
-	}
-		
-		if(cManaC != -1) {
-		Card card = new Card();
-		int cmcCount = 0;
-		for(int j = 0; j < filtered.size(); j++) {
-			try{
-				card = filtered.get(j);
+		}
+
+		if(!type2.equals("n")) {
+			Card card = new Card();
+			for(int j = 0; j < filtered.size(); j++) {
+				try{
+					card = filtered.get(j);
+				} catch (Exception e) {
+					card = list.get(j);
+				}			if(card != null)
+					if(card.type2 != null)
+						if((card.type2).equals(type2)) {
+							temp.add(card);
+						}
+			}
+			filtered = (ArrayList<Card>) temp.clone();
+			temp.clear();
+		}
+
+		if(owned != -1) {
+			Card card = new Card();
+			for(int j = 0; j < filtered.size(); j++) {
+				try{
+					card = filtered.get(j);
+				} catch (Exception e) {
+					card = list.get(j);
+				}	
+				if(card != null)
+					if(card.owned == owned) {
+						temp.add(card);
+					}
+			}
+			filtered = (ArrayList<Card>) temp.clone();
+			temp.clear();
+		}
+
+		if(!color.equals("n")) {
+			Card card = new Card();
+			for(int j = 0; j < filtered.size(); j++) {
+				try{
+					card = filtered.get(j);
 				} catch (Exception e) {
 					card = list.get(j);
 				} 
-			if(card != null)
-				if(card.CMC != null) {
-					cmcCount = cmcCount(card.CMC);
+				if(card != null)
+					if(card.color != null)
+						if(card.color.equals(color)) { 
+							temp.add(card);
+						}
+			}
+			filtered = (ArrayList<Card>) temp.clone();
+			temp.clear();
+		}
+
+		if(!rarity.equals("n")) {
+			Card card = new Card();
+			for(int j = 0; j < filtered.size(); j++) {
+				try{
+					card = filtered.get(j);
+				} catch (Exception e) {
+					card = list.get(j);
+				} 
+				if(card != null)
+					if(card.rarity != null)
+						if(card.rarity.contains(rarity)) {
+							temp.add(card);
+						}
+			}
+			filtered = (ArrayList<Card>) temp.clone();
+			temp.clear();
+		}
+		if(!text.equals("n")) {
+			Card card = new Card();
+			for(int j = 0; j < filtered.size(); j++) {
+				try{
+					card = filtered.get(j);
+				} catch (Exception e) {
+					card = list.get(j);
+				}if(card != null && text != null)
+					if(card.text != null)
+						if(card.name.toLowerCase().contains(text) || card.type2.toLowerCase().contains(text) 
+								|| card.text.toLowerCase().contains(text) ) {
+							temp.add(card);
+						}
+			}
+			filtered = (ArrayList<Card>) temp.clone();
+			temp.clear();
+		}
+
+		if(cManaC != -1) {
+			Card card = new Card();
+			int cmcCount = 0;
+			for(int j = 0; j < filtered.size(); j++) {
+				try{
+					card = filtered.get(j);
+				} catch (Exception e) {
+					card = list.get(j);
+				} 
+				if(card != null)
+					if(card.CMC != null) {
+						cmcCount = cmcCount(card.CMC);
 						if(cManaC == 9) {
 							if(cmcCount >= 9)
 								temp.add(card);
@@ -865,7 +883,7 @@ public class CollectionMethods extends BasicTree {
 			filtered = (ArrayList<Card>) temp.clone();
 			temp.clear();
 		}
-		
+
 		if(!colors.equals("")) {
 			Card card = new Card();
 			for(int z = 0; z < colors.length(); z++) {
@@ -873,15 +891,15 @@ public class CollectionMethods extends BasicTree {
 					for(int j = 0; j < filtered.size(); j++) {
 						try{
 							card = filtered.get(j);
-							} catch (Exception e) {
-								card = list.get(j);
-							} 
+						} catch (Exception e) {
+							card = list.get(j);
+						} 
 						if(card != null)
 							if(card.CMC != null)
 								if(card.CMC.contains("U")) {
 									temp.add(card);
 								}
-						}
+					}
 					filtered = (ArrayList<Card>) temp.clone();
 					temp.clear();
 				}
@@ -889,15 +907,15 @@ public class CollectionMethods extends BasicTree {
 					for(int j = 0; j < filtered.size(); j++) {
 						try{
 							card = filtered.get(j);
-							} catch (Exception e) {
-								card = list.get(j);
-							} 
+						} catch (Exception e) {
+							card = list.get(j);
+						} 
 						if(card != null)
 							if(card.CMC != null)
 								if(card.CMC.contains("R")) {
 									temp.add(card);
 								}
-						}
+					}
 					filtered = (ArrayList<Card>) temp.clone();
 					temp.clear();
 				}
@@ -905,15 +923,15 @@ public class CollectionMethods extends BasicTree {
 					for(int j = 0; j < filtered.size(); j++) {
 						try{
 							card = filtered.get(j);
-							} catch (Exception e) {
-								card = list.get(j);
-							} 
+						} catch (Exception e) {
+							card = list.get(j);
+						} 
 						if(card != null)
 							if(card.CMC != null)
 								if(card.CMC.contains("W")) {
 									temp.add(card);
 								}
-						}
+					}
 					filtered = (ArrayList<Card>) temp.clone();
 					temp.clear();
 				}
@@ -921,15 +939,15 @@ public class CollectionMethods extends BasicTree {
 					for(int j = 0; j < filtered.size(); j++) {
 						try{
 							card = filtered.get(j);
-							} catch (Exception e) {
-								card = list.get(j);
-							} 
+						} catch (Exception e) {
+							card = list.get(j);
+						} 
 						if(card != null)
 							if(card.CMC != null)
 								if(card.CMC.contains("G")) {
 									temp.add(card);
 								}
-						}
+					}
 					filtered = (ArrayList<Card>) temp.clone();
 					temp.clear();
 				}
@@ -937,28 +955,28 @@ public class CollectionMethods extends BasicTree {
 					for(int j = 0; j < filtered.size(); j++) {
 						try{
 							card = filtered.get(j);
-							} catch (Exception e) {
-								card = list.get(j);
-							} 
+						} catch (Exception e) {
+							card = list.get(j);
+						} 
 						if(card != null)
 							if(card.CMC != null)
 								if(card.CMC.contains("B")) {
 									temp.add(card);
 								}
-						}
+					}
 					filtered = (ArrayList<Card>) temp.clone();
 					temp.clear();
 				}
 			}
 		}
-		
+
 		String[] namesList= new String[filtered.size()];
 		for(int j = 0; j < filtered.size(); j++) {
 			namesList[j] = filtered.get(j).name;
 		}
 		return  namesList;
 	}
-	
+
 	/**
 	 * Count the CMC
 	 */
@@ -979,9 +997,17 @@ public class CollectionMethods extends BasicTree {
 				if(nextInt != -1 && current != -1 && nextInt < 10 && current < 10) {
 					System.out.println(nextInt);
 					System.out.println(current);
-					char[] array = {s.charAt(i), s.charAt(i + 1)};
-					String number = new String(array);
-					count += Integer.parseInt(number);
+					char charOne = 0;
+					char charTwo = 0;
+					try {
+						charOne = s.charAt(i);
+						charTwo = s.charAt(i + 1);
+						char[] array = {charOne,charTwo};
+						String number = new String(array);
+						count += Integer.parseInt(number);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				} else if (current < 10 && current > 0)
 					count += current;
 				else if (current == -1) {
@@ -1149,16 +1175,19 @@ public class CollectionMethods extends BasicTree {
 		String nameAndPrice = "";
 		String price = "";
 		for(int i = 0; i< names.length; i++) {
+			price = null;
 			try {
 			price = value.getPriceL(names[i]);
+			prices[i] = price;
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			prices[i] = price;
+			if(price != null) {
 			nameAndPrice += names[i] + ":" + price + "\n";
 			PrintWriter out = new PrintWriter(home + "/Desktop/Card Prices.txt");
 			out.print(nameAndPrice);
 			out.close();
+			}
 		}
 	}
 	/**
@@ -1178,7 +1207,7 @@ public class CollectionMethods extends BasicTree {
 			try {
 			card.setPrice(split[1]);
 			}catch (Exception e) {
-				//e.printStackTrace();
+				//card.setPrice(null);
 			}
         }
 	}
@@ -1226,8 +1255,13 @@ public class CollectionMethods extends BasicTree {
 			//System.out.println(name);
 			int power = Integer.parseInt(powerS);
 			int toughness = Integer.parseInt(toughnessS);
-
+//			try {
+//				addCard(name, color, CMC, power, toughness, text, type1, type2, tribal, rarity, picURL);
+//			} catch (InvalidKeyException e1) {
+//				e1.printStackTrace();
+//			}
 			CompleteDatabase.put(name, new Card(name, color, CMC, power, toughness, text, type1, type2, tribal, rarity, picURL));
+			Card card;
 		}
 	}
 

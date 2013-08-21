@@ -102,7 +102,7 @@ public class testFilePrint {
 		String rarity = "";
 		Boolean isLand = false;
 
-		BufferedReader br = new BufferedReader(new FileReader("/Users/eorndahl/Desktop/Standard Cards.txt"));
+		BufferedReader br = new BufferedReader(new FileReader("/Users/eorndahl/Desktop/Magic App Files/All Sets.txt"));
 		String sCurrentLine;
 		int counter = 0;
 		while ((sCurrentLine = br.readLine()) != null) {
@@ -169,7 +169,7 @@ public class testFilePrint {
 					}
 					if(sCurrentLine.contains("Artifact"))
 						type2 = "artifact";
-					if(sCurrentLine.contains("Planeswalker") || sCurrentLine.contains("Creature") || sCurrentLine.contains("Enchantment") || sCurrentLine.contains("Artifact")) {
+					if(sCurrentLine.contains("Planeswalker") || sCurrentLine.contains("Creature") || sCurrentLine.contains("Enchantment") || isLand == true) {
 						type1 = "permanent";
 					} else {
 						type1 = "nonPermanent";
@@ -185,10 +185,13 @@ public class testFilePrint {
 						if(powerS.equals("*") || toughnessS.equals("*")) {
 							powerS = "0";
 							toughnessS = "0";
-						} else {
+						} else if(powerS.contains("+*") || toughnessS.contains("+*")) {
+								String[] split = powerS.split("\\+");
+								powerS = split[0];
+								toughnessS = split[0];
+							}
 						powerS = pT[0];
 						toughnessS = pT[1];
-						}
 						} else {
 						powerS = "0";
 						toughnessS = "0";
@@ -197,7 +200,7 @@ public class testFilePrint {
 					}
 				}
 				if(counter == 4) {
-					if(sCurrentLine.contains("-L") ) {
+					if(sCurrentLine.contains("-L") && sCurrentLine.length() < 6) {
 					counter++;
 					text = null;
 					} else {
@@ -233,6 +236,11 @@ public class testFilePrint {
 					if(powerS.equals("*") || toughnessS.equals("*")) {
 						powerS = "0";
 						toughnessS = "0";
+					} else if (powerS.contains("+*") || toughnessS.contains("+*")) {
+						System.out.println(powerS);
+						String[] split = powerS.split("\\+");
+						powerS = split[0];
+						toughnessS = split[0];
 					} else {
 					power = Integer.parseInt(powerS);
 					toughness = Integer.parseInt(toughnessS);

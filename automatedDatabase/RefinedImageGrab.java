@@ -23,7 +23,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 public class RefinedImageGrab {
 	public static void main(String[] args) throws InterruptedException, AWTException, MalformedURLException, IOException {
 		RefinedImageGrab bot = new RefinedImageGrab();
-		bot.getImgURL("Shivan Dragon");
+		bot.getImgURL("Fire // Ice");
 	}
 	public String getImgURL(String s) throws InterruptedException, AWTException, MalformedURLException, IOException {
 		//removes logger error statements
@@ -32,19 +32,22 @@ public class RefinedImageGrab {
 		
 		//Create a new instance of the Firefox driver
 		WebDriver driver = new FirefoxDriver();
-		driver.get("http://gatherer.wizards.com/Pages/Default.aspx");
+		//driver.get("http://gatherer.wizards.com/Pages/Default.aspx");
+		driver.get("http://gatherer.wizards.com/pages/search/default.aspx?name=+[\"" + s + "\"]");
 		
 		//WebElement searchBox = driver.findElement(By.id("ctl00_ctl00_MainContent_Content_SearchControls_CardSearchBoxParent"));
-		WebElement searchBox = driver.findElement(By.id("ctl00_ctl00_MainContent_Content_SearchControls_CardSearchBoxParent_CardSearchBox"));
-		searchBox.sendKeys(s);
-	    searchBox.sendKeys(Keys.RETURN);	    
+//		WebElement searchBox = driver.findElement(By.id("ctl00_ctl00_MainContent_Content_SearchControls_CardSearchBoxParent_CardSearchBox"));
+//		searchBox.sendKeys(s);
+//	    searchBox.sendKeys(Keys.RETURN);	    
 	    String ID = driver.getCurrentUrl();
 	    String cURL = "http://gatherer.wizards.com/Handlers/Image.ashx";
 	    String[] splits = new String[1];
 	    splits = ID.split("aspx");
 	    cURL+= splits[1] + "&type=card";
 		BufferedImage img = ImageIO.read(new URL(cURL));
-	    File outputfile = new File("/Users/eorndahl/Desktop/VCO/Standard/" + s + ".jpg");
+		if(s.contains("//"))
+			s = s.replace("//", "");
+	    File outputfile = new File("/Users/eorndahl/Desktop/VCO/All Set Images/" + s + ".jpg");
 	    try{
 	    ImageIO.write(img, "jpg", outputfile);
 	    } catch (Exception ex){
@@ -66,7 +69,7 @@ public class RefinedImageGrab {
 			img = ImageIO.read(new URL(cURL));
 		    ImageIO.write(img, "jpg", outputfile);
 	    	} catch ( Exception e) {
-	    	System.out.println(s + " was not found.");
+	    	System.out.println(s);
 	    	}
 	    }
 	    driver.close();
