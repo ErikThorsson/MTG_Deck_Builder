@@ -32,6 +32,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -41,6 +42,7 @@ import java.net.MalformedURLException;
 import java.security.InvalidKeyException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.Vector;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
@@ -203,6 +205,8 @@ public class CardOrganizer extends JFrame  {
 	private JLabel ownedAndPrice = new JLabel("");
 	private JLabel ownedL = new JLabel("");
 	private JLabel collectionV = new JLabel("Collection Value: ");
+	private JLabel numberInTable = new JLabel("| # in Query:");
+	private JLabel numT = new JLabel("3");
 	private JLabel collectionValue = new JLabel("0.0");
 	private JLabel deckV = new JLabel("");
 	private JLabel deckValue = new JLabel("");
@@ -402,39 +406,23 @@ public class CardOrganizer extends JFrame  {
 			menuBar.add(menu);
 
 			//a group of JMenuItems
-//			menuItem = new JMenuItem("Save Collection",KeyEvent.VK_T);
-//			menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, ActionEvent.ALT_MASK));
-//			menuItem.getAccessibleContext().setAccessibleDescription("Save");
-//			menu.add(menuItem);
-			menuItemSaveDeck = new JMenuItem("Save Deck", KeyEvent.VK_T);
+			menuItemSaveDeck = new JMenuItem("Save Deck", KeyEvent.VK_S);
+			menuItemSaveDeck.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.META_MASK));
 			menu.add(menuItemSaveDeck);
-			menuItem3 = new JMenuItem("Save As", KeyEvent.VK_T);
+			menuItem3 = new JMenuItem("Save As", KeyEvent.VK_A);
+			menuItem3.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.META_MASK));
 			menu.add(menuItem3);
-			menuItem4 = new JMenuItem("Delete Deck", KeyEvent.VK_T);
+			menuItem4 = new JMenuItem("Delete Deck", KeyEvent.VK_D);
+			menuItem4.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.META_MASK));
 			menu.add(menuItem4);
-			menuItem5 = new JMenuItem("New Deck", KeyEvent.VK_T);
+			menuItem5 = new JMenuItem("New Deck", KeyEvent.VK_N);
+			menuItem5.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.META_MASK));
 			menu.add(menuItem5);
-			menuItem2 = new JMenuItem("Backup Collection", KeyEvent.VK_T);
-			menuItem2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2, ActionEvent.ALT_MASK));
+			menuItem2 = new JMenuItem("Backup Collection", KeyEvent.VK_B);
+			menuItem2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, ActionEvent.META_MASK));
 			menuItem2.getAccessibleContext().setAccessibleDescription("Backup");
 			menu.add(menuItem2);
 			setJMenuBar(menuBar);
-
-			//menuItem listener
-//			menuItem.addActionListener(new ActionListener() {
-//				@Override
-//				public void actionPerformed(ActionEvent e) {
-//					try {
-//						organizer.save();
-//					} catch (InvalidKeyException e1) {
-//						e1.printStackTrace();
-//					} catch (FileNotFoundException e1) {
-//						e1.printStackTrace();
-//					} catch (MalformedURLException e1) {
-//						e1.printStackTrace();
-//					}
-//				}
-//			});
 
 			//menuItem2 listener
 			menuItem2.addActionListener(new ActionListener() {
@@ -781,7 +769,7 @@ public class CardOrganizer extends JFrame  {
 			ImageIcon image;
 			label = new JLabel();
 			try {
-				image = new ImageIcon(ImageIO.read(new File(home +"/Desktop/VCO/Pictures Try 2/" + "card_back" + ".jpg")));
+				image = new ImageIcon(ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + "card_back" + ".jpg")));
 				label.setIcon(image);
 			} catch (Exception ex) {
 				label.setIcon(organizer.getCard("card_back").getImg());
@@ -933,8 +921,18 @@ public class CardOrganizer extends JFrame  {
 			g.insets = new Insets(0,110,0,0);
 			priceCollection();
 			cardV.add(collectionValue, g);
+			g.insets = new Insets(0,170,0,0);
+			cardV.add(numberInTable, g);
+			g.insets = new Insets(0,250,0,0);
+			int i = dataModel.getRowCount();
+			String numTable = Integer.toString(i);
+			numT.setText(numTable);
+			cardV.add(numT, g);
 			g.insets = new Insets(0,0,0,0);
 			g.gridy = 1;
+			cardV.setSize(300, 800);
+			resizeL();
+
 			cardV.add(label, g);
 			g.gridx = 0;
 			JPanel stats = new JPanel(new GridBagLayout());
@@ -998,7 +996,7 @@ public class CardOrganizer extends JFrame  {
 			g.ipady = 0;
 			combine.add(cardV, g);
 			add(combine);
-
+			
 			//remaps ENTER key in JTables to addCard()
 
 			table.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "add");
@@ -2197,7 +2195,7 @@ public class CardOrganizer extends JFrame  {
 				if(multi.equals("(g/u)"))
 					CMC.add(ugIcon);
 				i+=4;
-				}
+			}
 			}
 		}
 		Icon[] icons = new Icon[CMC.size()];
@@ -2205,30 +2203,6 @@ public class CardOrganizer extends JFrame  {
 		Icon icon = new CompoundIcon(icons);
 		return icon;
 	}
-	
-	/**
-	 * Icon to image
-	 * @param icon
-	 * @return
-	 */
-	static Image iconToImage(Icon icon) {
-		   if (icon instanceof ImageIcon) {
-		      return ((ImageIcon)icon).getImage();
-		   } 
-		   else {
-		      int w = icon.getIconWidth();
-		      int h = icon.getIconHeight();
-		      GraphicsEnvironment ge = 
-		        GraphicsEnvironment.getLocalGraphicsEnvironment();
-		      GraphicsDevice gd = ge.getDefaultScreenDevice();
-		      GraphicsConfiguration gc = gd.getDefaultConfiguration();
-		      BufferedImage image = gc.createCompatibleImage(w, h);
-		      Graphics2D g = image.createGraphics();
-		      icon.paintIcon(null, g, 0, 0);
-		      g.dispose();
-		      return image;
-		   }
-		 }
 	
 	/**
 	 * resize label in proper aspect ratio
@@ -2240,28 +2214,34 @@ public class CardOrganizer extends JFrame  {
 	if(selected != null && selected.contains("//")) {
 		cut = selected.replace("//", "");
 	try {
-		img = ImageIO.read(new File(home +"/Desktop/VCO/Pictures Try 2/" + cut + ".jpg"));
+		img = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + cut + ".jpg"));
 	} catch (IOException e1) {
-		e1.printStackTrace();
+		try {
+			img = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + cut + ".full.jpg"));
+		} catch( Exception e) {
+			e.printStackTrace();
+		}
 		}
 	} else {
 	try {
-		img = ImageIO.read(new File(home +"/Desktop/VCO/Pictures Try 2/" + selected + ".jpg"));
+		img = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + selected + ".jpg"));
 	} catch (IOException e1) {
 		try {
-			img = ImageIO.read(new File(home +"/Desktop/VCO/Pictures Try 2/" + "card_back" + ".jpg"));
-		} catch (IOException e) {
-			e.printStackTrace();
+			img = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + selected + ".full.jpg"));
+		} catch( Exception e) {
+		try {
+			img = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + "card_back" + ".jpg"));
+		} catch (IOException e2) {
+			e2.printStackTrace();
 			}
 		}
-	}
-	if(cardV.getWidth() != 243) {
+		}
+	}	
 		BufferedImage card =
-				Scalr.resize(img, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH,
+				Scalr.resize(img, Scalr.Method.QUALITY, Scalr.Mode.FIT_TO_WIDTH,
 						cardV.getWidth(), 100, Scalr.OP_ANTIALIAS);
 		ImageIcon i = new ImageIcon(card);
 		label.setIcon(i);
-	}
 	}
 
 	/**
@@ -2305,6 +2285,9 @@ public class CardOrganizer extends JFrame  {
 		} catch (InvalidKeyException e) {
 			e.printStackTrace();
 		}
+		int i = dataModel.getRowCount();
+		String numTable = Integer.toString(i);
+		numT.setText(numTable);
 		}
 	}
 	/**
@@ -2402,6 +2385,9 @@ public class CardOrganizer extends JFrame  {
 				dataModel.setValueAt(cards.get(i).name,i, 0);
 				dataModel.setValueAt(iconCombine(cards.get(i).CMC),i, 1);
 				dataModel.setValueAt(cards.get(i).type2,i, 2);
+				if(!cards.get(i).type3.equals("null")) {
+					dataModel.setValueAt(cards.get(i).type2 + " - " + cards.get(i).type3,i, 2);
+				}
 				if(cards.get(i).rarity.contains("-M")) {
 					dataModel.setValueAt(mythicIcon,i, 3);
 				} else if(cards.get(i).rarity.contains("-R")){
@@ -2430,7 +2416,9 @@ public class CardOrganizer extends JFrame  {
 				e.printStackTrace();
 			}
 		}
-		table.getColumnModel().getColumn(0).setPreferredWidth(150);
+		table.getColumnModel().getColumn(0).setPreferredWidth(200);
+		table.getColumnModel().getColumn(1).setPreferredWidth(150);
+		table.getColumnModel().getColumn(2).setPreferredWidth(170);
 		table.repaint(); 
 		refreshCardValues(table);
 	}
@@ -2565,6 +2553,16 @@ public class CardOrganizer extends JFrame  {
 		for(int i = 0; i < deck.size(); i++){
 			s += deck.get(i) + "\n";
 		}
+		Scanner scan = new Scanner(s);
+		String fixSpacing = "";
+		//System.out.println(s);
+		while(scan.hasNext()!= false) {
+			String line = scan.nextLine();
+			if(line.equals(""))
+				line = "%$$%";
+			fixSpacing += line;
+		}
+		//System.out.println("-------" + "\n" + fixSpacing);
 		PrintWriter out;
 		if(b == true) {
 		String inputValue = JOptionPane.showInputDialog(null, "Enter name", "Save Deck", JOptionPane.PLAIN_MESSAGE);
@@ -2576,7 +2574,7 @@ public class CardOrganizer extends JFrame  {
 			f.createNewFile();
 			out = new PrintWriter(home + "/Desktop/VCO/Decks/"+ currentDeck +".txt");
 		}
-		out.print(s);
+		out.print(fixSpacing);
 		out.close();
 	}
 	
@@ -2672,7 +2670,10 @@ public class CardOrganizer extends JFrame  {
 			}
 		}
 		String[] noteS = sFile.toString().split("///");
+		//System.out.println(noteS[1]);
 		try {
+		noteS[1] = noteS[1].replace("%$$%", "\n\n");
+			//System.out.println(noteS[1]);
 		notes.setText(noteS[1]);
 		} catch (Exception e) {
 			notes.setText("");

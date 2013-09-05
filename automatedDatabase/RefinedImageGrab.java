@@ -32,13 +32,8 @@ public class RefinedImageGrab {
 		
 		//Create a new instance of the Firefox driver
 		WebDriver driver = new FirefoxDriver();
-		//driver.get("http://gatherer.wizards.com/Pages/Default.aspx");
 		driver.get("http://gatherer.wizards.com/pages/search/default.aspx?name=+[\"" + s + "\"]");
-		
-		//WebElement searchBox = driver.findElement(By.id("ctl00_ctl00_MainContent_Content_SearchControls_CardSearchBoxParent"));
-//		WebElement searchBox = driver.findElement(By.id("ctl00_ctl00_MainContent_Content_SearchControls_CardSearchBoxParent_CardSearchBox"));
-//		searchBox.sendKeys(s);
-//	    searchBox.sendKeys(Keys.RETURN);	    
+			    
 	    String ID = driver.getCurrentUrl();
 	    String cURL = "http://gatherer.wizards.com/Handlers/Image.ashx";
 	    String[] splits = new String[1];
