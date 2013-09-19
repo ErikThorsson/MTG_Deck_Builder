@@ -42,6 +42,8 @@ import java.net.MalformedURLException;
 import java.security.InvalidKeyException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Scanner;
 import java.util.Vector;
 import javax.imageio.ImageIO;
@@ -264,6 +266,11 @@ public class CardOrganizer extends JFrame  {
 	int oldWidth = 223;
 	String[] myCards = organizer.getAllArray();
 	String[] allCards = organizer.getCategory("cD");
+	JPanel cardPanel = new JPanel(new GridBagLayout());
+	JPanel combine = new JPanel(new GridBagLayout());
+	JPanel notebox = new JPanel();
+	int heightScheme = 0;
+	boolean differentTens = false;
 	
 	public static void main(String[] args) throws InvalidKeyException, IOException, AWTException {
 		new CardOrganizer();
@@ -789,7 +796,7 @@ public class CardOrganizer extends JFrame  {
 			c.weighty = 1;
 			c.fill = GridBagConstraints.BOTH;
 			JPanel queryContainer = new JPanel(new GridBagLayout());
-			queryContainer.setPreferredSize(new Dimension(300, 460));
+			queryContainer.setPreferredSize(new Dimension(300, 498));
 			queryContainer.add(scroll, c);
 			JPanel queryScroll = new JPanel();
 			queryScroll.add(queryContainer);
@@ -895,6 +902,7 @@ public class CardOrganizer extends JFrame  {
 			g.gridy = 0;
 			g.ipady = 0;
 			JPanel top = new JPanel();
+			//p3.setPreferredSize(new Dimension(800, 600));
 			top.add(p3);
 			g.insets = new Insets(0,0,0,0);
 			topBottom.add(p3, g);
@@ -930,10 +938,11 @@ public class CardOrganizer extends JFrame  {
 			cardV.add(numT, g);
 			g.insets = new Insets(0,0,0,0);
 			g.gridy = 1;
-			cardV.setSize(300, 800);
+			cardV.setSize(300, 1);
+			cardPanel.add(label);
 			resizeL();
-
-			cardV.add(label, g);
+			cardPanel.setMinimumSize(new Dimension(0, 430));
+			cardV.add(cardPanel, g);
 			g.gridx = 0;
 			JPanel stats = new JPanel(new GridBagLayout());
 			g.gridx = 0;
@@ -955,7 +964,6 @@ public class CardOrganizer extends JFrame  {
 			deckNum.setText("");
 			cardV.add(deckNum, g);
 			g.insets = new Insets(0,0,0,0);
-			JPanel notebox = new JPanel();
 			notebox.add(notes);
 			JTabbedPane tabbedPane = new JTabbedPane();
 			JScrollPane noteScroll = new JScrollPane(notes); 
@@ -979,7 +987,6 @@ public class CardOrganizer extends JFrame  {
 			g.weighty = 0;
 
 			//combine tB and cV
-			JPanel combine = new JPanel(new GridBagLayout());
 			g.fill = GridBagConstraints.BOTH;
 			g.weightx = 0;
 			g.weighty = 0;
@@ -989,6 +996,7 @@ public class CardOrganizer extends JFrame  {
 			g.ipady = 0;			
 			topBottom.setMinimumSize(new Dimension(800, 700));
 			combine.add(topBottom, g);
+			//combine.setPreferredSize(new Dimension(1200,665));
 			g.gridx = 1;
 			g.weightx = 1;
 			g.weighty = 1;
@@ -1928,7 +1936,7 @@ public class CardOrganizer extends JFrame  {
 				}
 			});
 			
-		  	label.addComponentListener(new ComponentAdapter() {
+		  	cardPanel.addComponentListener(new ComponentAdapter() {
 		        public void componentResized(ComponentEvent e) {
 		        	resizeL();
 		        }
@@ -2242,6 +2250,42 @@ public class CardOrganizer extends JFrame  {
 						cardV.getWidth(), 100, Scalr.OP_ANTIALIAS);
 		ImageIcon i = new ImageIcon(card);
 		label.setIcon(i);
+		System.out.println(label.getHeight());
+		
+		//Now add pixels to the end of each so each image is uniform height.
+		//First, get the three types of images and render for this window width. This solution might be very resource intensive unfortunately.
+		int aGHeight = 0;
+		int aCHeight = 0;
+		int aSHeight = 0;
+		try {
+			BufferedImage ajaniGoldmane = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + "Ajani Goldmane" + ".full.jpg"));
+			BufferedImage aGResize =
+					Scalr.resize(ajaniGoldmane, Scalr.Method.SPEED, Scalr.Mode.FIT_TO_WIDTH,
+							cardV.getWidth(), 100, Scalr.OP_GRAYSCALE);
+			aGHeight = aGResize.getHeight();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try {
+			BufferedImage ajaniCaller = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + "Ajani, Caller of the Pride" + ".jpg"));
+			BufferedImage aCResize =
+					Scalr.resize(ajaniCaller, Scalr.Method.SPEED, Scalr.Mode.FIT_TO_WIDTH,
+							cardV.getWidth(), 100, Scalr.OP_GRAYSCALE);
+			aCHeight = aCResize.getHeight();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try {
+			BufferedImage aquusSteed = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + "Aquus Steed" + ".jpg"));
+			BufferedImage aSResize =
+					Scalr.resize(aquusSteed, Scalr.Method.SPEED, Scalr.Mode.FIT_TO_WIDTH,
+							cardV.getWidth(), 100, Scalr.OP_GRAYSCALE);
+			aSHeight = aSResize.getHeight();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		int largest = Collections.max(Arrays.asList(aGHeight, aCHeight, aSHeight));
+		cardPanel.setMinimumSize(new Dimension(1, label.getHeight() + (largest - label.getHeight()))); // add the difference in pixels between the desired height and actual
 	}
 
 	/**
@@ -2252,21 +2296,7 @@ public class CardOrganizer extends JFrame  {
 			if(isText!= true) {
 					j.requestFocusInWindow();
 				}
-//		try {
-//			selected = (String) j.getValueAt(j.getSelectedRow(), 0);
-//		} catch (ArrayIndexOutOfBoundsException e1) {
-//			e1.printStackTrace(); //this will not be selected at times which is ok
-//		}
-		if(cardV.getWidth() == 243)
-			try {
-				label.setIcon(organizer.getCard(selected).getImg());
-			} catch (InvalidKeyException e1) {
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-		else
-			resizeL();
+		resizeL();
 		try {
 			NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance();
 			double pric = Double.parseDouble(organizer.getCard(selected).price);
@@ -2290,6 +2320,7 @@ public class CardOrganizer extends JFrame  {
 		numT.setText(numTable);
 		}
 	}
+	
 	/**
 	 * Price collection
 	 * @throws InvalidKeyException 
