@@ -271,6 +271,7 @@ public class CardOrganizer extends JFrame  {
 	JPanel notebox = new JPanel();
 	int heightScheme = 0;
 	boolean differentTens = false;
+	int currentHeight = 0;
 	
 	public static void main(String[] args) throws InvalidKeyException, IOException, AWTException {
 		new CardOrganizer();
@@ -2250,8 +2251,25 @@ public class CardOrganizer extends JFrame  {
 						cardV.getWidth(), 100, Scalr.OP_ANTIALIAS);
 		ImageIcon i = new ImageIcon(card);
 		label.setIcon(i);
-		System.out.println(label.getHeight());
+		//System.out.println(label.getHeight());
 		
+		int height = label.getHeight();
+		int newHS =  (int) height/10;
+		String num = Integer.toString(newHS);
+		for(int p = 0; p < num.length(); p++) {
+			if(p == num.length() - 1) {
+				newHS = Character.getNumericValue(num.charAt(p)); //get the tens place of the pixel height
+			}
+		}
+		
+		if(heightScheme - newHS <= -2 || heightScheme - newHS >= 2) { //if the pixel tenth height is a 2 tenths difference, restart the method
+			differentTens = true;
+			heightScheme = newHS;
+		}
+		
+		if(differentTens == true) {
+		differentTens = false;
+		//System.out.println("New size");
 		//Now add pixels to the end of each so each image is uniform height.
 		//First, get the three types of images and render for this window width. This solution might be very resource intensive unfortunately.
 		int aGHeight = 0;
@@ -2284,8 +2302,9 @@ public class CardOrganizer extends JFrame  {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		int largest = Collections.max(Arrays.asList(aGHeight, aCHeight, aSHeight));
-		cardPanel.setMinimumSize(new Dimension(1, label.getHeight() + (largest - label.getHeight()))); // add the difference in pixels between the desired height and actual
+		currentHeight = Collections.max(Arrays.asList(aGHeight, aCHeight, aSHeight));
+		}
+		cardPanel.setMinimumSize(new Dimension(1, label.getHeight() + (currentHeight - label.getHeight()))); // add the difference in pixels between the desired height and actual
 	}
 
 	/**
