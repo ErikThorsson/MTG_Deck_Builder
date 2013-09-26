@@ -44,6 +44,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.Vector;
 import javax.imageio.ImageIO;
@@ -171,7 +172,7 @@ public class CardOrganizer extends JFrame  {
 	private String combinedColors = "";
 	private JMenuBar menuBar;
 	private JMenu menu;
-	private JMenuItem menuItem, menuItem2, menuItem3, menuItem4, menuItem5, menuItemSaveDeck;
+	private JMenuItem menuItem, menuItem2, menuItem3, menuItem4, menuItem5, menuItemSaveDeck, menuRand;
 	private String[] queryList;
 	private boolean isAnd = false;
 	private boolean isQuery = false;
@@ -430,6 +431,10 @@ public class CardOrganizer extends JFrame  {
 			menuItem2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, ActionEvent.META_MASK));
 			menuItem2.getAccessibleContext().setAccessibleDescription("Backup");
 			menu.add(menuItem2);
+			menuRand = new JMenuItem("Random Card", KeyEvent.VK_R);
+			menuRand.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.META_MASK));
+			menuRand.getAccessibleContext().setAccessibleDescription("Random Card");
+			menu.add(menuRand);
 			setJMenuBar(menuBar);
 
 			//menuItem2 listener
@@ -511,6 +516,56 @@ public class CardOrganizer extends JFrame  {
 					}catch (Exception e2) {
 						e2.printStackTrace();
 						}
+				}
+			});
+			
+			menuRand.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					String[] num = organizer.getCategory("cD");
+					Random r = new Random();
+					int rand = r.nextInt(num.length);
+					String st = num[rand];
+					Card card = null;
+					try {
+						card = organizer.getCard(st);
+					} catch (InvalidKeyException e1) {
+						e1.printStackTrace();
+					}
+					BufferedImage img = null;
+					String cut = card.name;
+					System.out.println(cut);
+					if(cut != null && cut.contains("//")) {
+						cut = cut.replace("//", "");
+					try {
+						img = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + cut + ".jpg"));
+					} catch (IOException e1) {
+						try {
+							img = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + cut + ".full.jpg"));
+						} catch( Exception e2) {
+							e2.printStackTrace();
+						}
+						}
+					} else {
+					try {
+						img = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + cut + ".jpg"));
+					} catch (IOException e1) {
+						try {
+							img = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + cut + ".full.jpg"));
+						} catch( Exception e3) {
+						try {
+							img = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + "card_back" + ".jpg"));
+						} catch (IOException e2) {
+							e2.printStackTrace();
+							}
+						}
+						}
+					}	
+						BufferedImage cardIm =
+								Scalr.resize(img, Scalr.Method.QUALITY, Scalr.Mode.FIT_TO_WIDTH,
+										cardV.getWidth(), 100, Scalr.OP_ANTIALIAS);
+						ImageIcon i = new ImageIcon(cardIm);
+						label.setIcon(i);
 				}
 			});
 
@@ -2723,7 +2778,7 @@ public class CardOrganizer extends JFrame  {
 		//System.out.println(noteS[1]);
 		try {
 		noteS[1] = noteS[1].replace("%$$%", "\n\n");
-			//System.out.println(noteS[1]);
+		//System.out.println(noteS[1]);
 		notes.setText(noteS[1]);
 		} catch (Exception e) {
 			notes.setText("");
@@ -2777,7 +2832,7 @@ public class CardOrganizer extends JFrame  {
 				&& power == -1 && toughness == -1 && rarityC.equals("n") && tribal.equals("n") 
 				&& cardText.equals("n") && name.equals("n") && CMC == -1 && combinedColors.equals("")) { //if no input for query
 			isQuery = false;
-			if (isMyCards == true) {
+			if (isMyCards == true && isSet == false) {
 				viewMyCards();
 			} else if(isSet == true) {
 				viewSet();
