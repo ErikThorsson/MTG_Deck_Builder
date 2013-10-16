@@ -33,14 +33,8 @@ public class CollectionMethods extends BasicTree {
 
 	public CollectionMethods() throws InvalidKeyException, IOException {		
 		String sFile = "";
-		String home = System.getProperty("user.home");
-//		try {
-			readFromFile(home + "/Desktop/VCO/VCOSave.txt");
-			sFile = (home + "/Desktop/VCO/VCOSave.txt");
-//		} catch (Exception ex) {
-//			sFile = "/Volumes/NIGEL/VCO/VCOSave.txt";
-//		}
-		saveFile = sFile;
+		String home = System.getProperty("user.home"); 
+		saveFile = (home + "/Desktop/VCO/VCOSave.txt");
 		this.loadCompleteDatabase();
 		try {
 			this.load();
@@ -108,14 +102,11 @@ public class CollectionMethods extends BasicTree {
 	String filepath = "/Users/eorndahl/Desktop/VCO/Decks";
 	File directory = new File(filepath);
 	String[] files = directory.list();
-//	for(int i = 0; i < files.length; i++)
-//		System.out.println(files[i]);
 	String[] names = new String[files.length];
 	for (int i = 0; i < names.length; i++){
 		try{
 		String[] splits = new String[2];
 		splits = files[i].split("\\.");
-		//System.out.println(splits[0]);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -189,37 +180,6 @@ public class CollectionMethods extends BasicTree {
 		java.util.Arrays.sort(setArr);
 		return setArr;
 	}
-	/**
-	 * Selection sort O(n^2)....currently not usable due to slowness... >5 sec to load. A very informative display of algorithm runtime importance.
-	 * @param s
-	 * @return
-	 */
-	public String[] sortByName(String[] s) {
-		String[] s2 = new String[s.length];
-		for(int i = 0; i < s.length; i++) {
-			String smallest = "";
-			int in = 0;
-			int j;
-			for(j = 0; j < s.length; j++) {
-				if(s[j] != null) {
-					smallest = s[j];
-					in = j;
-					break;
-				}}
-			for(int k = 0 ; k < s.length; k++) {
-				String n = s[k];
-				if(s[k] != null) {
-					if(smallest.compareTo(n) > 0) {
-						smallest = s[k];
-						in = k;
-					}
-				}}
-			s2[i] = smallest;
-			s[in] = null;
-			j = 0;
-		}
-		return s2;
-	}
 
 /**
  * Returns a String[] of the number of cards owned for every card you own
@@ -255,15 +215,12 @@ public class CollectionMethods extends BasicTree {
 		card.inSB = false;
 	if(deck.get(s) != null && card.inSB != true) { //increases owned by one if not owned 
 		card.cardsInDeck++;
-		//System.out.println("in");
 			return;
 	} else if(deck.get(s) != null && card.inSB == true){
 		card.numSB++;
-		//System.out.println("sb");
 		return;
 	}
 	deck.put(card.name, card);
-	//System.out.println("NOPE");
 	if(b == true)
 		card.numSB++;
 	else
@@ -296,7 +253,6 @@ public class CollectionMethods extends BasicTree {
 	/**
 	 * grabs deck card
 	 */
-	
 	public Card grabDeckCard(String s) {
 		return (Card) deck.get(s);
 	}
@@ -304,7 +260,6 @@ public class CollectionMethods extends BasicTree {
 	/**
 	 * Reset deck
 	 */
-	
 	public void resetDeck(){
 		ArrayList<Card> cards = deck.cardEntries();
 		for(int i = 0; i < cards.size(); i++) {
@@ -325,10 +280,6 @@ public class CollectionMethods extends BasicTree {
 	@SuppressWarnings("unchecked")
 	public void addCard(String s, String s2, String s3, int i, int i2, String t, String ty, String ty2, String ty3, String r, String url) throws InvalidKeyException {
 		Card card = new Card(s, s2, s3, i, i2, t, ty, ty2, ty3, r, url);
-//		if(MTG.get(s) != null) {
-//			setOwned(s, ((Card)MTG.get(s)).owned + 1, MTG);
-//			return;
-//		}
 		try {
 			if(card.type2 == "land") {
 				land.put(card.name, card);
@@ -643,10 +594,7 @@ public class CollectionMethods extends BasicTree {
 		}
 		TreeNode start = ((TreeNode) treeNodes.get(color));
 		//remove it from its color
-		if(owned > 1) {
-			setOwned(s, owned - 1, MTG);
-		} else {
-			((HashTableMap) start.getReference()).remove(s); }
+		((HashTableMap) start.getReference()).remove(s); 
 		//then remove from every other possible subtree
 		List<TreeNode> children = start.getChildren();
 		for (Iterator iter = children.iterator(); iter.hasNext();) {

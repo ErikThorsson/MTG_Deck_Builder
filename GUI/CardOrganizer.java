@@ -201,7 +201,6 @@ public class CardOrganizer extends JFrame  {
 	private JTable table4;
 	private JTable table5;
 	private CollectionMethods organizer = new CollectionMethods();
-	private boolean isRemoved;
 	private JScrollPane scrollList;
 	private JScrollPane scrollQuery;
 	private JLabel label = new JLabel();
@@ -537,30 +536,16 @@ public class CardOrganizer extends JFrame  {
 					System.out.println(cut);
 					if(cut != null && cut.contains("//")) {
 						cut = cut.replace("//", "");
+					}
 					try {
 						img = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + cut + ".jpg"));
 					} catch (IOException e1) {
 						try {
 							img = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + cut + ".full.jpg"));
 						} catch( Exception e2) {
-							e2.printStackTrace();
+							System.out.println("why not work?");
 						}
 						}
-					} else {
-					try {
-						img = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + cut + ".jpg"));
-					} catch (IOException e1) {
-						try {
-							img = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + cut + ".full.jpg"));
-						} catch( Exception e3) {
-						try {
-							img = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + "card_back" + ".jpg"));
-						} catch (IOException e2) {
-							e2.printStackTrace();
-							}
-						}
-						}
-					}	
 						BufferedImage cardIm =
 								Scalr.resize(img, Scalr.Method.QUALITY, Scalr.Mode.FIT_TO_WIDTH,
 										cardV.getWidth(), 100, Scalr.OP_ANTIALIAS);
@@ -1789,95 +1774,7 @@ public class CardOrganizer extends JFrame  {
 			removeCard.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {			
-					isRemoved = false;
-					if(enterC == true) { 
-						selected = textBox.getText();
-					}
-					if(deckCheck!= true){
-					if(isMyCards == true) {
-						if(selected != null)
-							organizer.removeCard(selected, "root");
-						if(isQuery == true) {
-							ArrayList<String> filterOwned = new ArrayList<String>(); //filters out owned = 0 cards 
-							for (int i = 0; i < queryList.length; i++) {
-								Card card = null;
-								try {
-									card = organizer.getCard(queryList[i]);
-								} catch (InvalidKeyException e2) {
-									e2.printStackTrace();
-								}
-								if(card.owned != 0)
-									filterOwned.add(queryList[i]);
-							}
-							String[] myCards = new String[filterOwned.size()];
-							filterOwned.toArray(myCards);
-							queryList = myCards;
-							ArrayList<String[]> values = returnValues(queryList);
-							refreshTable(queryList, values);
-							//return;
-						}
-					viewMyCards();
-					}
-					if(isMyCards != true) {
-						if(selected != null)
-							organizer.removeCard(selected, "cD");
-						if(isQuery == true) {
-							try {
-								queryList = organizer.query(queryList, color, power,toughness,owned, 
-										type1, type2, rarityC, tribal, cardText, name,	CMC, combinedColors);
-							} catch (InvalidKeyException e2) {
-								e2.printStackTrace();
-							}
-							ArrayList<String[]> values = returnValues(queryList);
-							refreshTable(queryList, values);
-							//return;
-							}
-						viewAll(); 
-						}
-					try { //price collection on remove
-						priceCollection();
-					} catch (InvalidKeyException e1) {
-						e1.printStackTrace();
-					}
-					try {
-						organizer.save();
-					} catch (InvalidKeyException e1) {
-						e1.printStackTrace();
-					} catch (FileNotFoundException e1) {
-						e1.printStackTrace();
-					} catch (MalformedURLException e1) {
-						e1.printStackTrace();
-					}
-					} else {
-						try{
-						organizer.removeCardFromDeck(selected, sideboardCheck);
-						countDeck();
-						priceDeck();
-						refreshALs();
-						} catch (Exception ex) {
-							//tis fine
-						}
-						try{
-							refreshDeckTable(creatures, dataModel2);
-						}catch (Exception e2) {
-							e2.printStackTrace();
-							}
-						try{
-							refreshDeckTable(spells, dataModel3);
-						}catch (Exception e2) {
-							e2.printStackTrace();
-							}
-						try{
-							refreshDeckTable(lands, dataModel4);
-						}catch (Exception e2) {
-							e2.printStackTrace();
-							}
-						try{
-							refreshDeckTable(sideboard, dataModel5);
-						}catch (Exception e2) {
-							e2.printStackTrace();
-							}
-					}
+				removeCard();
 				}
 			});
 
@@ -1885,66 +1782,7 @@ public class CardOrganizer extends JFrame  {
 			addCard.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if(enterC == true) { //use textbox string if checked
-						selected = textBox.getText();
-					}
-					if(deckCheck!= true){
-					try {
-						if(selected != null)
-							organizer.addCard(selected);
-					} catch (InvalidKeyException e1) {
-						e1.printStackTrace();
-					}
-					//determine view and refresh
-					if(isQuery != true) {
-						if(isMyCards == true)
-							viewMyCards(); 
-						else
-							viewAll();
-					} else if(isQuery == true) { 	//determine if query view and refresh
-						ArrayList<String[]> values = returnValues(queryList);
-						refreshTable(queryList, values);
-					}
-					try { //price collection on add
-						priceCollection();
-					} catch (InvalidKeyException e1) {
-						e1.printStackTrace();
-					}
-					try {
-						organizer.save();
-					} catch (InvalidKeyException e1) {
-						e1.printStackTrace();
-					} catch (FileNotFoundException e1) {
-						e1.printStackTrace();
-					} catch (MalformedURLException e1) {
-						e1.printStackTrace();
-					}
-					} else {
-						organizer.addCardToDeck(selected, sideboardCheck);
-						countDeck();
-						priceDeck();
-						refreshALs();
-						try{
-							refreshDeckTable(creatures, dataModel2);
-						}catch (Exception e2) {
-							e2.printStackTrace();
-							}
-						try{
-							refreshDeckTable(spells, dataModel3);
-						}catch (Exception e2) {
-							e2.printStackTrace();
-							}
-						try{
-							refreshDeckTable(lands, dataModel4);
-						}catch (Exception e2) {
-							e2.printStackTrace();
-							}
-						try{
-							refreshDeckTable(sideboard, dataModel5);
-						}catch (Exception e2) {
-							e2.printStackTrace();
-							}
-						}
+					addCard();
 					}
 			});
 			
@@ -2134,7 +1972,7 @@ public class CardOrganizer extends JFrame  {
 	 * String color to char abbreviation
 	 */
 	public char stringToChar() {
-	char x =  97;
+	char x = 97;
 		if(color.equals("blue"))
 			x = 85;
 		if(color.equals("white"))
@@ -2151,7 +1989,6 @@ public class CardOrganizer extends JFrame  {
 	/**
 	 * Unowned filter
 	 */
-	
 	public void unowned() {
 		ArrayList<String> unownedCards = new ArrayList<String>();
 		for(int i = 0; i < queryList.length; i++) {
@@ -2177,12 +2014,12 @@ public class CardOrganizer extends JFrame  {
 	 */
 	@SuppressWarnings("unchecked")
 	public void getDecks() {
-	String filepath = "/Users/eorndahl/Desktop/VCO/Decks";
-	File directory = new File(filepath);
+	File directory = new File("/Users/eorndahl/Desktop/VCO/Decks");
 	String[] files = directory.list();
 	model.removeAllElements();
 	model.addElement("Load Deck");
 	for (int i = 0; i < files.length; i++){
+		//System.out.println(files[i]);
 		String[] splits = new String[2];
 		splits = files[i].split("\\.");
 		if(!splits[0].equals("")) {
@@ -2277,30 +2114,20 @@ public class CardOrganizer extends JFrame  {
 	String cut = selected;
 	if(selected != null && selected.contains("//")) {
 		cut = selected.replace("//", "");
+	}
 	try {
 		img = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + cut + ".jpg"));
 	} catch (IOException e1) {
 		try {
 			img = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + cut + ".full.jpg"));
 		} catch( Exception e) {
-			e.printStackTrace();
+			try {
+				img = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + "card_back" + ".jpg"));
+			} catch (IOException e2) {
+				e2.printStackTrace();
+				}
 		}
 		}
-	} else {
-	try {
-		img = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + selected + ".jpg"));
-	} catch (IOException e1) {
-		try {
-			img = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + selected + ".full.jpg"));
-		} catch( Exception e) {
-		try {
-			img = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + "card_back" + ".jpg"));
-		} catch (IOException e2) {
-			e2.printStackTrace();
-			}
-		}
-		}
-	}	
 		BufferedImage card =
 				Scalr.resize(img, Scalr.Method.QUALITY, Scalr.Mode.FIT_TO_WIDTH,
 						cardV.getWidth(), 100, Scalr.OP_ANTIALIAS);
@@ -3023,7 +2850,6 @@ public class CardOrganizer extends JFrame  {
 	}
 	
 	public void removeCard() {
-		isRemoved = false;
 		if(enterC == true) { 
 			selected = textBox.getText();
 		}
@@ -3048,7 +2874,6 @@ public class CardOrganizer extends JFrame  {
 				queryList = myCards;
 				ArrayList<String[]> values = returnValues(queryList);
 				refreshTable(queryList, values);
-				//return;
 			}
 		viewMyCards();
 		}
