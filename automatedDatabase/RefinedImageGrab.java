@@ -42,7 +42,7 @@ public class RefinedImageGrab {
 		BufferedImage img = ImageIO.read(new URL(cURL));
 		if(s.contains("//"))
 			s = s.replace("//", "");
-	    File outputfile = new File("/Users/eorndahl/Desktop/VCO/All Set Images/" + s + ".jpg");
+	    File outputfile = new File("/Users/eorndahl/Desktop/VCO/Theros/" + s + ".jpg");
 	    try{
 	    ImageIO.write(img, "jpg", outputfile);
 	    } catch (Exception ex){

@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.awt.AWTException;
 import java.awt.Robot;
 import java.awt.event.InputEvent;
@@ -21,14 +22,30 @@ import MTGApplication.Card;
 
 public class testFilePrint {
 	protected ArrayList<Card> arr = new ArrayList<Card>();
+	protected ArrayList<Card> arr2 = new ArrayList<Card>();
 
 	public static void main(String[] args) throws Exception {
 		testFilePrint test = new testFilePrint();
 		test.scanFile();
-		test.formatCards();
+		//test.formatCards();
 	}
 
 	public void printData() {
+
+	}
+	
+	public void sieveForSet(String s) throws MalformedURLException, InterruptedException, AWTException, IOException {
+		Card card = new Card();
+		int count = 0;
+		for(int i = 0; i < arr.size(); i++) {
+				card = arr.get(i);
+				card.imgURL = getImgURL(card.name);
+				arr2.add(card);
+				count++;
+				if(count % 50 == 0) {
+					this.formatCards();
+				}
+		}
 
 	}
 
@@ -102,7 +119,7 @@ public class testFilePrint {
 		String rarity = "";
 		Boolean isLand = false;
 
-		BufferedReader br = new BufferedReader(new FileReader("/Users/eorndahl/Desktop/Magic App Files/All Sets.txt"));
+		BufferedReader br = new BufferedReader(new FileReader("/Users/eorndahl/Desktop/Theros Block-2013-09-29.txt"));
 		String sCurrentLine;
 		int counter = 0;
 		while ((sCurrentLine = br.readLine()) != null) {
@@ -247,6 +264,8 @@ public class testFilePrint {
 					}
 					Card card = new Card(name, color, CMC, power, toughness, text, type1, type2, type3, rarity, null);
 					arr.add(card);
+					RefinedImageGrab bot = new RefinedImageGrab();
+					bot.getImgURL(card.name);
 					System.out.print(nameQuery(card) + "\n");
 					counter = 0;
 					isLand = false;

@@ -21,6 +21,7 @@ import javax.swing.ImageIcon;
 
 import automatedDatabase.GetPrice;
 import automatedDatabase.GoogleImageRobot;
+import automatedDatabase.RefinedImageGrab;
 
 import dataStructures.BasicTree;
 import dataStructures.HashTableMap;
@@ -48,7 +49,7 @@ public class CollectionMethods extends BasicTree {
 	public static void main(String[] args) throws InvalidKeyException, IOException, InterruptedException, AWTException {
 		CollectionMethods test = new CollectionMethods();
 				test.loadCompleteDatabase();
-				test.printNameAndPrice();
+//				test.printNameAndPrice();
 //				String[] s = test.getCategory("cD");
 				
 //				Card card = test.getCard("Howlpack Alpha");
@@ -93,7 +94,17 @@ public class CollectionMethods extends BasicTree {
 //					out.close();
 //					}
 //					test.getDecks();
+				
+//	Card card = new Card();
+//	card = test.getCard("Ashen Rider");
+//	System.out.println(test.nameQuery(card));
+//	if(card.rarity.contains("THS-"))
+//		System.out.println("yessir");
+	String[] set = test.getSet("THS-");
+	for(int i = 0; i < set.length; i++)
+		System.out.println(set[i]);
 	}
+	
 	
 	/**
 	 * Set JCombo list to current saved decks
@@ -643,7 +654,7 @@ public class CollectionMethods extends BasicTree {
 	 * New query (sieve method)
 	 */
 	public String[] query(String[] lis, String s, int i, int i2, int i3, String s2, 
-			String s3, String s4, String t, String t2, String t3, int i4, String s5) throws InvalidKeyException {
+			String s3, String s4, String t, String t2, String t3, int i4, String s5, boolean b, boolean b2) throws InvalidKeyException {
 		String color = s;
 		String[] li = lis;
 		int power = i;
@@ -655,7 +666,9 @@ public class CollectionMethods extends BasicTree {
 		String rarity = s4;
 		String text = t2;
 		String colors = s5;
-		
+		boolean and = b;
+		boolean or = b2;
+
 		ArrayList<Card> filtered = new ArrayList<Card>();
 		ArrayList<Card> temp = new ArrayList<Card>();
 		ArrayList<Card> list = new ArrayList<Card>();
@@ -664,9 +677,7 @@ public class CollectionMethods extends BasicTree {
 			list.add(getCard(li[z]));
 		}
 		filtered = (ArrayList<Card>) list.clone();
-//		if (color.equals("red")) {
-//			filtered = red.cardEntries();
-//		}
+
 		if(rarity.equals("common"))
 			rarity = "-C";
 		if(rarity.equals("uncommon"))
@@ -916,6 +927,78 @@ public class CollectionMethods extends BasicTree {
 					temp.clear();
 				}
 			}
+		}
+		
+		if(and == true && or == false) {		
+			String filterOut = "";
+				for (int q = 0; q < colors.length(); q++) {
+					if(colors.charAt(q) != 85)
+						if(q == colors.length() -1)
+							filterOut += "U";
+						else
+						continue;
+				}
+				for (int q = 0; q < colors.length(); q++) {
+					if(colors.charAt(q) != 82) {
+						if(q == colors.length() -1)
+							filterOut += "R";
+						else
+						continue;
+					}else 
+						break;
+				}
+				for (int q = 0; q < colors.length(); q++) {
+					if(colors.charAt(q) != 87) {
+						if(q == colors.length() -1)
+							filterOut += "W";
+						else
+						continue;
+					}else 
+						break;
+				}
+				for (int q = 0; q < colors.length(); q++) {
+					if(colors.charAt(q) != 71) {
+						if(q == colors.length() -1)
+							filterOut += "G";
+						else
+							continue;
+					}else 
+						break;
+				}
+				for (int q = 0; q < colors.length(); q++) {
+					if(colors.charAt(q) != 66) {
+						if(q == colors.length() -1)
+							filterOut += "B";
+						else
+						continue;
+					}else 
+						break;
+					}						
+
+			Card card = new Card();
+			for(int h = 0; h < filtered.size(); h++) {
+				for (int u = 0; u < filterOut.length(); u++) {
+				char c = filterOut.charAt(u);
+				String charColor = Character.toString(c);
+				try{
+					card = filtered.get(h);
+				} catch (Exception e) {
+					card = list.get(h);
+				} 
+				if(card != null)
+					if(card.CMC != null) {
+						if(!card.CMC.contains(charColor)) {
+								if(u == filterOut.length() -1)
+									temp.add(card);
+								else
+								continue;
+						}else 
+							break;
+						}
+					}
+				}
+			filtered = (ArrayList<Card>) temp.clone();
+			temp.clear();
 		}
 
 		String[] namesList= new String[filtered.size()];

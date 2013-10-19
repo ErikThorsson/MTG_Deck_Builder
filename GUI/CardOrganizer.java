@@ -102,7 +102,7 @@ public class CardOrganizer extends JFrame  {
 	protected JButton addCard = new JButton("+");
 	protected JButton removeCard = new JButton("-");
 	private JButton viewDatabase = new JButton("All Cards");
-	protected JComboBox set = new JComboBox(new Object[] {"Set", "Return to Ravnica", "Gatecrash", "Dragon's Maze", "Innistrad", "Dark Ascension", "Avacyn Restored", "Magic 2012", "Magic 2013", "Magic 2014"});
+	protected JComboBox set = new JComboBox(new Object[] {"Set", "Theros", "Return to Ravnica", "Gatecrash", "Dragon's Maze", "Innistrad", "Dark Ascension", "Avacyn Restored", "Magic 2012", "Magic 2013", "Magic 2014"});
 	private JToggleButton red = new JToggleButton("R");
 	private JToggleButton white = new JToggleButton("W");
 	private JToggleButton blue = new JToggleButton("U");
@@ -148,6 +148,7 @@ public class CardOrganizer extends JFrame  {
 	private JToggleButton land = new JToggleButton("Land");
 	private JToggleButton unowned = new JToggleButton("Missing");
 	private JToggleButton ownedC = new JToggleButton("Owned");
+	JToggleButton[] buttons;
 	private JButton mycards = new JButton("My Cards");
 	private JButton allcards = new JButton("All Cards");
 	protected JButton goQuery = new JButton("Query!");
@@ -172,9 +173,10 @@ public class CardOrganizer extends JFrame  {
 	private String combinedColors = "";
 	private JMenuBar menuBar;
 	private JMenu menu;
-	private JMenuItem menuItem, menuItem2, menuItem3, menuItem4, menuItem5, menuItemSaveDeck, menuRand;
+	private JMenuItem menuItem, menuItem2, menuItem3, menuItem4, menuItem5, menuItemSaveDeck, menuRand, menuClear;
 	private String[] queryList;
 	private boolean isAnd = false;
+	private boolean isOr = false;
 	private boolean isQuery = false;
 	private boolean isText = false;
 	private boolean isMyCards = true;
@@ -272,6 +274,7 @@ public class CardOrganizer extends JFrame  {
 	int heightScheme = 0;
 	boolean differentTens = false;
 	int currentHeight = 0;
+	String[] setList;
 	
 	public static void main(String[] args) throws InvalidKeyException, IOException, AWTException {
 		new CardOrganizer();
@@ -361,7 +364,7 @@ public class CardOrganizer extends JFrame  {
 			multi = new JToggleButton(new ImageIcon(home + "/Desktop/VCO/Icons/multi.png"));
 			green = new JToggleButton(new ImageIcon(home + "/Desktop/VCO/Icons/green.png"));
 			
-			//rarity icons and buttons	private JToggleButton common = new JToggleButton("C");
+			//rarity icons and buttons	
 			mythicIcon = new ImageIcon(home + "/Desktop/VCO/Icons/mythic.png");
 			rareIcon = new ImageIcon(home + "/Desktop/VCO/Icons/rare.png");		  
 			uncommonIcon = new ImageIcon(home + "/Desktop/VCO/Icons/uncommon.png");		  
@@ -434,6 +437,10 @@ public class CardOrganizer extends JFrame  {
 			menuRand.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.META_MASK));
 			menuRand.getAccessibleContext().setAccessibleDescription("Random Card");
 			menu.add(menuRand);
+			menuClear = new JMenuItem("Clear Toggles", KeyEvent.VK_C);
+			menuClear.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.META_MASK));
+			menuClear.getAccessibleContext().setAccessibleDescription("Clear Toggles");
+			menu.add(menuClear);
 			setJMenuBar(menuBar);
 
 			//menuItem2 listener
@@ -553,6 +560,38 @@ public class CardOrganizer extends JFrame  {
 						label.setIcon(i);
 				}
 			});
+			
+			menuClear.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					JToggleButton[] buttons = {ownedC, unowned, land, nineC, eightC, sevenC, sixC, fiveC, fourC, threeC, twoC, oneC, sevenT, sixT, fiveT, fourT, threeT, twoT, oneT, sevenP, sixP, fiveP, fourP, threeP, twoP, oneP, planeswalker, creature, enchantment, instant, artifact, sorcery, mythic, uncommon, common, rare, red, white, blue, green, black, multi, colorless, and, or};
+					for (JToggleButton jToggleButton : buttons) {
+		                if(jToggleButton.isSelected())
+		                	jToggleButton.setSelected(!jToggleButton.isSelected());
+		            }
+					name = "n";
+					cardText = "n";
+					color = "n";
+					power = -1;
+					toughness = -1;
+					owned = -1;
+					CMC = -1;
+					type1 = "n";
+					type2 = "n";
+					rarityC = "n";
+					tribal = "n";
+					isAnd = false;
+					isOr = false;
+					combinedColors = "";
+					if (isMyCards == true && isSet == false) {
+						viewMyCards();
+					} else if(isSet == true) {
+						viewSet();
+					} else {
+						viewAll();
+					}
+				}
+			});
 
 			JPanel p5 = new JPanel(new GridLayout(2,1));
 			p5.add(viewDatabase);
@@ -564,7 +603,6 @@ public class CardOrganizer extends JFrame  {
 			//TextBox, add, and remove card	
 			JPanel p2 = new JPanel(new GridBagLayout());
 			scrollQuery = new JScrollPane(p2);
-
 			d.fill = GridBagConstraints.HORIZONTAL;
 			d.weightx = 1;
 			d.gridwidth = 1;
@@ -794,7 +832,7 @@ public class CardOrganizer extends JFrame  {
 			dataModel.setRowCount(organizer.getAllArray().length);
 			dataModel.setColumnIdentifiers(new String[]{"Name", "CMC", "Type", "Rarity", "Set"});
 			table = new JTable(dataModel) {
-				private static final long serialVersionUID = 1L;
+				//private static final long serialVersionUID = 1L;
 				@Override
 				public boolean isCellEditable(int row, int column) {                
 					return false;  
@@ -825,7 +863,7 @@ public class CardOrganizer extends JFrame  {
 	
 			ownedAndPrice.setFont(new Font("Serif", Font.PLAIN, 30));
 
-			//final formatting
+			//Final formatting
 			JPanel p3 = new JPanel(new GridBagLayout());
 			GridBagConstraints c = new GridBagConstraints();
 
@@ -878,7 +916,7 @@ public class CardOrganizer extends JFrame  {
 			dataModel5.setColumnIdentifiers(new String[]{"Side Board", "#"});
 
 			table2 = new JTable(dataModel2) {
-				private static final long serialVersionUID = 1L;
+				//private static final long serialVersionUID = 1L;
 				@Override
 				public boolean isCellEditable(int row, int column) {                
 					return false;  
@@ -887,7 +925,7 @@ public class CardOrganizer extends JFrame  {
 			table2.getColumnModel().getColumn(0).setPreferredWidth(150);
 			
 			table3 = new JTable(dataModel3) {
-				private static final long serialVersionUID = 1L;
+				//private static final long serialVersionUID = 1L;
 				@Override
 				public boolean isCellEditable(int row, int column) {                
 					return false;  
@@ -896,7 +934,7 @@ public class CardOrganizer extends JFrame  {
 			table3.getColumnModel().getColumn(0).setPreferredWidth(150);
 
 			table4 = new JTable(dataModel4) {
-				private static final long serialVersionUID = 1L;
+				//private static final long serialVersionUID = 1L;
 				@Override
 				public boolean isCellEditable(int row, int column) {                
 					return false;  
@@ -905,7 +943,7 @@ public class CardOrganizer extends JFrame  {
 			table4.getColumnModel().getColumn(0).setPreferredWidth(150);
 
 			table5 = new JTable(dataModel5) {
-				private static final long serialVersionUID = 1L;
+				//private static final long serialVersionUID = 1L;
 				@Override
 				public boolean isCellEditable(int row, int column) {                
 					return false;  
@@ -943,7 +981,6 @@ public class CardOrganizer extends JFrame  {
 			g.gridy = 0;
 			g.ipady = 0;
 			JPanel top = new JPanel();
-			//p3.setPreferredSize(new Dimension(800, 600));
 			top.add(p3);
 			g.insets = new Insets(0,0,0,0);
 			topBottom.add(p3, g);
@@ -1047,7 +1084,6 @@ public class CardOrganizer extends JFrame  {
 			add(combine);
 			
 			//remaps ENTER key in JTables to addCard()
-
 			table.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "add");
 			table.getActionMap().put("add", new AbstractAction() {
 				@Override
@@ -1771,6 +1807,24 @@ public class CardOrganizer extends JFrame  {
 				}
 			});
 			
+			or.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					AbstractButton abstractButton = (AbstractButton) e.getSource();
+					buttonSelected = abstractButton.getModel().isSelected();
+					char color = stringToChar();
+					isAnd = true;
+					isOr = true;
+					if(color != 97)
+						combinedColors = Character.toString(color);
+					if(buttonSelected == false) {
+						combinedColors = "";
+						isAnd = false;
+						isOr = false;
+					}
+				}
+			});
+			
 			removeCard.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {			
@@ -1836,7 +1890,8 @@ public class CardOrganizer extends JFrame  {
 		        }
 		    });
 
-			//listens for textBox input
+		  	//would be ideal for real time updating as your type (like Google) but far too inefficient right now
+		  	
 //			textBox.getDocument().addDocumentListener(new DocumentListener() {
 //				@Override
 //				public void changedUpdate(DocumentEvent e) {
@@ -1850,14 +1905,9 @@ public class CardOrganizer extends JFrame  {
 //				public void insertUpdate(DocumentEvent e) {
 //				text();
 //				}
+		  	
 		  	textBox.addKeyListener(new KeyAdapter() {
 	            public void keyReleased(KeyEvent e) {
-//	            	if(textBox.getText().equals("")) {
-//						if(isMyCards == true) 
-//							viewMyCards();
-//						else
-//							viewAll();
-//					}
 	            	if(e.getKeyCode() == KeyEvent.VK_ENTER){
 					isText = true;
 					if(!textBox.getText().equals("")) {
@@ -1875,6 +1925,15 @@ public class CardOrganizer extends JFrame  {
 				@Override
 				public void valueChanged(ListSelectionEvent e) {
 					try {
+					selected = (String) table.getValueAt(table.getSelectedRow(), 0);
+					}catch (Exception e2) {
+						e2.printStackTrace();
+					}
+						table3.getSelectionModel().clearSelection();
+						table2.getSelectionModel().clearSelection();
+						table4.getSelectionModel().clearSelection();
+						table5.getSelectionModel().clearSelection();					
+					try {
 						selected = (String) table.getValueAt(table.getSelectedRow(), 0);
 					} catch (ArrayIndexOutOfBoundsException e1) {
 						e1.printStackTrace();
@@ -1885,11 +1944,21 @@ public class CardOrganizer extends JFrame  {
 					}
 				}
 			});
+			
 			table2.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 				@Override
 				public void valueChanged(ListSelectionEvent e) {
-					try {
+						try {
 						selected = (String) table2.getValueAt(table2.getSelectedRow(), 0);
+						}catch (Exception e2) {
+							e2.printStackTrace();
+						}
+						table.getSelectionModel().clearSelection();
+						table3.getSelectionModel().clearSelection();
+						table4.getSelectionModel().clearSelection();
+						table5.getSelectionModel().clearSelection();
+					try {
+						selected = (String) table.getValueAt(table.getSelectedRow(), 0);
 					} catch (ArrayIndexOutOfBoundsException e1) {
 						e1.printStackTrace();
 					}
@@ -1899,17 +1968,19 @@ public class CardOrganizer extends JFrame  {
 					}
 				}
 			});
+			
 			table3.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 				@Override
 				public void valueChanged(ListSelectionEvent e) {
-//					try {
-//					table.getSelectionModel().clearSelection();
-//					table2.getSelectionModel().clearSelection();
-//					table4.getSelectionModel().clearSelection();
-//					table5.getSelectionModel().clearSelection();
-//					} catch (Exception e1) {
-//						e1.printStackTrace();
-//					}
+					try {
+					selected = (String) table3.getValueAt(table3.getSelectedRow(), 0);
+					}catch (Exception e2) {
+						e2.printStackTrace();
+					}
+					table.getSelectionModel().clearSelection();
+					table2.getSelectionModel().clearSelection();
+					table4.getSelectionModel().clearSelection();
+					table5.getSelectionModel().clearSelection();
 					try {
 						selected = (String) table3.getValueAt(table3.getSelectedRow(), 0);
 					} catch (ArrayIndexOutOfBoundsException e1) {
@@ -1921,17 +1992,19 @@ public class CardOrganizer extends JFrame  {
 					}
 				}
 			});
+			
 			table4.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 				@Override
 				public void valueChanged(ListSelectionEvent e) {
-//					try {
-//					table2.getSelectionModel().clearSelection();
-//					table3.getSelectionModel().clearSelection();
-//					table.getSelectionModel().clearSelection();
-//					table5.getSelectionModel().clearSelection();
-//					} catch (Exception e1) {
-//						e1.printStackTrace();
-//					}
+					try {
+					selected = (String) table4.getValueAt(table4.getSelectedRow(), 0);
+					}catch (Exception e2) {
+						e2.printStackTrace();
+					}
+					table2.getSelectionModel().clearSelection();
+					table3.getSelectionModel().clearSelection();
+					table.getSelectionModel().clearSelection();
+					table5.getSelectionModel().clearSelection();
 					try {
 						selected = (String) table4.getValueAt(table4.getSelectedRow(), 0);
 					} catch (ArrayIndexOutOfBoundsException e1) {
@@ -1946,14 +2019,15 @@ public class CardOrganizer extends JFrame  {
 			table5.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 				@Override
 				public void valueChanged(ListSelectionEvent e) {
-//					try {
-//					table.getSelectionModel().clearSelection();
-//					table3.getSelectionModel().clearSelection();
-//					table4.getSelectionModel().clearSelection();
-//					table2.getSelectionModel().clearSelection();
-//					} catch (Exception e1) {
-//						e1.printStackTrace();
-//					}
+					try {
+					selected = (String) table5.getValueAt(table5.getSelectedRow(), 0);
+					}catch (Exception e2) {
+						e2.printStackTrace();
+					}
+					table.getSelectionModel().clearSelection();
+					table3.getSelectionModel().clearSelection();
+					table4.getSelectionModel().clearSelection();
+					table2.getSelectionModel().clearSelection();
 					try {
 						selected = (String) table5.getValueAt(table5.getSelectedRow(), 0);
 					} catch (ArrayIndexOutOfBoundsException e1) {
@@ -2151,7 +2225,6 @@ public class CardOrganizer extends JFrame  {
 		
 		if(differentTens == true) {
 		differentTens = false;
-		//System.out.println("New size");
 		//Now add pixels to the end of each so each image is uniform height.
 		//First, get the three types of images and render for this window width. This solution might be very resource intensive unfortunately.
 		int aGHeight = 0;
@@ -2193,10 +2266,19 @@ public class CardOrganizer extends JFrame  {
 	 * Refresh card values (price/owned/icon)
 	 */
 	public void refreshCardValues(JTable j) {
-		if(selected != null) {
-			if(isText!= true) {
-					j.requestFocusInWindow();
-				}
+		try { //set selected to the new row upon query
+		selected = (String) table.getValueAt(table.getSelectedRow(), 0);
+			} catch (Exception e) {
+				e.printStackTrace();
+		}
+		
+		if(selected != null) 
+		{
+			if(isText!= true)
+			{
+				j.requestFocusInWindow();
+			}
+			
 		resizeL();
 		try {
 			NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance();
@@ -2293,7 +2375,7 @@ public class CardOrganizer extends JFrame  {
 	public void refreshTable(String[] s, ArrayList<String[]> l) {
 		String[] all = s;
 		ArrayList<Card> cards = new ArrayList<Card>();	
-		
+
 		int toRemove = dataModel.getRowCount() - s.length; //get # of rows to remove which = current rowCount - querylist length	
 		for(int i = 0; i < toRemove; i++) {
 			if(dataModel.getRowCount() > 2)
@@ -2494,7 +2576,6 @@ public class CardOrganizer extends JFrame  {
 				line = "%$$%";
 			fixSpacing += line;
 		}
-		//System.out.println("-------" + "\n" + fixSpacing);
 		PrintWriter out;
 		if(b == true) {
 		String inputValue = JOptionPane.showInputDialog(null, "Enter name", "Save Deck", JOptionPane.PLAIN_MESSAGE);
@@ -2643,14 +2724,13 @@ public class CardOrganizer extends JFrame  {
 		isQuery = true;
 		String[] querySet = null;
 		if(isSet == true) {
-			querySet = queryList;
+			querySet = setList;
 		} else if(isMyCards) {
 			querySet = myCards;
 		} else 
 			querySet = allCards;
 		try {
-			queryList = organizer.query(querySet, color, power,toughness,owned, type1, type2, 
-					rarityC, tribal, cardText, name, CMC, combinedColors);
+			queryList = organizer.query(querySet, color, power,toughness,owned, type1, type2, rarityC, tribal, cardText, name, CMC, combinedColors, isAnd, isOr);
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
@@ -2686,7 +2766,7 @@ public class CardOrganizer extends JFrame  {
 		} else {
 		try {
 			my = organizer.query(organizer.getCategory("cD"), color, power,toughness,
-					owned, type1, type2, rarityC, tribal, cardText, name, CMC, combinedColors);
+					owned, type1, type2, rarityC, tribal, cardText, name, CMC, combinedColors, isAnd, isOr);
 		} catch (InvalidKeyException e) {
 			e.printStackTrace();
 			}
@@ -2721,19 +2801,13 @@ public class CardOrganizer extends JFrame  {
 		} else {
 			try {
 				all = organizer.query(organizer.getCategory("cD"), color, power,toughness,owned, 
-						type1, type2, rarityC, tribal, cardText, name, CMC, combinedColors);
+						type1, type2, rarityC, tribal, cardText, name, CMC, combinedColors, isAnd, isOr);
 			} catch (InvalidKeyException e) {
 				e.printStackTrace();
 			}
 		}
-//		for (int i = 0; i < all.length; i++) {
-//			System.out.println(all[i]);
-//		}
 		queryList = all;
-		ArrayList<String[]> values = null;//returnValues(all);
-//		for (int i = 0; i < values.get(0).length; i++) {
-//			System.out.println(values.get(0));
-//		}
+		ArrayList<String[]> values = null;
 		refreshTable(all, values);
 	}
 
@@ -2761,6 +2835,8 @@ public class CardOrganizer extends JFrame  {
 			sel = "M13-";
 		if(sel.equals("Magic 2014"))
 			sel = "M14-";
+		if(sel.equals("Theros"))
+			sel = "THS-";
 		String[] all = null;
 		try {
 			all = organizer.getSet(sel);
@@ -2782,7 +2858,7 @@ public class CardOrganizer extends JFrame  {
 			all = new String[arr.size()];
 			arr.toArray(all);
 		}
-		queryList = all;
+		setList = all;
 		ArrayList<String[]> values = returnValues(all);
 		refreshTable(all, values);
 	}
@@ -2883,7 +2959,7 @@ public class CardOrganizer extends JFrame  {
 			if(isQuery == true) {
 				try {
 					queryList = organizer.query(queryList, color, power,toughness,owned, 
-							type1, type2, rarityC, tribal, cardText, name,	CMC, combinedColors);
+							type1, type2, rarityC, tribal, cardText, name,	CMC, combinedColors, isAnd, isOr);
 				} catch (InvalidKeyException e2) {
 					e2.printStackTrace();
 				}
