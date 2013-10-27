@@ -21,6 +21,7 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.LayoutManager;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
@@ -173,7 +174,7 @@ public class CardOrganizer extends JFrame  {
 	private String combinedColors = "";
 	private JMenuBar menuBar;
 	private JMenu menu;
-	private JMenuItem menuItem, menuItem2, menuItem3, menuItem4, menuItem5, menuItemSaveDeck, menuRand, menuClear;
+	private JMenuItem menuItem, menuItem2, menuItem3, menuItem4, menuItem5, menuItemSaveDeck, menuRand, menuClear, menuText;
 	private String[] queryList;
 	private boolean isAnd = false;
 	private boolean isOr = false;
@@ -275,6 +276,7 @@ public class CardOrganizer extends JFrame  {
 	boolean differentTens = false;
 	int currentHeight = 0;
 	String[] setList;
+	JScrollPane noteScroll;
 	
 	public static void main(String[] args) throws InvalidKeyException, IOException, AWTException {
 		new CardOrganizer();
@@ -431,16 +433,15 @@ public class CardOrganizer extends JFrame  {
 			menu.add(menuItem5);
 			menuItem2 = new JMenuItem("Backup Collection", KeyEvent.VK_B);
 			menuItem2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, ActionEvent.META_MASK));
-			menuItem2.getAccessibleContext().setAccessibleDescription("Backup");
 			menu.add(menuItem2);
 			menuRand = new JMenuItem("Random Card", KeyEvent.VK_R);
 			menuRand.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.META_MASK));
-			menuRand.getAccessibleContext().setAccessibleDescription("Random Card");
 			menu.add(menuRand);
 			menuClear = new JMenuItem("Clear Toggles", KeyEvent.VK_C);
 			menuClear.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.META_MASK));
-			menuClear.getAccessibleContext().setAccessibleDescription("Clear Toggles");
 			menu.add(menuClear);
+			menuText = new JMenuItem("Extract Deck Text (Tappedout.net format)");
+			menu.add(menuText);
 			setJMenuBar(menuBar);
 
 			//menuItem2 listener
@@ -590,6 +591,74 @@ public class CardOrganizer extends JFrame  {
 					} else {
 						viewAll();
 					}
+				}
+			});
+			
+			menuText.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					PrintWriter out = null;
+					File f;
+					String data = "Main Deck:\n\n";
+					StringBuilder sFile = new StringBuilder();
+					
+					try {
+						sFile = organizer.readFromFile(home + "/Desktop/VCO/Decks/" + currentDeck + ".txt");
+					} catch (IOException e4) {
+						e4.printStackTrace();
+					}
+					
+					String[] sBSplit = sFile.toString().split("::");
+					String sB[] = null;
+					try {
+						if(sBSplit[1] != null)
+							sB = sBSplit[1].split(":");
+					} catch (Exception e2){
+						System.out.print("there will be an array out of bounds w/o a sideboard. Tis okay");
+					}
+					
+					String[] line = sBSplit[0].toString().split(":");
+					int z = 0;
+					String d = "";
+					for(int i = 1; i < line.length; i++) {
+						if(i % 2 != 0) {
+							d = line[i];
+						} else {
+							z = Integer.parseInt(line[i]);
+							data += z +"x " + d + "\n";
+						}	
+					}
+					
+					data += "\nSideboard:\n\n";
+					if(sB != null) {
+					for(int i = 0; i < sB.length; i++) {
+						if(i % 2 == 0) {
+							d = sB[i];
+						} else {
+							z = Integer.parseInt(sB[i]);
+							data += z +"x " + d + "\n";
+							}	
+						}
+					}
+					
+					data += "\nNotes:\n\n";
+					String[] noteS = sFile.toString().split("///");
+					try {
+						noteS[1] = noteS[1].replace("%$$%", "\n\n");
+						data += noteS[1];
+					} catch (Exception e3) {
+						System.out.println("No Notes");
+					}
+					
+					
+					f = new File(home + "/Desktop/VCO/" + "deckData" + ".txt");
+					try {
+						out = new PrintWriter(f);
+					} catch (FileNotFoundException e1) {
+						e1.printStackTrace();
+					}
+					out.print(data);
+					out.close();
 				}
 			});
 
@@ -1044,7 +1113,7 @@ public class CardOrganizer extends JFrame  {
 			g.insets = new Insets(0,0,0,0);
 			notebox.add(notes);
 			JTabbedPane tabbedPane = new JTabbedPane();
-			JScrollPane noteScroll = new JScrollPane(notes); 
+			noteScroll = new JScrollPane(notes); 
 			JScrollPane oracleScroll = new JScrollPane(oracleText); 
 			tabbedPane.addTab("Deck Notes:", noteScroll);
 			tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
@@ -2569,7 +2638,6 @@ public class CardOrganizer extends JFrame  {
 		}
 		Scanner scan = new Scanner(s);
 		String fixSpacing = "";
-		//System.out.println(s);
 		while(scan.hasNext()!= false) {
 			String line = scan.nextLine();
 			if(line.equals(""))
@@ -2657,7 +2725,7 @@ public class CardOrganizer extends JFrame  {
 		if(sBSplit[1] != null)
 			sB = sBSplit[1].split(":");
 		} catch (Exception e){
-		//e.printStackTrace(); there will be an array out of bounds w/o a sideboard. Tis okay
+		System.out.print("there will be an array out of bounds w/o a sideboard. Tis okay");
 		}
 		String[] line = sBSplit[0].toString().split(":");
 		int z = 0;
@@ -2683,11 +2751,10 @@ public class CardOrganizer extends JFrame  {
 			}
 		}
 		String[] noteS = sFile.toString().split("///");
-		//System.out.println(noteS[1]);
 		try {
-		noteS[1] = noteS[1].replace("%$$%", "\n\n");
-		//System.out.println(noteS[1]);
-		notes.setText(noteS[1]);
+			noteS[1] = noteS[1].replace("%$$%", "\n\n");
+			notes.setText(noteS[1]);
+			notes.setCaretPosition(0);
 		} catch (Exception e) {
 			notes.setText("");
 		}
