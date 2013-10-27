@@ -358,52 +358,52 @@ public class CardOrganizer extends JFrame  {
 //			unowned.putClientProperty("JButton.buttonType", "bevel");
 			
 			//button images
-			red = new JToggleButton(new ImageIcon(home + "/Desktop/VCO/Icons/red.png"));
-			blue = new JToggleButton(new ImageIcon(home + "/Desktop/VCO/Icons/blue.png"));
-			black = new JToggleButton(new ImageIcon(home + "/Desktop/VCO/Icons/black.png"));
-			white = new JToggleButton(new ImageIcon(home + "/Desktop/VCO/Icons/white.png"));
-			colorless = new JToggleButton(new ImageIcon(home + "/Desktop/VCO/Icons/colorless.png"));
-			multi = new JToggleButton(new ImageIcon(home + "/Desktop/VCO/Icons/multi.png"));
-			green = new JToggleButton(new ImageIcon(home + "/Desktop/VCO/Icons/green.png"));
+			red = new JToggleButton(new ImageIcon(home + "/VCO/Icons/red.png"));
+			blue = new JToggleButton(new ImageIcon(home + "/VCO/Icons/blue.png"));
+			black = new JToggleButton(new ImageIcon(home + "/VCO/Icons/black.png"));
+			white = new JToggleButton(new ImageIcon(home + "/VCO/Icons/white.png"));
+			colorless = new JToggleButton(new ImageIcon(home + "/VCO/Icons/colorless.png"));
+			multi = new JToggleButton(new ImageIcon(home + "/VCO/Icons/multi.png"));
+			green = new JToggleButton(new ImageIcon(home + "/VCO/Icons/green.png"));
 			
 			//rarity icons and buttons	
-			mythicIcon = new ImageIcon(home + "/Desktop/VCO/Icons/mythic.png");
-			rareIcon = new ImageIcon(home + "/Desktop/VCO/Icons/rare.png");		  
-			uncommonIcon = new ImageIcon(home + "/Desktop/VCO/Icons/uncommon.png");		  
-			commonIcon = new ImageIcon(home + "/Desktop/VCO/Icons/common.png");	
+			mythicIcon = new ImageIcon(home + "/VCO/Icons/mythic.png");
+			rareIcon = new ImageIcon(home + "/VCO/Icons/rare.png");		  
+			uncommonIcon = new ImageIcon(home + "/VCO/Icons/uncommon.png");		  
+			commonIcon = new ImageIcon(home + "/VCO/Icons/common.png");	
 			common = new JToggleButton(commonIcon);
 			uncommon = new JToggleButton(uncommonIcon);
 			rare = new JToggleButton(rareIcon);
 			mythic = new JToggleButton(mythicIcon);
-			blackIcon = new ImageIcon(home + "/Desktop/VCO/Icons/black_mana.gif");
-			greenIcon = new ImageIcon(home + "/Desktop/VCO/Icons/green_mana.gif");
-			blueIcon = new ImageIcon(home + "/Desktop/VCO/Icons/blue_mana.gif");
-			whiteIcon = new ImageIcon(home + "/Desktop/VCO/Icons/white_mana.gif");
-			redIcon = new ImageIcon(home + "/Desktop/VCO/Icons/red_mana.gif");
-			oneIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_1_mana.gif");
-			twoIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_2_mana.gif");
-			threeIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_3_mana.gif");
-			fourIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_4_mana.gif");
-			fiveIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_5_mana.gif");
-			sixIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_6_mana.gif");
-			sevenIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_7_mana.gif");
-			eightIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_8_mana.gif");
-			nineIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_9_mana.gif");
-			tenIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_10_mana.gif");
-			elevenIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_11_mana.gif");
-			bgIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_BG_mana.gif");
-			buIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_UB_mana.gif");
-			brIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_BR_mana.gif");
-			bwIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_WB_mana.gif");
-			ugIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_GU_mana.gif");
-			urIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_UR_mana.gif");
-			uwIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_WU_mana.gif");
-			wgIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_GW_mana.gif");
-			wrIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_RW_mana.gif");
-			grIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_RG_mana.gif");
-			checkIcon = new ImageIcon(home + "/Desktop/VCO/Icons/rsz_check2.png");
-			xIcon = new ImageIcon(home + "/Desktop/VCO/Icons/cross16.png");
-			XIcon = new ImageIcon(home + "/Desktop/VCO/Icons/Symbol_X_mana.gif");
+			blackIcon = new ImageIcon(home + "/VCO/Icons/black_mana.gif");
+			greenIcon = new ImageIcon(home + "/VCO/Icons/green_mana.gif");
+			blueIcon = new ImageIcon(home + "/VCO/Icons/blue_mana.gif");
+			whiteIcon = new ImageIcon(home + "/VCO/Icons/white_mana.gif");
+			redIcon = new ImageIcon(home + "/VCO/Icons/red_mana.gif");
+			oneIcon = new ImageIcon(home + "/VCO/Icons/Symbol_1_mana.gif");
+			twoIcon = new ImageIcon(home + "/VCO/Icons/Symbol_2_mana.gif");
+			threeIcon = new ImageIcon(home + "/VCO/Icons/Symbol_3_mana.gif");
+			fourIcon = new ImageIcon(home + "/VCO/Icons/Symbol_4_mana.gif");
+			fiveIcon = new ImageIcon(home + "/VCO/Icons/Symbol_5_mana.gif");
+			sixIcon = new ImageIcon(home + "/VCO/Icons/Symbol_6_mana.gif");
+			sevenIcon = new ImageIcon(home + "/VCO/Icons/Symbol_7_mana.gif");
+			eightIcon = new ImageIcon(home + "/VCO/Icons/Symbol_8_mana.gif");
+			nineIcon = new ImageIcon(home + "/VCO/Icons/Symbol_9_mana.gif");
+			tenIcon = new ImageIcon(home + "/VCO/Icons/Symbol_10_mana.gif");
+			elevenIcon = new ImageIcon(home + "/VCO/Icons/Symbol_11_mana.gif");
+			bgIcon = new ImageIcon(home + "/VCO/Icons/Symbol_BG_mana.gif");
+			buIcon = new ImageIcon(home + "/VCO/Icons/Symbol_UB_mana.gif");
+			brIcon = new ImageIcon(home + "/VCO/Icons/Symbol_BR_mana.gif");
+			bwIcon = new ImageIcon(home + "/VCO/Icons/Symbol_WB_mana.gif");
+			ugIcon = new ImageIcon(home + "/VCO/Icons/Symbol_GU_mana.gif");
+			urIcon = new ImageIcon(home + "/VCO/Icons/Symbol_UR_mana.gif");
+			uwIcon = new ImageIcon(home + "/VCO/Icons/Symbol_WU_mana.gif");
+			wgIcon = new ImageIcon(home + "/VCO/Icons/Symbol_GW_mana.gif");
+			wrIcon = new ImageIcon(home + "/VCO/Icons/Symbol_RW_mana.gif");
+			grIcon = new ImageIcon(home + "/VCO/Icons/Symbol_RG_mana.gif");
+			checkIcon = new ImageIcon(home + "/VCO/Icons/rsz_check2.png");
+			xIcon = new ImageIcon(home + "/VCO/Icons/cross16.png");
+			XIcon = new ImageIcon(home + "/VCO/Icons/Symbol_X_mana.gif");
 			common.putClientProperty("JButton.buttonType", "roundRect");
 			uncommon.putClientProperty("JButton.buttonType", "roundRect");
 			rare.putClientProperty("JButton.buttonType", "roundRect");
@@ -546,10 +546,10 @@ public class CardOrganizer extends JFrame  {
 						cut = cut.replace("//", "");
 					}
 					try {
-						img = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + cut + ".jpg"));
+						img = ImageIO.read(new File(home +"/VCO/All Cards/" + cut + ".jpg"));
 					} catch (IOException e1) {
 						try {
-							img = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + cut + ".full.jpg"));
+							img = ImageIO.read(new File(home +"/VCO/All Cards/" + cut + ".full.jpg"));
 						} catch( Exception e2) {
 							System.out.println("why not work?");
 						}
@@ -603,7 +603,7 @@ public class CardOrganizer extends JFrame  {
 					StringBuilder sFile = new StringBuilder();
 					
 					try {
-						sFile = organizer.readFromFile(home + "/Desktop/VCO/Decks/" + currentDeck + ".txt");
+						sFile = organizer.readFromFile(home + "/VCO/Decks/" + currentDeck + ".txt");
 					} catch (IOException e4) {
 						e4.printStackTrace();
 					}
@@ -651,7 +651,7 @@ public class CardOrganizer extends JFrame  {
 					}
 					
 					
-					f = new File(home + "/Desktop/VCO/" + "deckData" + ".txt");
+					f = new File(home + "/VCO/" + "deckData" + ".txt");
 					try {
 						out = new PrintWriter(f);
 					} catch (FileNotFoundException e1) {
@@ -924,7 +924,7 @@ public class CardOrganizer extends JFrame  {
 			ImageIcon image;
 			label = new JLabel();
 			try {
-				image = new ImageIcon(ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + "card_back" + ".jpg")));
+				image = new ImageIcon(ImageIO.read(new File(home +"/VCO/All Cards/" + "card_back" + ".jpg")));
 				label.setIcon(image);
 			} catch (Exception ex) {
 				label.setIcon(organizer.getCard("card_back").getImg());
@@ -1143,7 +1143,6 @@ public class CardOrganizer extends JFrame  {
 			g.ipady = 0;			
 			topBottom.setMinimumSize(new Dimension(800, 700));
 			combine.add(topBottom, g);
-			//combine.setPreferredSize(new Dimension(1200,665));
 			g.gridx = 1;
 			g.weightx = 1;
 			g.weighty = 1;
@@ -2157,7 +2156,7 @@ public class CardOrganizer extends JFrame  {
 	 */
 	@SuppressWarnings("unchecked")
 	public void getDecks() {
-	File directory = new File("/Users/eorndahl/Desktop/VCO/Decks");
+	File directory = new File("/Users/eorndahl/VCO/Decks");
 	String[] files = directory.list();
 	model.removeAllElements();
 	model.addElement("Load Deck");
@@ -2259,13 +2258,13 @@ public class CardOrganizer extends JFrame  {
 		cut = selected.replace("//", "");
 	}
 	try {
-		img = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + cut + ".jpg"));
+		img = ImageIO.read(new File(home +"/VCO/All Cards/" + cut + ".jpg"));
 	} catch (IOException e1) {
 		try {
-			img = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + cut + ".full.jpg"));
+			img = ImageIO.read(new File(home +"/VCO/All Cards/" + cut + ".full.jpg"));
 		} catch( Exception e) {
 			try {
-				img = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + "card_back" + ".jpg"));
+				img = ImageIO.read(new File(home +"/VCO/All Cards/" + "card_back" + ".jpg"));
 			} catch (IOException e2) {
 				e2.printStackTrace();
 				}
@@ -2300,7 +2299,7 @@ public class CardOrganizer extends JFrame  {
 		int aCHeight = 0;
 		int aSHeight = 0;
 		try {
-			BufferedImage ajaniGoldmane = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + "Ajani Goldmane" + ".full.jpg"));
+			BufferedImage ajaniGoldmane = ImageIO.read(new File(home + "/VCO/All Cards/" + "Ajani Goldmane" + ".full.jpg"));
 			BufferedImage aGResize =
 					Scalr.resize(ajaniGoldmane, Scalr.Method.SPEED, Scalr.Mode.FIT_TO_WIDTH,
 							cardV.getWidth(), 100, Scalr.OP_GRAYSCALE);
@@ -2309,7 +2308,7 @@ public class CardOrganizer extends JFrame  {
 			e.printStackTrace();
 		}
 		try {
-			BufferedImage ajaniCaller = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + "Ajani, Caller of the Pride" + ".jpg"));
+			BufferedImage ajaniCaller = ImageIO.read(new File(home +"/VCO/All Cards/" + "Ajani, Caller of the Pride" + ".jpg"));
 			BufferedImage aCResize =
 					Scalr.resize(ajaniCaller, Scalr.Method.SPEED, Scalr.Mode.FIT_TO_WIDTH,
 							cardV.getWidth(), 100, Scalr.OP_GRAYSCALE);
@@ -2318,7 +2317,7 @@ public class CardOrganizer extends JFrame  {
 			e.printStackTrace();
 		}
 		try {
-			BufferedImage aquusSteed = ImageIO.read(new File(home +"/Desktop/VCO/All Cards/" + "Aquus Steed" + ".jpg"));
+			BufferedImage aquusSteed = ImageIO.read(new File(home +"/VCO/All Cards/" + "Aquus Steed" + ".jpg"));
 			BufferedImage aSResize =
 					Scalr.resize(aquusSteed, Scalr.Method.SPEED, Scalr.Mode.FIT_TO_WIDTH,
 							cardV.getWidth(), 100, Scalr.OP_GRAYSCALE);
@@ -2647,13 +2646,13 @@ public class CardOrganizer extends JFrame  {
 		PrintWriter out;
 		if(b == true) {
 		String inputValue = JOptionPane.showInputDialog(null, "Enter name", "Save Deck", JOptionPane.PLAIN_MESSAGE);
-		File f = new File(home + "/Desktop/VCO/Decks/" + inputValue+ ".txt");
+		File f = new File(home + "/VCO/Decks/" + inputValue+ ".txt");
 		f.createNewFile();
-		out = new PrintWriter(home + "/Desktop/VCO/Decks/"+ inputValue +".txt");
+		out = new PrintWriter(home + "/VCO/Decks/"+ inputValue +".txt");
 		} else {
-			File f = new File(home + "/Desktop/VCO/Decks/" + currentDeck + ".txt");
+			File f = new File(home + "/VCO/Decks/" + currentDeck + ".txt");
 			f.createNewFile();
-			out = new PrintWriter(home + "/Desktop/VCO/Decks/"+ currentDeck +".txt");
+			out = new PrintWriter(home + "/VCO/Decks/"+ currentDeck +".txt");
 		}
 		out.print(fixSpacing);
 		out.close();
@@ -2670,7 +2669,7 @@ public class CardOrganizer extends JFrame  {
 	            "",
 	            JOptionPane.YES_NO_OPTION);
 		if(reply == JOptionPane.YES_NO_OPTION) {
-			File file = new File(home + "/Desktop/VCO/Decks/"+ currentDeck +".txt");
+			File file = new File(home + "/VCO/Decks/"+ currentDeck +".txt");
 			file.delete();
 			getDecks();
 		}
@@ -2717,7 +2716,7 @@ public class CardOrganizer extends JFrame  {
 		priceDeck();
 		countDeck();
 		StringBuilder sFile = new StringBuilder();
-		sFile = organizer.readFromFile(home + "/Desktop/VCO/Decks/" + s + ".txt");
+		sFile = organizer.readFromFile(home + "/VCO/Decks/" + s + ".txt");
 		organizer.resetDeck();
 		String[] sBSplit = sFile.toString().split("::");
 		String sB[] = null;

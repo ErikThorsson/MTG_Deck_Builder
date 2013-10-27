@@ -34,8 +34,14 @@ public class CollectionMethods extends BasicTree {
 
 	public CollectionMethods() throws InvalidKeyException, IOException {		
 		String sFile = "";
+		//this will move the directory if this is a first time run
+		try {
+			Process pr = Runtime.getRuntime().exec(home +"/Desktop/VCO/moveVCO.sh");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		String home = System.getProperty("user.home"); 
-		saveFile = (home + "/Desktop/VCO/VCOSave.txt");
+		saveFile = (home + "/VCO/VCOSave.txt");
 		this.loadCompleteDatabase();
 		try {
 			this.load();
@@ -110,7 +116,7 @@ public class CollectionMethods extends BasicTree {
 	 * Set JCombo list to current saved decks
 	 */
 	public void getDecks() {
-	String filepath = "/Users/eorndahl/Desktop/VCO/Decks";
+	String filepath = home + "/VCO/Decks";
 	File directory = new File(filepath);
 	String[] files = directory.list();
 	String[] names = new String[files.length];
@@ -1132,9 +1138,9 @@ public class CollectionMethods extends BasicTree {
 		sFile = readFromFile(saveFile);
 		Random r = new Random();
 		int i = r.nextInt(100000);
-		File f = new File(home + "/Desktop/VCO/VCOBackupSave" + i + ".txt");
+		File f = new File(home + "VCO/VCOBackupSave" + i + ".txt");
 		f.createNewFile();
-		PrintWriter out = new PrintWriter(home + "/Desktop/VCO/VCOBackupSave" + i + ".txt");
+		PrintWriter out = new PrintWriter(home + "/VCO/VCOBackupSave" + i + ".txt");
 		out.print(sFile);
 		out.close();
 	}
@@ -1215,7 +1221,7 @@ public class CollectionMethods extends BasicTree {
 			}
 			if(price != null) {
 			nameAndPrice += names[i] + ":" + price + "\n";
-			PrintWriter out = new PrintWriter(home + "/Desktop/Card Prices.txt");
+			PrintWriter out = new PrintWriter(home + "/VCO/Card Prices.txt");
 			out.print(nameAndPrice);
 			out.close();
 			}
@@ -1227,7 +1233,7 @@ public class CollectionMethods extends BasicTree {
 	 * @throws InvalidKeyException 
 	 */
 	public void loadPrices() throws IOException, InvalidKeyException {
-		File price = new File(home + "/Desktop/Card Values.txt");
+		File price = new File(home + "/VCO/Card Values.txt");
 		BufferedReader br = new BufferedReader(new FileReader(price));
 		String[] split = null;
         String lineRead = "";
@@ -1262,9 +1268,9 @@ public class CollectionMethods extends BasicTree {
 		String text;
 		String picURL;
 		try {
-			sFile = readFromFile(home + "/Desktop/VCO/readFormattedCards.txt");
+			sFile = readFromFile(home + "/VCO/readFormattedCards.txt");
 		} catch (Exception ex) {
-			sFile = readFromFile("/Volumes/NIGEL/VCO/readFormattedCards.txt");
+			ex.printStackTrace();	
 		}
 		String[] lines = sFile.toString().split("::");
 		int cur = 0;
