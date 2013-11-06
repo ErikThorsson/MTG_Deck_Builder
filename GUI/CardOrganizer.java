@@ -422,18 +422,21 @@ public class CardOrganizer extends JFrame  {
 			menuItemSaveDeck = new JMenuItem("Save Deck", KeyEvent.VK_S);
 			menuItemSaveDeck.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.META_MASK));
 			menu.add(menuItemSaveDeck);
-			menuItem3 = new JMenuItem("Save As", KeyEvent.VK_A);
-			menuItem3.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.META_MASK));
+			menuItem3 = new JMenuItem("Save As", KeyEvent.VK_D);
+			menuItem3.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.META_MASK));
 			menu.add(menuItem3);
+			menuItem = new JMenuItem("Save Collection", KeyEvent.VK_X);
+			menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.META_MASK));
+			menu.add(menuItem);
+			menuItem2 = new JMenuItem("Backup Collection", KeyEvent.VK_B);
+			menuItem2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, ActionEvent.META_MASK));
+			menu.add(menuItem2);
 			menuItem4 = new JMenuItem("Delete Deck", KeyEvent.VK_D);
 			menuItem4.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.META_MASK));
 			menu.add(menuItem4);
 			menuItem5 = new JMenuItem("New Deck", KeyEvent.VK_N);
 			menuItem5.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.META_MASK));
 			menu.add(menuItem5);
-			menuItem2 = new JMenuItem("Backup Collection", KeyEvent.VK_B);
-			menuItem2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, ActionEvent.META_MASK));
-			menu.add(menuItem2);
 			menuRand = new JMenuItem("Random Card", KeyEvent.VK_R);
 			menuRand.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.META_MASK));
 			menu.add(menuRand);
@@ -444,7 +447,21 @@ public class CardOrganizer extends JFrame  {
 			menu.add(menuText);
 			setJMenuBar(menuBar);
 
-			//menuItem2 listener
+			menuItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					try {
+						organizer.save();
+					} catch (FileNotFoundException e1) {
+						e1.printStackTrace();
+					} catch (MalformedURLException e1) {
+						e1.printStackTrace();
+					} catch (InvalidKeyException e2) {
+						e2.printStackTrace();
+					}
+				}
+			});
+			
 			menuItem2.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -2944,8 +2961,29 @@ public class CardOrganizer extends JFrame  {
 		if(isQuery != true) {
 			if(isMyCards == true)
 				viewMyCards(); 
-			else
-				viewAll();
+			else { //trying to just repaint the individual row with a check or X if all cards...
+				try {
+					selected = (String) table.getValueAt(table.getSelectedRow(), 0);
+					}catch (Exception e2) {
+						e2.printStackTrace();
+					}
+				refreshCardValues(table);
+				int row = table.getSelectedRow();
+				Card card = null;
+				try {
+					card = organizer.getCard(selected);
+				} catch (InvalidKeyException e) {
+					e.printStackTrace();
+				}
+				if(!isMyCards) {
+					if(card.owned > 0) {
+						dataModel.setValueAt(checkIcon,row, 5);
+					} else
+					dataModel.setValueAt(xIcon,row, 5);
+					}
+				table.repaint(); 
+				// <----- end of repaint attempt
+			}
 		} else if(isQuery == true) { 	//determine if query view and refresh
 			ArrayList<String[]> values = returnValues(queryList);
 			refreshTable(queryList, values);
@@ -2953,15 +2991,6 @@ public class CardOrganizer extends JFrame  {
 		try { //price collection on add
 			priceCollection();
 		} catch (InvalidKeyException e1) {
-			e1.printStackTrace();
-		}
-		try {
-			organizer.save();
-		} catch (InvalidKeyException e1) {
-			e1.printStackTrace();
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		} catch (MalformedURLException e1) {
 			e1.printStackTrace();
 		}
 		} else {
@@ -3033,20 +3062,33 @@ public class CardOrganizer extends JFrame  {
 				refreshTable(queryList, values);
 				//return;
 				}
-			viewAll(); 
+			//attempt to refresh individual rows to add the X or check ---->
+			try { 
+				selected = (String) table.getValueAt(table.getSelectedRow(), 0);
+				}catch (Exception e2) {
+					e2.printStackTrace();
+				}
+			refreshCardValues(table);
+			int row = table.getSelectedRow();
+			Card card = null;
+			try {
+				card = organizer.getCard(selected);
+			} catch (InvalidKeyException e) {
+				e.printStackTrace();
+			}
+			if(!isMyCards) {
+				if(card.owned > 0) {
+					dataModel.setValueAt(checkIcon,row, 5);
+				} else
+				dataModel.setValueAt(xIcon,row, 5);
+				}
+			table.repaint();
+			refreshCardValues(table);
+			// 	<------------------------------ end of repaint attempt
 			}
 		try { //price collection on remove
 			priceCollection();
 		} catch (InvalidKeyException e1) {
-			e1.printStackTrace();
-		}
-		try {
-			organizer.save();
-		} catch (InvalidKeyException e1) {
-			e1.printStackTrace();
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		} catch (MalformedURLException e1) {
 			e1.printStackTrace();
 		}
 		} else {

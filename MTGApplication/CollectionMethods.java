@@ -37,6 +37,7 @@ public class CollectionMethods extends BasicTree {
 		//this will move the directory if this is a first time run
 		try {
 			Process pr = Runtime.getRuntime().exec(home +"/Desktop/VCO/moveVCO.sh");
+			Thread.sleep(1000);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
