@@ -6,7 +6,8 @@ Windows <a href="https://dl.dropboxusercontent.com/s/79iwezw9q6nf9k3/WindowsDemo
 demo</a>.
 - Unpack and move the VCO folder to your home directory.
 - Click on the jar (You can move this to your desktop).
+- Unfortunately it doesn't (currently) look quite as sexy on windows as OSX.
 
-Unfortunately it doesn't (currently) look quite as sexy on windows as OSX.
-
-Mac demo / release is on the way. Bug hunting will resume after my exams -_-
+Mac <a href="https://dl.dropboxusercontent.com/s/g4e9r90k1lsmeeh/Demo.zip?dl=1&token_hash=AAF-1OewSQhskTMSAzYapn_0-Kj0qhNKaJ2Zp0bRb2Mtqw">
+demo.</a>
+- The folder will automatically move to your home folder when you first click the jar.
