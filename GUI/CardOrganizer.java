@@ -682,7 +682,6 @@ public class CardOrganizer extends JFrame  {
 			JPanel p5 = new JPanel(new GridLayout(2,1));
 			p5.add(viewDatabase);
 			p5.add(set);
-
 			JPanel panel1 = new JPanel(new GridBagLayout());
 			panel1.setBorder(new MatteBorder(0, 0, 1, 0, Color.GRAY));
 
@@ -2321,24 +2320,7 @@ public class CardOrganizer extends JFrame  {
 					Scalr.resize(ajaniGoldmane, Scalr.Method.SPEED, Scalr.Mode.FIT_TO_WIDTH,
 							cardV.getWidth(), 100, Scalr.OP_GRAYSCALE);
 			aGHeight = aGResize.getHeight();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		try {
-			BufferedImage ajaniCaller = ImageIO.read(new File(home +"/VCO/All Cards/" + "Ajani, Caller of the Pride" + ".jpg"));
-			BufferedImage aCResize =
-					Scalr.resize(ajaniCaller, Scalr.Method.SPEED, Scalr.Mode.FIT_TO_WIDTH,
-							cardV.getWidth(), 100, Scalr.OP_GRAYSCALE);
-			aCHeight = aCResize.getHeight();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		try {
-			BufferedImage aquusSteed = ImageIO.read(new File(home +"/VCO/All Cards/" + "Aquus Steed" + ".jpg"));
-			BufferedImage aSResize =
-					Scalr.resize(aquusSteed, Scalr.Method.SPEED, Scalr.Mode.FIT_TO_WIDTH,
-							cardV.getWidth(), 100, Scalr.OP_GRAYSCALE);
-			aSHeight = aSResize.getHeight();
+			System.out.println(aGHeight);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -2454,8 +2436,6 @@ public class CardOrganizer extends JFrame  {
 	 * This method takes as a parameter the String[] of card names and then an ArrayList<String[]>
 	 * of the number owned and rarity in their appropriate String[] and refreshes the JTable with this
 	 * data. There are two parameters vs just one due to the structure upstream but mostly pure laziness :D! 
-	 * @param s
-	 * @param l
 	 */
 	public void refreshTable(String[] s, ArrayList<String[]> l) {
 		String[] all = s;

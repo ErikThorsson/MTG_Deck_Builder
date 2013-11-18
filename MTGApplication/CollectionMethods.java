@@ -1109,10 +1109,7 @@ public class CollectionMethods extends BasicTree {
 	}
 
 	/**
-	 * saves to a specific text file on my computer
-	 * @throws FileNotFoundException
-	 * @throws InvalidKeyException
-	 * @throws MalformedURLException
+	 * save collection
 	 */
 	public void save() throws FileNotFoundException, InvalidKeyException, MalformedURLException {
 		PrintWriter out = new PrintWriter(saveFile);
@@ -1132,7 +1129,6 @@ public class CollectionMethods extends BasicTree {
 
 	/**
 	 * Saves a backup of the save file under a randomized file name.
-	 * @throws IOException
 	 */
 	public void backup() throws IOException {
 		StringBuilder sFile = new StringBuilder();
@@ -1148,8 +1144,6 @@ public class CollectionMethods extends BasicTree {
 
 	/**
 	 * Reads the save text file and adds the correct number of cards to your database
-	 * @throws IOException
-	 * @throws InvalidKeyException
 	 */
 	public void load() throws IOException, InvalidKeyException  {
 		StringBuilder sFile = new StringBuilder();
