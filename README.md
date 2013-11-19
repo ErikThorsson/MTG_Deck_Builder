@@ -10,4 +10,4 @@ demo</a>.
 
 Mac <a href="https://dl.dropboxusercontent.com/s/g4e9r90k1lsmeeh/Demo.zip?dl=1&token_hash=AAF-1OewSQhskTMSAzYapn_0-Kj0qhNKaJ2Zp0bRb2Mtqw">
 demo.</a>
-- The folder will automatically move to your home folder when you first click the jar.
+- Same as above but if on desktop, the folder will automatically move to your home folder when you first click the jar.
