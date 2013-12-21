@@ -1,5 +1,3 @@
-A card organizer and deck builder for Magic the Gathering.
-
 **So what does it do?**
 
 I find it handy for keeping track of my decks and tweaking them, experimenting with deck ideas, keeping track of my collection, and seeing what I don't have in a set. It has a comprehensive query system and a search bar for looking by name, tribal, keyword.
