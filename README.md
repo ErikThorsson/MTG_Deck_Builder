@@ -1,5 +1,5 @@
-<img src="http://i.imgur.com/4Sh8rBx.png"  width="500">
-<a href="http://www.youtube.com/watch?v=IFpPBQsTcFo&feature=youtu.be" rel="nofollow" target="_blank">Youtube.</a>
+<img src="http://i.imgur.com/4Sh8rBx.png"  width="800">
+<br><a href="http://www.youtube.com/watch?v=IFpPBQsTcFo&feature=youtu.be" rel="nofollow" target="_blank">Youtube.</a>
 
 **So what does it do?**
 
