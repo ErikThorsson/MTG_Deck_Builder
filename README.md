@@ -16,7 +16,7 @@ I find it handy for keeping track of my decks and tweaking them, experimenting w
 - While functional, swing doesn't exactly look too great on windows.
 - Also for unknown reasons some cards may be french.
 
-<img src="http://i.imgur.com/4Sh8rBx.png"  height="200">
+<img src="http://i.imgur.com/4Sh8rBx.png"  height="300">
 <a href="http://i.imgur.com/4Sh8rBx.png" rel="nofollow" target="_blank">Picture.</a> <a href="http://www.youtube.com/watch?v=IFpPBQsTcFo&feature=youtu.be" rel="nofollow" target="_blank">Youtube.</a>
 
 Windows <a href="https://dl.dropboxusercontent.com/s/79iwezw9q6nf9k3/WindowsDemo.zip?dl=1&token_hash=AAFoeYnTwoT6TbSsW0Qehqm3-fLbQ1quPoNfb90cHJjSag"> 
