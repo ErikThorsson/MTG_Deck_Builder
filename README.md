@@ -1,3 +1,6 @@
+<img src="http://i.imgur.com/4Sh8rBx.png"  height="400">
+<a href="http://www.youtube.com/watch?v=IFpPBQsTcFo&feature=youtu.be" rel="nofollow" target="_blank">Youtube.</a>
+
 **So what does it do?**
 
 I find it handy for keeping track of my decks and tweaking them, experimenting with deck ideas, keeping track of my collection, and seeing what I don't have in a set. It has a comprehensive query system and a search bar for looking by name, tribal, keyword.
@@ -15,9 +18,6 @@ I find it handy for keeping track of my decks and tweaking them, experimenting w
 - Querying through all cards is a little slow right now and something I will optimize so stick to "my cards" for best results.
 - While functional, swing doesn't exactly look too great on windows.
 - Also for unknown reasons some cards may be french.
-
-<img src="http://i.imgur.com/4Sh8rBx.png"  height="300">
-<a href="http://i.imgur.com/4Sh8rBx.png" rel="nofollow" target="_blank">Picture.</a> <a href="http://www.youtube.com/watch?v=IFpPBQsTcFo&feature=youtu.be" rel="nofollow" target="_blank">Youtube.</a>
 
 Windows <a href="https://dl.dropboxusercontent.com/s/79iwezw9q6nf9k3/WindowsDemo.zip?dl=1&token_hash=AAFoeYnTwoT6TbSsW0Qehqm3-fLbQ1quPoNfb90cHJjSag"> 
 demo</a> | <a href="https://dl.dropboxusercontent.com/s/fpeg9z28seyafrq/VCO.zip?dl=1&token_hash=AAE3i-QXBQRjgTLeCf8KyhdPN5F50TdTWP-FEbiUi4JOsA">
